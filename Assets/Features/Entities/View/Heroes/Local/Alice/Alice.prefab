@@ -490,6 +490,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3206923099687242365}
   - component: {fileID: 8466526908961427062}
+  - component: {fileID: 1066416052500076519}
+  - component: {fileID: 2652304111055867068}
+  - component: {fileID: 4310347511843957529}
+  - component: {fileID: 5220319081674580048}
   m_Layer: 0
   m_Name: Alice
   m_TagString: Untagged
@@ -527,7 +531,68 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 4278100186079492270}
   rotationSpeed: 10
+  attackFacingDuration: 0.3
   weaponSlot: {fileID: 1993995369825730728}
+  hitReactionCooldown: 0.5
+  healthBarHeight: 2.1
+  hitFeedback: {fileID: 1066416052500076519}
+  deathLaunch: {fileID: 2652304111055867068}
+--- !u!114 &1066416052500076519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206923099687242354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 686905213ec87e64497e00b8acfaabcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visual: {fileID: 2148928661061455951}
+--- !u!114 &2652304111055867068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206923099687242354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc2786dd61b127e4091b0a5d7a36b37f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visual: {fileID: 2148928661061455951}
+  distance: 1.5
+  hopHeight: 0.4
+  airTime: 0.55
+  flips: 1
+  bounciness: 0.35
+  variation: 0.2
+--- !u!114 &4310347511843957529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206923099687242354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 141abc338750541478fe92fd837f6107, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5220319081674580048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206923099687242354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 040ff60c2b55dc6449bae4182464cf74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3512741108777884559
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,9 +19,10 @@ TO FILL
 | Smooth hero rotation | 4 min |
 | Hero health value | 5 min |
 | Hero ground ring | 8 min |
+| Footstep puffs | 10 min |
 | Archero-style visual pass | 13 min |
 | Great Sword texture | 3 min |
-| **Total** | 174 min |
+| **Total** | 184 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -70,7 +71,7 @@ TO FILL
 - **Time:** 4 min
 - **Bottleneck:** none.
 
-### Hero health value � 5 min
+### Hero health value � 5 min
 - **Implemented:** the hero's current health number now floats above his health bar, so the player reads exactly how much health is left. Enemies keep the bar only. Details in [the feature note](Documentation/FeatureNotes/10_HeroHealthValue.md).
 - **Time:** 5 min
 - **Bottleneck:** not recorded.
@@ -81,6 +82,12 @@ TO FILL
 - **Bottleneck:** not recorded.
 - **Addressables:** the ring prefab is preloaded from the `VFX` group.
 
+### Footstep puffs — 10 min
+- **Implemented:** a small dust puff pops at the hero's feet every few steps while he walks, to highlight the feeling of walking. Details in [the feature note](Documentation/FeatureNotes/12_FootstepPuffs.md).
+- **Time:** 10 min
+- **Bottleneck:** no real bottleneck.
+- **Addressables:** the puff prefab is preloaded from the `VFX` group.
+
 ### Archero-style visual pass — 13 min
 - **Implemented:** the prototype visuals were not helping the player understand the game: flat grey floor, hard black shadows, a default sky and no post-processing. The scene now has a warm key light with soft violet shadows, a gradient sky with fog that melts the floor into the horizon, a teal floor so the warm characters stand out, and a light post-processing grade (bloom, tonemapping, saturation, split toning, vignette). The look lives in the Dungeon biome prefab. HDR, 4x MSAA and soft shadows are enabled in the URP asset. The Great Sword also got a steel material, because its texture was missing from the project.
 - **Time:** 13 min (the sword material fix was not timed separately)
@@ -90,7 +97,6 @@ TO FILL
 - **Implemented:** the sword now has a texture: gold ornamented crossguard with a gem, leather-wrapped grip, steel blade with gold trim. The model's UVs are a palette-style atlas, so the texture is baked from the mesh instead of hand painted, and can be replaced by a real one without touching the material.
 - **Time:** 3 min
 - **Bottleneck:** not recorded.
-
 
 ## Feedback on the base project
 
