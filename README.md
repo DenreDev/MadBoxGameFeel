@@ -12,8 +12,14 @@ TO FILL
 | Health bars | 17 min |
 | Joystick UI rework | 9 min |
 | Higher camera angle | 8 min |
+| Damage numbers | 26 min |
+| Start screen and game flow | 31 min |
+| Hit feedback, ragdoll death and screen shake | 25 min |
+| Enemy spawn | 16 min |
+| Smooth hero rotation | 4 min |
 | Hero health value | 5 min |
-| **Total** | 48 min |
+| Hero ground ring | 8 min |
+| **Total** | 158 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -36,10 +42,42 @@ TO FILL
 - **Time:** 8 min
 - **Bottleneck:** the camera was too focused on the player, so enemy spawns came as a surprise.
 
-### Hero health value — 5 min
+### Damage numbers — 26 min
+- **Implemented:** every hit on an enemy pops a floating damage number: chunky, outlined, with a color gradient. It slams in, drifts and fades. It is bigger for heavier weapons, and the hit that kills prints a bigger, red-orange number. Built on third-party package, so critical hits or scaling damage can reuse it later. Details in [the feature note](Documentation/FeatureNotes/05_DamageNumbers.md).
+- **Time:** 26 min
+- **Bottleneck:** validating in play mode on a Unity editor shared with other sessions, after making the imported third-party package compile.
+- **Addressables:** the damage number prefab is preloaded and pooled from the `VFX` group.
+
+### Start screen and game flow — 31 min
+- **Implemented:** the game now waits on a "main menu" start screen: the camera frames the hero close up, facing the player, with a "TAP TO START" prompt, and nothing moves or spawns until the tap. A small game manager (Start, Playing, GameOver) drives it, so Restart comes back to the same screen. Details in [the feature note](Documentation/FeatureNotes/06_StartScreen.md).
+- **Time:** 31 min
+
+### Hit feedback, ragdoll death and screen shake — 25 min
+- **Implemented:** every hit on the hero or a bee flashes the body white, squashes it and spits a small spark burst. Killed bees and the dead hero are knocked away in a flipping, ragdoll-style hop, and the camera gets small shakes when the hero attacks, is hit and dies. Details in [the feature note](Documentation/FeatureNotes/07_HitFeedbackRagdollShake.md).
+- **Time:** 25 min
+- **Addressables:** the spark prefab and the flash material are preloaded from the `VFX` group.
+
+### Enemy spawn — 16 min
+- **Implemented:** bees now pop in from nothing with a springy overshoot while a lavender dust puff, a ground glow and a few sparkles burst at their feet. Details in [the feature note](Documentation/FeatureNotes/08_EnemySpawn.md).
+- **Time:** 16 min
+- **Bottleneck:** not recorded.
+- **Addressables:** the puff prefab is preloaded from the `VFX` group.
+
+### Smooth hero rotation — 4 min
+- **Implemented:** the hero no longer snaps to face his target when he auto-attacks. He eases toward it for a moment, then back to his movement direction, and every hero turn now shares the same easing. Details in [the feature note](Documentation/FeatureNotes/09_SmoothHeroRotation.md).
+- **Time:** 4 min
+- **Bottleneck:** none.
+
+### Hero health value � 5 min
 - **Implemented:** the hero's current health number now floats above his health bar, so the player reads exactly how much health is left. Enemies keep the bar only. Details in [the feature note](Documentation/FeatureNotes/10_HeroHealthValue.md).
 - **Time:** 5 min
 - **Bottleneck:** not recorded.
+
+### Hero ground ring — 8 min
+- **Implemented:** a thin, semi-transparent white ring now sits on the ground under the hero, so the player always knows where he is. Details in [the feature note](Documentation/FeatureNotes/11_HeroRing.md).
+- **Time:** 8 min
+- **Bottleneck:** not recorded.
+- **Addressables:** the ring prefab is preloaded from the `VFX` group.
 
 ## Feedback on the base project
 
