@@ -11,7 +11,8 @@ TO FILL
 | Entity animation state machines | 9 min |
 | Health bars | 17 min |
 | Joystick UI rework | 9 min |
-| **Total** | 35 min |
+| Higher camera angle | 8 min |
+| **Total** | 43 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -28,6 +29,11 @@ TO FILL
 - **Implemented:** the joystick is smaller and its base stays in a bottom thumb zone, so it no longer covers the gameplay. The ring size and the finger travel now come from one value. Details in [the feature note](Documentation/FeatureNotes/03_JoystickUI.md).
 - **Time:** 9 min
 - **Bottleneck:** the joystick UI was too big and on top of the gameplay actions.
+
+### Higher camera angle — 8 min
+- **Implemented:** the gameplay camera is higher and steeper (65° instead of 57.7°, distance 16 instead of 14), so enemies coming from the sides and behind show up earlier while the hero stays readable. Details in [the feature note](Documentation/FeatureNotes/04_HigherCamera.md).
+- **Time:** 8 min
+- **Bottleneck:** the camera was too focused on the player, so enemy spawns came as a surprise.
 
 ## Feedback on the base project
 
