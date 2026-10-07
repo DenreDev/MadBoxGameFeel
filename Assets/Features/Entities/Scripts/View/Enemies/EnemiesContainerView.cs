@@ -26,29 +26,38 @@ namespace Game.GamePlay.Enemies
 			_enemiesController.OnEnemySpawned += OnEnemySpawned;
 			_enemiesController.OnEnemyRemoved += OnEnemyRemoved;
 			_enemiesController.OnEnemyPositionChanged += OnEnemyPositionChanged;
-			_enemiesController.OnEnemyAttacked += OnEnemyAttacked;
+			_enemiesController.OnEnemyWindupStarted += OnEnemyWindupStarted;
+			_enemiesController.OnEnemyStrikeStarted += OnEnemyStrikeStarted;
 			_enemiesController.OnEnemyDamaged += OnEnemyDamaged;
 			_enemiesController.OnEnemyKilled += OnEnemyKilled;
 		}
 
-		private void OnEnemyAttacked(int enemyId)
-		{
-			if (_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) enemyView.PlayAttack();
-		}
-
-		private void OnEnemyDamaged(int enemyId)
+		private void OnEnemyWindupStarted(int enemyId, float duration)
 		{
 			if (!_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) return;
 			if (!_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemyState)) return;
 
-			enemyView.PlayHit(enemyState.Health, enemyState.Config.InitialHealth);
+			enemyView.PlayWindup(duration, enemyState.Config.AttackRange);
+		}
+
+		private void OnEnemyStrikeStarted(int enemyId)
+		{
+			if (_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) enemyView.PlayStrike();
+		}
+
+		private void OnEnemyDamaged(int enemyId, int damage)
+		{
+			if (!_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) return;
+			if (!_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemyState)) return;
+
+			enemyView.PlayHit(damage, enemyState.Health, enemyState.Config.InitialHealth);
 		}
 
 		// Killed enemies leave the dictionary here and destroy themselves after the death animation,
 		// so the OnEnemyRemoved that follows finds nothing. Restart (ClearAllEnemies) skips this and destroys instantly.
-		private void OnEnemyKilled(int enemyId)
+		private void OnEnemyKilled(int enemyId, int damage)
 		{
-			if (_enemyViews.Remove(enemyId, out EnemyView enemyView)) enemyView.PlayDeath();
+			if (_enemyViews.Remove(enemyId, out EnemyView enemyView)) enemyView.PlayDeath(damage);
 		}
 
 		private void OnEnemySpawned(EnemyState enemyState)
@@ -56,6 +65,7 @@ namespace Game.GamePlay.Enemies
 			EnemyView enemyView = Instantiate(enemyState.Config.Prefab, transform);
 			enemyView.transform.position = enemyState.Position;
 			enemyView.CreateHealthBar(_healthBarService, enemyState.Health, enemyState.Config.InitialHealth);
+			enemyView.PlaySpawn();
 			_enemyViews[enemyState.Id] = enemyView;
 		}
 
@@ -83,7 +93,8 @@ namespace Game.GamePlay.Enemies
 				_enemiesController.OnEnemySpawned -= OnEnemySpawned;
 				_enemiesController.OnEnemyRemoved -= OnEnemyRemoved;
 				_enemiesController.OnEnemyPositionChanged -= OnEnemyPositionChanged;
-				_enemiesController.OnEnemyAttacked -= OnEnemyAttacked;
+				_enemiesController.OnEnemyWindupStarted -= OnEnemyWindupStarted;
+				_enemiesController.OnEnemyStrikeStarted -= OnEnemyStrikeStarted;
 				_enemiesController.OnEnemyDamaged -= OnEnemyDamaged;
 				_enemiesController.OnEnemyKilled -= OnEnemyKilled;
 			}

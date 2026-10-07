@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f5f18e0fed3e4745b44e82601378a56, type: 3}
   m_Name: EnemiesConfig
   m_EditorClassIdentifier: 
-  spawnInterval: 2
+  spawnInterval: 1.2
   spawnRadius: 10
-  maxEnemies: 20
+  maxEnemies: 30
   enemies:
   - {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
   - {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}

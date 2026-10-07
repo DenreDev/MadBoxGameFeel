@@ -531,6 +531,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 4278100186079492270}
   rotationSpeed: 10
+  runClipGroundSpeed: 4
   attackFacingDuration: 0.3
   weaponSlot: {fileID: 1993995369825730728}
   hitReactionCooldown: 0.5

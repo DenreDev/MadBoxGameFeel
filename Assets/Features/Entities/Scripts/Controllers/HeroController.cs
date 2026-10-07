@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Game.GameFlow;
 using Game.GamePlay.Enemies;
 using Game.JoystickInput;
 using Game.Weapons;
@@ -14,27 +16,34 @@ namespace Game.GamePlay.Heroes
 		private EnemiesController _enemiesController;
 		private JoystickInputService _joystickInputService;
 		private WeaponsService _weaponsService;
+		private GameFlowService _gameFlowService;
 
 		// Internal State
 		private CancellationTokenSource _cancellationTokenSource;
 		private HeroState _currentState;
+		private bool _isSwinging;
+		private readonly List<EnemyState> _hitTargets = new List<EnemyState>(); // reused by every swing
 
 		// Public State
 		public HeroState CurrentState => _currentState;
 
 		// Events
 		public event Action<HeroState> OnStateChanged;
-		public event Action<Vector3> OnAttacked; // target position
+		public event Action<int> OnAttackStarted; // target enemy id: the swing begins, the damage lands later
+		public event Action<Vector3> OnAttacked; // position of the first enemy hit: the slash reached its high point (the damage lands now, if an enemy is still in range)
 		public event Action OnDamaged; // hit taken and survived (death is reported through OnStateChanged)
+		public event Action OnDied; // the hit that killed the hero, raised right after OnStateChanged
 
-		public UniTask<bool> Initialize(EnemiesController enemiesController, JoystickInputService joystickInputService, WeaponsService weaponsService)
+		public UniTask<bool> Initialize(EnemiesController enemiesController, JoystickInputService joystickInputService, WeaponsService weaponsService, GameFlowService gameFlowService)
 		{
 			_enemiesController = enemiesController;
 			_joystickInputService = joystickInputService;
 			_weaponsService = weaponsService;
+			_gameFlowService = gameFlowService;
 
 			_currentState = new HeroState(Vector3.zero, HeroConfig.Instance.InitialHealth, 0f);
 			_cancellationTokenSource = new CancellationTokenSource();
+			_isSwinging = false;
 
 			UpdateLoop(_cancellationTokenSource.Token).Forget();
 
@@ -53,6 +62,7 @@ namespace Game.GamePlay.Heroes
 			if (_currentState.IsDead)
 			{
 				Debug.Log("Hero is dead!");
+				OnDied?.Invoke();
 			}
 			else
 			{
@@ -78,10 +88,12 @@ namespace Game.GamePlay.Heroes
 		{
 			while (!cancellationToken.IsCancellationRequested)
 			{
-				if (!_currentState.IsDead)
+				// The hero neither moves nor attacks outside of gameplay (start screen, game over).
+				if (_gameFlowService.IsPlaying && !_currentState.IsDead)
 				{
+					// Move and auto-attack at the same time (survivor-like): moving never disables the weapon.
 					if (_joystickInputService.CurrentState.IsActive) UpdatePosition();
-					else AttackClosestEnemy();
+					AttackClosestEnemy();
 				}
 				await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
 			}
@@ -101,15 +113,70 @@ namespace Game.GamePlay.Heroes
 
 		private void AttackClosestEnemy()
 		{
-			if (_weaponsService.CurrentWeapon == null) return;
-			if (Time.time - _currentState.LastAttackTime < _weaponsService.CurrentWeapon.Cooldown) return;
+			WeaponConfig weapon = _weaponsService.CurrentWeapon;
+			if (weapon == null || _isSwinging) return;
+			if (Time.time - _currentState.LastAttackTime < weapon.Cooldown) return;
 
 			if (TryFindClosestEnemy(out EnemyState closestEnemy))
 			{
-				_enemiesController.AttackEnemy(closestEnemy, _weaponsService.CurrentWeapon.Damage);
-				_currentState = new HeroState(_currentState.Position, _currentState.Health, Time.time);
-				OnAttacked?.Invoke(closestEnemy.Position);
+				Swing(weapon, closestEnemy, _cancellationTokenSource.Token).Forget();
 			}
+		}
+
+		// The swing is not instant: the animation starts now, the damage lands when the slash reaches its high point,
+		// and the next swing waits for the animation to finish so it always plays completely.
+		private async UniTaskVoid Swing(WeaponConfig weapon, EnemyState target, CancellationToken cancellationToken)
+		{
+			_isSwinging = true;
+			_currentState = new HeroState(_currentState.Position, _currentState.Health, Time.time);
+			OnAttackStarted?.Invoke(target.Id);
+
+			try
+			{
+				await UniTask.Delay(TimeSpan.FromSeconds(weapon.HitDelay), cancellationToken: cancellationToken);
+				Slash(weapon, target);
+
+				await UniTask.Delay(TimeSpan.FromSeconds(Mathf.Max(0f, weapon.SwingDuration - weapon.HitDelay)), cancellationToken: cancellationToken);
+			}
+			finally
+			{
+				_isSwinging = false;
+			}
+		}
+
+		// Every enemy in range takes the hit, up to the weapon's max targets: the one the hero aimed at first (unless it died or left the range
+		// during the windup), then the closest ones. The slash is announced even when nothing is left in range, so a missed swing still looks like a swing.
+		private void Slash(WeaponConfig weapon, EnemyState swingTarget)
+		{
+			if (_currentState.IsDead || !_gameFlowService.IsPlaying) return;
+
+			FindTargetsInRange(weapon, swingTarget.Id);
+			Vector3 slashPosition = _hitTargets.Count > 0 ? _hitTargets[0].Position : swingTarget.Position;
+
+			// Iterating our own list: killing an enemy removes it from the controller, not from here.
+			foreach (EnemyState target in _hitTargets)
+			{
+				_enemiesController.AttackEnemy(target, weapon.Damage);
+			}
+
+			OnAttacked?.Invoke(slashPosition);
+		}
+
+		private void FindTargetsInRange(WeaponConfig weapon, int aimedEnemyId)
+		{
+			Vector3 heroPosition = _currentState.Position;
+			_hitTargets.Clear();
+
+			foreach (EnemyState enemy in _enemiesController.Enemies.Values)
+			{
+				if (Vector3.Distance(heroPosition, enemy.Position) < weapon.Range) _hitTargets.Add(enemy);
+			}
+
+			// The aimed enemy sorts first, the others by distance.
+			_hitTargets.Sort((a, b) => SortKey(a).CompareTo(SortKey(b)));
+			if (_hitTargets.Count > weapon.MaxTargets) _hitTargets.RemoveRange(weapon.MaxTargets, _hitTargets.Count - weapon.MaxTargets);
+
+			float SortKey(EnemyState enemy) => enemy.Id == aimedEnemyId ? -1f : Vector3.Distance(heroPosition, enemy.Position);
 		}
 
 		private bool TryFindClosestEnemy(out EnemyState closestEnemy)

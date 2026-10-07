@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: HeroUpperBodyMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 0
+  - m_Path: root
+    m_Weight: 0
+  - m_Path: root/hips
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones00
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones00/characters_bones01
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones00/characters_bones01/characters_bones02
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones00/characters_bones01/characters_bones02/characters_bones03_end
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones04
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones04/characters_bones05
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones04/characters_bones05/characters_bones06
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones04/characters_bones05/characters_bones06/characters_bones07_end
+    m_Weight: 0
+  - m_Path: root/hips/characters_bones08
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones10
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones10/characters_bones11
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones10/characters_bones11/characters_bones12_end
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones13
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones13/characters_bones14
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones13/characters_bones14/characters_bones15
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones13/characters_bones14/characters_bones15/characters_bones16
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones13/characters_bones14/characters_bones15/characters_bones16/characters_bones17_end
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones18
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones18/characters_bones19
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones18/characters_bones19/characters_bones20
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones18/characters_bones19/characters_bones20/characters_bones21
+    m_Weight: 1
+  - m_Path: root/hips/characters_bones08/characters_bones09/characters_bones18/characters_bones19/characters_bones20/characters_bones21/characters_bones22_end
+    m_Weight: 1

@@ -50,6 +50,7 @@ namespace Game.GameFeel
 			{
 				service.PlayDamageNumber(hitPoint, damage, isKillingBlow);
 				service.PlayHitStop(isKillingBlow);
+				service.PlayHitSound(isKillingBlow);
 			}
 
 			ClearRecoil();

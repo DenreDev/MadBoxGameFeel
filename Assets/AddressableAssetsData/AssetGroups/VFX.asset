@@ -27,6 +27,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab25c33471e347bd932759157c1f5dfa
+    m_Address: VFX/AttackWarning
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b763b540cdec1c445ac50b0b8104fb79
     m_Address: VFX/HitSpark
     m_ReadOnly: 0
@@ -37,23 +42,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bbb4bbbe8cd244f5ab36d2caae3fd842
+    m_Address: VFX/AttackWarnTint
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bd159ad1d1a768047982997c36c508f0
     m_Address: VFX/HitFlash
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf4dd906ca10d594a833f0c57fc468df
+    m_Address: VFX/SwordSlash
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c622901844d1e2b4bbfcf85033246607
     m_Address: VFX/StepPuff
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ab25c33471e347bd932759157c1f5dfa
-    m_Address: VFX/AttackWarning
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bbb4bbbe8cd244f5ab36d2caae3fd842
-    m_Address: VFX/AttackWarnTint
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

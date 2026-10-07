@@ -34,6 +34,33 @@ namespace Game.GameFeel
 		[Tooltip("Addressable unlit material the enemy body blinks to while winding up an attack (address VFX/AttackWarnTint, group VFX)")]
 		private AssetReferenceT<Material> attackWarnMaterial;
 
+		[SerializeField]
+		[Tooltip("Addressable whoosh played when the hero starts a swing, its loudest moment lands just before the slash (address Audio/SwordWhoosh, group Audio)")]
+		private AssetReferenceT<AudioClip> swordWhooshClip;
+		[SerializeField]
+		[Tooltip("Addressable thump played when the hero's sword hits an enemy (address Audio/HitImpact, group Audio)")]
+		private AssetReferenceT<AudioClip> hitImpactClip;
+		[SerializeField]
+		[Tooltip("Addressable heavier crunch played when the hero's sword kills an enemy (address Audio/KillImpact, group Audio)")]
+		private AssetReferenceT<AudioClip> killImpactClip;
+
+		[Header("Attack sounds")]
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the swing whoosh")]
+		private float swordWhooshVolume = 0.5f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the hit thump")]
+		private float hitImpactVolume = 0.8f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the kill crunch")]
+		private float killImpactVolume = 1f;
+		[SerializeField]
+		[Tooltip("Pitch gained by the kill sound for each kill chained in the streak window, so a crowd going down sounds higher and higher")]
+		private float killStreakPitchStep = 0.06f;
+		[SerializeField]
+		[Tooltip("Highest pitch of the kill sound, whatever the streak")]
+		private float maxKillPitch = 1.5f;
+
 		[Header("Attack telegraph")]
 		[SerializeField]
 		[Tooltip("Red blinks per second of the enemy body during the windup")]
@@ -153,6 +180,14 @@ namespace Game.GameFeel
 		public AssetReferenceGameObject SpawnPuffPrefab => spawnPuffPrefab;
 		public AssetReferenceGameObject StepPuffPrefab => stepPuffPrefab;
 		public float StepDistance => stepDistance;
+		public AssetReferenceT<AudioClip> SwordWhooshClip => swordWhooshClip;
+		public AssetReferenceT<AudioClip> HitImpactClip => hitImpactClip;
+		public AssetReferenceT<AudioClip> KillImpactClip => killImpactClip;
+		public float SwordWhooshVolume => swordWhooshVolume;
+		public float HitImpactVolume => hitImpactVolume;
+		public float KillImpactVolume => killImpactVolume;
+		public float KillStreakPitchStep => killStreakPitchStep;
+		public float MaxKillPitch => maxKillPitch;
 		public AssetReferenceGameObject AttackWarningPrefab => attackWarningPrefab;
 		public AssetReferenceT<Material> AttackWarnMaterial => attackWarnMaterial;
 		public float AttackWarnBlinkRate => attackWarnBlinkRate;

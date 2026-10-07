@@ -52,6 +52,26 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  swordWhooshClip:
+    m_AssetGUID: 5f37f0b9708030d46b608d4ff259ee1b
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  hitImpactClip:
+    m_AssetGUID: 5571dd18d408a584da396e747c20af05
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  killImpactClip:
+    m_AssetGUID: 56c01494495289d4392afabf4f659692
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  swordWhooshVolume: 0.5
+  hitImpactVolume: 0.8
+  killImpactVolume: 1
+  killStreakPitchStep: 0.06
+  maxKillPitch: 1.5
   attackWarnBlinkRate: 6
   attackWarnStartScale: 0.3
   stepDistance: 1.2
@@ -60,6 +80,14 @@ MonoBehaviour:
   flashDuration: 0.08
   punchSquash: 0.15
   punchDuration: 0.18
+  recoilDistance: 0.45
+  recoilDuration: 0.22
+  hitStopMinKillStreak: 2
+  killStopDuration: 0.1
+  killStreakStopBonus: 0.03
+  killStreakWindow: 1.5
+  maxHitStopDuration: 0.22
+  hitStopTimeScale: 0.02
   damageNumberHeight: 0.5
   hitNumberScale: 1.8
   hitNumberTopColor: {r: 1, g: 0.9, b: 0.25, a: 1}
@@ -67,7 +95,9 @@ MonoBehaviour:
   killNumberTopColor: {r: 1, g: 0.25, b: 0, a: 1}
   killNumberBottomColor: {r: 0.75, g: 0, b: 0.05, a: 1}
   killNumberScale: 1.5
-  attackShake: 0.04
+  attackShake: 0.02
+  enemyHitShake: 0.1
+  enemyKillShake: 0.2
   hitShake: 0.15
   deathShake: 0.3
   hitShakeCooldown: 0.5

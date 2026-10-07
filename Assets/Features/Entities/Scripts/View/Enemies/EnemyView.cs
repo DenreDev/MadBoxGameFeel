@@ -1,5 +1,6 @@
 using Game.GamePlay.Entities;
 using Game.GamePlay.Heroes;
+using Game.GameFeel;
 using Game.HealthBar;
 using Core.ServicesManager;
 using UnityEngine;
@@ -19,6 +20,10 @@ namespace Game.GamePlay.Enemies
 		private float deathDuration = 1.5f;
 		[SerializeField, Tooltip("Screen-space height above the enemy pivot where the health bar floats")]
 		private float healthBarHeight = 1f;
+		[SerializeField] private SpawnFeedbackView spawnFeedback;
+		[SerializeField] private AttackTelegraphView attackTelegraph;
+		[SerializeField] private HitFeedbackView hitFeedback;
+		[SerializeField] private DeathLaunchView deathLaunch;
 
 		private HealthBarView _healthBar;
 		private HeroController _heroController;
@@ -36,8 +41,21 @@ namespace Game.GamePlay.Enemies
 			_heroController = ServicesLocator.Instance.GetService<EntitiesService>().HeroController;
 		}
 
-		public void PlayAttack()
+		public void PlaySpawn()
 		{
+			if (spawnFeedback != null) spawnFeedback.Play();
+		}
+
+		// The enemy stands in range and warns the player: red blinks and a growing ground disc covering the attack range.
+		public void PlayWindup(float duration, float attackRange)
+		{
+			if (attackTelegraph != null) attackTelegraph.Begin(duration, attackRange);
+		}
+
+		// The windup is over: the warning stops and the attack animation plays.
+		public void PlayStrike()
+		{
+			if (attackTelegraph != null) attackTelegraph.End();
 			if (animator != null) animator.SetTrigger(AttackHash);
 		}
 
@@ -47,19 +65,32 @@ namespace Game.GamePlay.Enemies
 			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
 
-		public void PlayHit(int health, int maxHealth)
+		public void PlayHit(int damage, int health, int maxHealth)
 		{
 			if (animator != null) animator.SetTrigger(HitHash);
+			if (hitFeedback != null) hitFeedback.Play(damage, awayDirection: AwayFromHero());
 			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
 
-		// Plays the death animation then destroys the enemy.
-		public void PlayDeath()
+		// Plays the death animation while the model is knocked away from the hero, then destroys the enemy.
+		public void PlayDeath(int damage)
 		{
 			_isDying = true;
+			if (spawnFeedback != null) spawnFeedback.Finish();
+			if (attackTelegraph != null) attackTelegraph.End();
 			if (_healthBar != null) _healthBar.Hide();
 			if (animator != null) animator.SetTrigger(DieHash);
+			if (hitFeedback != null) hitFeedback.Play(damage, isKillingBlow: true);
+			if (deathLaunch != null)
+			{
+				deathLaunch.Play(AwayFromHero());
+			}
 			Destroy(gameObject, deathDuration);
+		}
+
+		private Vector3 AwayFromHero()
+		{
+			return _heroController != null ? transform.position - _heroController.CurrentState.Position : Vector3.zero;
 		}
 
 		private void Update()

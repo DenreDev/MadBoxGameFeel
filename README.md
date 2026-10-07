@@ -12,10 +12,10 @@ TO FILL
 | Health bars | 17 min |
 | Joystick UI rework | 9 min |
 | Higher camera angle | 8 min |
-| Damage numbers | 26 min |
-| Start screen and game flow | 31 min |
+| Damage numbers | 12 min |
+| Start screen and game flow | 10 min |
 | Hit feedback, ragdoll death and screen shake | 25 min |
-| Enemy spawn | 16 min |
+| Enemy spawn | 8 min |
 | Smooth hero rotation | 4 min |
 | Hero health value | 5 min |
 | Hero ground ring | 8 min |
@@ -23,9 +23,12 @@ TO FILL
 | Archero-style visual pass | 13 min |
 | Great Sword texture | 3 min |
 | Multi-hit Great Sword | 2 min |
-| Run animation speed | not recorded |
+| Run animation speed | 2 min |
 | Enemy attack telegraph (WIP) | 7 min |
-| **Total** | 193 min |
+| Delayed swing and aim | 8 min |
+| Attack impact pass | 3 min |
+| Attack sounds | 7 min |
+| **Total** | 211 min |
 
 ### Entity animation state machines â€” 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -116,6 +119,23 @@ TO FILL
 - **Time:** 7 min
 - **Bottleneck:** tuning the timings.
 - **Addressables:** the red disc prefab and the tint material are preloaded from the `VFX` group.
+
+### Delayed swing and aim — 8 min
+- **Implemented:** the hero's attack now waits for the slash high point to deal damage, keeps facing its target for the whole swing and always plays its animation completely. Details in [the feature note](Documentation/FeatureNotes/16_DelayedSwing.md).
+- **Time:** 8 min
+- **Bottleneck:** not confirmed.
+- **Addressables:** a slash effect was added in the `VFX` group, then removed from the game.
+
+### Attack impact pass — 3 min
+- **Implemented:** sword hits shove the enemy back, chained kills freeze the game for a few frames, and the camera kicks along the slash. Details in [the feature note](Documentation/FeatureNotes/17_AttackImpactPass.md).
+- **Time:** 3 min
+- **Bottleneck:** not confirmed.
+
+### Attack sounds — 7 min
+- **Implemented:** the attack now has sound: a swing whoosh, a hit thump and a heavier kill crunch that rises in pitch with the kill streak. Details in [the feature note](Documentation/FeatureNotes/18_AttackSounds.md).
+- **Time:** 7 min
+- **Bottleneck:** not confirmed.
+- **Addressables:** three generated sounds preloaded from a new `Audio` group.
 
 ## Feedback on the base project
 

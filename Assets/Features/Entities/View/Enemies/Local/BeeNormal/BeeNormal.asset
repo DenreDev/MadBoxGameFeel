@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: BeeNormal
   m_EditorClassIdentifier: 
   id: bee_normal
-  initialHealth: 50
-  speed: 10
-  attackCooldown: 3
-  attackDamage: 10
-  attackRange: 2
+  initialHealth: 60
+  speed: 4
+  attackCooldown: 0.5
+  attackDamage: 3
+  attackRange: 1.5
+  attackWindupDuration: 0.6
+  attackDuration: 0.45
   prefab: {fileID: -4038593928516999298, guid: 41e04faa14fb7a34e8b16750ec910fc3, type: 3}

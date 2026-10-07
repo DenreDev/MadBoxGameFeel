@@ -22,6 +22,15 @@ namespace Game.GameFeel
 		private float _hitStopEndTime = float.NegativeInfinity; // unscaled time: the freeze must not depend on the time it freezes
 		private float _lastKillTime = float.NegativeInfinity;
 		private int _killStreak;
+		private AudioClip _whooshClip;
+		private AudioClip _hitClip;
+		private AudioClip _killClip;
+		private GameObject _audioHost;
+		private AudioSource _whooshSource; // one source per sound: a pitch change must not bend the others
+		private AudioSource _hitSource;
+		private AudioSource _killSource;
+		private int _hitSoundFrame = -1;
+		private int _killSoundFrame = -1;
 
 		public Material FlashMaterial { get; private set; }
 		public Material AttackWarnMaterial { get; private set; }
@@ -41,6 +50,10 @@ namespace Game.GameFeel
 			_heroRingPrefab = await Load(config.HeroRingPrefab);
 			_attackWarningPrefab = await Load(config.AttackWarningPrefab);
 			AttackWarnMaterial = await Load(config.AttackWarnMaterial);
+			_whooshClip = await Load(config.SwordWhooshClip);
+			_hitClip = await Load(config.HitImpactClip);
+			_killClip = await Load(config.KillImpactClip);
+			CreateAudioSources();
 			await LoadDamageNumber(config);
 
 			return true;
@@ -61,6 +74,10 @@ namespace Game.GameFeel
 			}
 
 			_handles.Clear();
+			if (_audioHost != null) Object.Destroy(_audioHost);
+			_audioHost = null;
+			_whooshSource = _hitSource = _killSource = null;
+			_whooshClip = _hitClip = _killClip = null;
 			_sparkPrefab = null;
 			_spawnPuffPrefab = null;
 			_stepPuffPrefab = null;
@@ -112,6 +129,70 @@ namespace Game.GameFeel
 			while (Time.unscaledTime < _hitStopEndTime) await UniTask.Yield(PlayerLoopTiming.Update);
 
 			Time.timeScale = 1f;
+		}
+
+		// Swing whoosh, played when the swing starts: the sound peaks just before the slash lands.
+		public void PlaySwordWhoosh()
+		{
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (config == null) return;
+
+			PlaySound(_whooshSource, _whooshClip, config.SwordWhooshVolume, UnityEngine.Random.Range(0.95f, 1.05f));
+		}
+
+		// Thump when the sword hits, heavier crunch when it kills. One of each per frame: a swing hitting several enemies is one blow, not three.
+		// The kill sound climbs in pitch with the kill streak, so call this after PlayHitStop (which counts the streak).
+		public void PlayHitSound(bool isKillingBlow)
+		{
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (config == null) return;
+
+			if (isKillingBlow)
+			{
+				if (_killSoundFrame == Time.frameCount) return;
+
+				_killSoundFrame = Time.frameCount;
+				float pitch = Mathf.Min(config.MaxKillPitch, 1f + Mathf.Max(0, _killStreak - 1) * config.KillStreakPitchStep);
+				PlaySound(_killSource, _killClip, config.KillImpactVolume, pitch);
+			}
+			else
+			{
+				if (_hitSoundFrame == Time.frameCount) return;
+
+				_hitSoundFrame = Time.frameCount;
+				PlaySound(_hitSource, _hitClip, config.HitImpactVolume, UnityEngine.Random.Range(0.95f, 1.05f));
+			}
+		}
+
+		private static void PlaySound(AudioSource source, AudioClip clip, float volume, float pitch)
+		{
+			if (source == null || clip == null) return;
+
+			source.pitch = pitch;
+			source.PlayOneShot(clip, volume);
+		}
+
+		// Plain 2D sources on one hidden object: the sounds are interface-like feedback, not positional.
+		private void CreateAudioSources()
+		{
+			if (_whooshClip == null && _hitClip == null && _killClip == null) return;
+
+			_audioHost = new GameObject("GameFeelAudio") { hideFlags = HideFlags.DontSave };
+
+			// The base scene has no AudioListener, so nothing would be heard. The sounds are 2D, so the listener's position does not matter.
+			if (Object.FindObjectOfType<AudioListener>() == null) _audioHost.AddComponent<AudioListener>();
+
+			_whooshSource = CreateSource();
+			_hitSource = CreateSource();
+			_killSource = CreateSource();
+		}
+
+		private AudioSource CreateSource()
+		{
+			AudioSource source = _audioHost.AddComponent<AudioSource>();
+			source.playOnAwake = false;
+			source.spatialBlend = 0f;
+			return source;
 		}
 
 		public void PlaySpawnPuff(Vector3 position)

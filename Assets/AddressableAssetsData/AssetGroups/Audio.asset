@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Audio
+  m_EditorClassIdentifier: 
+  m_GroupName: Audio
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 9bb6f8bd98d806246b15e6f7eb7fd074
+  m_SerializeEntries:
+  - m_GUID: 5571dd18d408a584da396e747c20af05
+    m_Address: Audio/HitImpact
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56c01494495289d4392afabf4f659692
+    m_Address: Audio/KillImpact
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f37f0b9708030d46b608d4ff259ee1b
+    m_Address: Audio/SwordWhoosh
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2c2a01d9444a5c343a774372540cda35, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2925f7365e7f25241978b505ba343f10, type: 2}
+    - {fileID: 11400000, guid: 2a4bfea1bc3deec4aa3e31dc68425001, type: 2}

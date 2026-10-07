@@ -11,6 +11,10 @@ namespace Game.GamePlay.Enemies
 		[SerializeField] private float attackCooldown;
 		[SerializeField] private int attackDamage;
 		[SerializeField] private float attackRange;
+		[SerializeField, Tooltip("Seconds the enemy stands still and telegraphs the attack once the hero is in range")]
+		private float attackWindupDuration = 0.6f;
+		[SerializeField, Tooltip("Seconds of the attack animation. The hit lands at its end if the hero is still in range. Match the animation clip length")]
+		private float attackDuration = 0.45f;
 		[SerializeField] private EnemyView prefab;
 
 		public string Id => id;
@@ -19,6 +23,8 @@ namespace Game.GamePlay.Enemies
 		public float AttackCooldown => attackCooldown;
 		public int AttackDamage => attackDamage;
 		public float AttackRange => attackRange;
+		public float AttackWindupDuration => attackWindupDuration;
+		public float AttackDuration => attackDuration;
 		public EnemyView Prefab => prefab;
 	}
 }
