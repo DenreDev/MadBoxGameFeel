@@ -22,6 +22,7 @@ TO FILL
 | Footstep puffs | 10 min |
 | Archero-style visual pass | 13 min |
 | Great Sword texture | 3 min |
+| Run animation speed | not recorded |
 | **Total** | 184 min |
 
 ### Entity animation state machines — 9 min
@@ -97,6 +98,11 @@ TO FILL
 - **Implemented:** the sword now has a texture: gold ornamented crossguard with a gem, leather-wrapped grip, steel blade with gold trim. The model's UVs are a palette-style atlas, so the texture is baked from the mesh instead of hand painted, and can be replaced by a real one without touching the material.
 - **Time:** 3 min
 - **Bottleneck:** not recorded.
+
+### Run animation speed — time not recorded
+- **Implemented:** the hero's run animation now plays at a speed based on his real move speed, so the legs match how fast he moves. Details in [the feature note](Documentation/FeatureNotes/14_RunAnimationSpeed.md).
+- **Time:** not recorded
+- **Bottleneck:** not confirmed.
 
 ## Feedback on the base project
 

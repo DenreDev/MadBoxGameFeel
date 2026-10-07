@@ -10,12 +10,15 @@ namespace Game.GamePlay.Heroes
 	public class HeroView : MonoBehaviour
 	{
 		private static readonly int SpeedHash = Animator.StringToHash("Speed");
+		private static readonly int RunSpeedHash = Animator.StringToHash("RunSpeed");
 		private static readonly int AttackHash = Animator.StringToHash("Attack");
 		private static readonly int HitHash = Animator.StringToHash("Hit");
 		private static readonly int IsDeadHash = Animator.StringToHash("IsDead");
 
 		[SerializeField] private Animator animator;
 		[SerializeField] private float rotationSpeed = 10f;
+		[SerializeField, Tooltip("Ground speed (units per second) the Run clip covers when played at normal speed. The clip plays faster or slower in proportion to the hero's real move speed, so the feet do not slide. Raise it if the legs look too fast.")]
+		private float runClipGroundSpeed = 2f;
 		[SerializeField] private Transform weaponSlot;
 		[SerializeField, Tooltip("Screen-space height above the hero pivot where the health bar floats")]
 		private float healthBarHeight = 2.1f;
@@ -134,6 +137,9 @@ namespace Game.GamePlay.Heroes
 
 			float speed = _currentMovementInput.magnitude;
 			animator.SetFloat(SpeedHash, speed);
+
+			// Same speed the controller moves the hero at. Left untouched when stopped, so the run pose does not freeze while it blends out to idle.
+			if (speed > 0.01f) animator.SetFloat(RunSpeedHash, HeroConfig.Instance.MoveSpeed * speed / runClipGroundSpeed);
 		}
 
 		private void OnWeaponChanged(WeaponConfig newWeapon)
