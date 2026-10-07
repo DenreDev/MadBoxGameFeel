@@ -21,6 +21,10 @@ namespace Game.HealthBar
 		[Tooltip("Enemy bars only appear once the enemy has taken damage. The hero bar is always visible")]
 		private bool hideEnemyBarWhenFull = true;
 
+		[SerializeField]
+		[Tooltip("Shows the hero's current health number above his bar. Enemies never show one")]
+		private bool showHeroHealthValue = true;
+
 		[Header("Colors")]
 		[SerializeField] private Color heroColor = new Color(0.35f, 0.85f, 0.25f);
 		[SerializeField] private Color enemyColor = new Color(0.95f, 0.25f, 0.25f);
@@ -55,6 +59,7 @@ namespace Game.HealthBar
 		public float HeroScale => heroScale;
 		public float EnemyScale => enemyScale;
 		public bool HideEnemyBarWhenFull => hideEnemyBarWhenFull;
+		public bool ShowHeroHealthValue => showHeroHealthValue;
 		public Color HeroColor => heroColor;
 		public Color EnemyColor => enemyColor;
 		public Color TrailColor => trailColor;

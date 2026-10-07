@@ -62,7 +62,8 @@ namespace Game.HealthBar
 			healthBar.Bind(config, target, height,
 				isHero ? config.HeroColor : config.EnemyColor,
 				isHero ? config.HeroScale : config.EnemyScale,
-				!isHero && config.HideEnemyBarWhenFull);
+				!isHero && config.HideEnemyBarWhenFull,
+				isHero && config.ShowHeroHealthValue);
 			return healthBar;
 		}
 

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 namespace Game.HealthBar
@@ -11,6 +12,7 @@ namespace Game.HealthBar
 		[SerializeField, Tooltip("Left-anchored transform, scale.x = width * ratio")] private Transform trail;
 		[SerializeField] private SpriteRenderer fillRenderer;
 		[SerializeField] private SpriteRenderer trailRenderer;
+		[SerializeField, Tooltip("Current health number floating above the bar, only shown when the owner asks for it")] private TMP_Text healthText;
 		[SerializeField] private float width = 1f;
 		[SerializeField] private float height = 0.14f;
 
@@ -20,6 +22,7 @@ namespace Game.HealthBar
 		private Color _fillColor;
 		private float _scale;
 		private bool _hideWhenFull;
+		private int _shownHealth = -1;
 		private bool _hasHealth; // false until the first value and after death, so the next value is not animated
 		private Camera _camera;
 
@@ -30,7 +33,7 @@ namespace Game.HealthBar
 		private float _trailHoldEnd;
 		private float _hitTime;
 
-		public void Bind(HealthBarConfig config, Transform target, float targetHeight, Color fillColor, float scale, bool hideWhenFull)
+		public void Bind(HealthBarConfig config, Transform target, float targetHeight, Color fillColor, float scale, bool hideWhenFull, bool showHealthValue)
 		{
 			_config = config;
 			_target = target;
@@ -40,6 +43,7 @@ namespace Game.HealthBar
 			_hideWhenFull = hideWhenFull;
 
 			trailRenderer.color = config.TrailColor;
+			if (healthText != null) healthText.gameObject.SetActive(showHealthValue);
 			Hide();
 			FollowTarget();
 		}
@@ -55,6 +59,8 @@ namespace Game.HealthBar
 				Hide();
 				return;
 			}
+
+			UpdateHealthText(health);
 
 			float ratio = Mathf.Clamp01(health / (float)Mathf.Max(1, maxHealth));
 
@@ -76,6 +82,15 @@ namespace Game.HealthBar
 			bool hidden = _hideWhenFull && ratio >= 1f;
 			visual.SetActive(!hidden);
 			if (!hidden) Animate();
+		}
+
+		// Only rewritten when the value changes.
+		private void UpdateHealthText(int health)
+		{
+			if (healthText == null || health == _shownHealth) return;
+
+			_shownHealth = health;
+			healthText.SetText("{0}", health);
 		}
 
 		private void LateUpdate()

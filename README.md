@@ -12,7 +12,8 @@ TO FILL
 | Health bars | 17 min |
 | Joystick UI rework | 9 min |
 | Higher camera angle | 8 min |
-| **Total** | 43 min |
+| Hero health value | 5 min |
+| **Total** | 48 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -34,6 +35,11 @@ TO FILL
 - **Implemented:** the gameplay camera is higher and steeper (65° instead of 57.7°, distance 16 instead of 14), so enemies coming from the sides and behind show up earlier while the hero stays readable. Details in [the feature note](Documentation/FeatureNotes/04_HigherCamera.md).
 - **Time:** 8 min
 - **Bottleneck:** the camera was too focused on the player, so enemy spawns came as a surprise.
+
+### Hero health value — 5 min
+- **Implemented:** the hero's current health number now floats above his health bar, so the player reads exactly how much health is left. Enemies keep the bar only. Details in [the feature note](Documentation/FeatureNotes/10_HeroHealthValue.md).
+- **Time:** 5 min
+- **Bottleneck:** not recorded.
 
 ## Feedback on the base project
 
