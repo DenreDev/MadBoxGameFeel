@@ -1,0 +1,17 @@
+{
+    "name": "Game.GameFlow",
+    "rootNamespace": "Game.GameFlow",
+    "references": [
+        "Core.ServicesManager",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
