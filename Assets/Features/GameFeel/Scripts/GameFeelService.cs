@@ -19,6 +19,9 @@ namespace Game.GameFeel
 		private DamageNumber _damageNumberPrefab;
 		private GameObject _heroRingPrefab;
 		private GameObject _attackWarningPrefab;
+		private float _hitStopEndTime = float.NegativeInfinity; // unscaled time: the freeze must not depend on the time it freezes
+		private float _lastKillTime = float.NegativeInfinity;
+		private int _killStreak;
 
 		public Material FlashMaterial { get; private set; }
 		public Material AttackWarnMaterial { get; private set; }
@@ -45,6 +48,10 @@ namespace Game.GameFeel
 
 		public UniTask Reset()
 		{
+			_hitStopEndTime = float.NegativeInfinity;
+			_killStreak = 0;
+			Time.timeScale = 1f;
+
 			// The numbers pooled by third-party package are copies of the prefab about to be released.
 			if (_damageNumberPrefab != null) DamageNumber.ClearPooled();
 
@@ -71,6 +78,40 @@ namespace Game.GameFeel
 
 			// The prefab destroys itself when its particles are done (Stop Action = Destroy).
 			Object.Instantiate(_sparkPrefab, position, Quaternion.identity);
+		}
+
+		// Freeze frame, kept for big impacts only: a regular hit or a lone kill never freezes, otherwise every swing would stutter.
+		// Kills chained within the streak window count as a streak (a swing killing several enemies, or a crowd going down).
+		// From HitStopMinKillStreak kills on, each kill freezes the game for a few frames, longer and longer with the streak.
+		// Overlapping freezes do not stack: the longest one wins.
+		public void PlayHitStop(bool isKillingBlow)
+		{
+			if (!isKillingBlow) return;
+
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (config == null) return;
+
+			float now = Time.unscaledTime;
+			_killStreak = now - _lastKillTime <= config.KillStreakWindow ? _killStreak + 1 : 1;
+			_lastKillTime = now;
+			if (_killStreak < config.HitStopMinKillStreak) return;
+
+			int extraKills = _killStreak - Mathf.Max(1, config.HitStopMinKillStreak);
+			float duration = Mathf.Min(config.KillStopDuration + extraKills * config.KillStreakStopBonus, config.MaxHitStopDuration);
+			if (duration <= 0f || now + duration <= _hitStopEndTime) return;
+
+			bool alreadyFrozen = _hitStopEndTime > now;
+			_hitStopEndTime = now + duration;
+			Time.timeScale = config.HitStopTimeScale;
+			if (!alreadyFrozen) EndHitStopWhenOver().Forget();
+		}
+
+		// Frame based wait, so it keeps running while the time scale is near zero.
+		private async UniTaskVoid EndHitStopWhenOver()
+		{
+			while (Time.unscaledTime < _hitStopEndTime) await UniTask.Yield(PlayerLoopTiming.Update);
+
+			Time.timeScale = 1f;
 		}
 
 		public void PlaySpawnPuff(Vector3 position)

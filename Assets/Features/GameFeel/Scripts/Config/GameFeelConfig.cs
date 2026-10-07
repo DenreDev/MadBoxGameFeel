@@ -66,6 +66,34 @@ namespace Game.GameFeel
 		[Tooltip("Seconds for the body to settle back to its normal shape")]
 		private float punchDuration = 0.18f;
 
+		[Header("Enemy recoil (the model is shoved away from the hero when his sword lands)")]
+		[SerializeField]
+		[Tooltip("How far the enemy's model is shoved at the instant of a hit, in world units (0 disables)")]
+		private float recoilDistance = 0.45f;
+		[SerializeField]
+		[Tooltip("Seconds for the model to slide back to its place")]
+		private float recoilDuration = 0.22f;
+
+		[Header("Hit stop (the game freezes for a few frames, only on big impacts: a kill chained with others)")]
+		[SerializeField]
+		[Tooltip("Kills chained inside the streak window needed before the kill freezes the game (1 = every kill, 2 = the second kill of a crowd, 0 or less would act like 1)")]
+		private int hitStopMinKillStreak = 2;
+		[SerializeField]
+		[Tooltip("Freeze, in real seconds, on the first kill that qualifies (0 disables the freeze)")]
+		private float killStopDuration = 0.1f;
+		[SerializeField]
+		[Tooltip("Extra freeze for each further kill chained in the streak window, so killing a crowd feels heavier and heavier")]
+		private float killStreakStopBonus = 0.03f;
+		[SerializeField]
+		[Tooltip("Seconds after a kill during which the next kill counts as part of the streak")]
+		private float killStreakWindow = 1.5f;
+		[SerializeField]
+		[Tooltip("The longest a single freeze can last, in real seconds, whatever the streak")]
+		private float maxHitStopDuration = 0.22f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Game speed during the freeze (0 = fully stopped, 0.1 = crawling, which keeps a little motion)")]
+		private float hitStopTimeScale = 0.02f;
+
 		[Header("Damage numbers")]
 		[SerializeField]
 		[Tooltip("How far above the hit point (body center) the number appears, in world units")]
@@ -91,8 +119,14 @@ namespace Game.GameFeel
 
 		[Header("Camera shake (impulse strength in world units, 0 disables)")]
 		[SerializeField]
-		[Tooltip("Hero swings his weapon")]
-		private float attackShake = 0.04f;
+		[Tooltip("The hero's slash reaches its high point, hit or miss")]
+		private float attackShake = 0.02f;
+		[SerializeField]
+		[Tooltip("The hero's sword hits an enemy that survives. The kick goes along the slash. A swing hitting several enemies kicks once")]
+		private float enemyHitShake = 0.1f;
+		[SerializeField]
+		[Tooltip("The hero's sword kills an enemy. The kick goes along the slash. A swing hitting several enemies kicks once")]
+		private float enemyKillShake = 0.2f;
 		[SerializeField]
 		[Tooltip("Hero takes a hit")]
 		private float hitShake = 0.15f;
@@ -137,7 +171,17 @@ namespace Game.GameFeel
 		public float FlashDuration => flashDuration;
 		public float PunchSquash => punchSquash;
 		public float PunchDuration => punchDuration;
+		public float RecoilDistance => recoilDistance;
+		public float RecoilDuration => recoilDuration;
+		public int HitStopMinKillStreak => hitStopMinKillStreak;
+		public float KillStopDuration => killStopDuration;
+		public float KillStreakStopBonus => killStreakStopBonus;
+		public float KillStreakWindow => killStreakWindow;
+		public float MaxHitStopDuration => maxHitStopDuration;
+		public float HitStopTimeScale => hitStopTimeScale;
 		public float AttackShake => attackShake;
+		public float EnemyHitShake => enemyHitShake;
+		public float EnemyKillShake => enemyKillShake;
 		public float HitShake => hitShake;
 		public float DeathShake => deathShake;
 		public float HitShakeCooldown => hitShakeCooldown;
