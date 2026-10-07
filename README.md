@@ -10,7 +10,8 @@ TO FILL
 |---|---|
 | Entity animation state machines | 9 min |
 | Health bars | 17 min |
-| **Total** | 26 min |
+| Joystick UI rework | 9 min |
+| **Total** | 35 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -22,6 +23,11 @@ TO FILL
 - **Time:** 17 min
 - **Bottleneck:** the player had no feedback on enemy health.
 - **Addressables:** the bar prefab is preloaded from a new `UI` group.
+
+### Joystick UI rework — 9 min
+- **Implemented:** the joystick is smaller and its base stays in a bottom thumb zone, so it no longer covers the gameplay. The ring size and the finger travel now come from one value. Details in [the feature note](Documentation/FeatureNotes/03_JoystickUI.md).
+- **Time:** 9 min
+- **Bottleneck:** the joystick UI was too big and on top of the gameplay actions.
 
 ## Feedback on the base project
 

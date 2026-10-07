@@ -10,17 +10,13 @@ namespace Game.JoystickInput
 		[SerializeField] private RectTransform joystickOuterStick;
 		[SerializeField] private RectTransform joystickInnerStick;
 
-		private float _containerRadius;
+		private Canvas _canvas;
 		private HeroController _heroController;
 		private bool _isHeroDead;
 
 		private void Awake()
 		{
-			if (joystickOuterStick != null)
-			{
-				_containerRadius = joystickOuterStick.sizeDelta.x * 0.5f;
-			}
-
+			_canvas = GetComponentInParent<Canvas>();
 			joystickOuterStick.gameObject.SetActive(false);
 		}
 
@@ -66,16 +62,26 @@ namespace Game.JoystickInput
 				return;
 			}
 
+			bool wasVisible = joystickOuterStick.gameObject.activeSelf;
 			joystickOuterStick.gameObject.SetActive(state.IsActive);
-			if (state.IsActive) UpdateJoystickVisuals(state);
+			if (!state.IsActive) return;
+
+			if (!wasVisible) ApplyRingSize();
+			UpdateJoystickVisuals(state);
 		}
 
+		// The ring is sized from the same radius the input uses, so the knob always stays under the finger.
+		private void ApplyRingSize()
+		{
+			float diameterInCanvasUnits = JoystickInputConfig.Instance.MaxRadius * 2f / _canvas.scaleFactor;
+			joystickOuterStick.sizeDelta = new Vector2(diameterInCanvasUnits, diameterInCanvasUnits);
+		}
+
+		// Overlay canvas: RectTransform.position is in screen pixels, like the input state.
 		private void UpdateJoystickVisuals(JoystickState state)
 		{
 			joystickOuterStick.position = state.JoystickCenter;
-
-			Vector2 innerStickOffset = state.MovementVector * _containerRadius;
-			joystickInnerStick.anchoredPosition = innerStickOffset;
+			joystickInnerStick.position = state.JoystickCenter + state.MovementVector * JoystickInputConfig.Instance.MaxRadius;
 		}
 	}
 }

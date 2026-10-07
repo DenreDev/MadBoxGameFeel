@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 975626bca157a4a05b2f592dcac3d6b7, type: 3}
   m_Name: JoystickInputConfig
   m_EditorClassIdentifier: 
-  _maxRadius: 100
+  _maxRadiusScreenRatio: 0.09
+  _thumbZoneHeightRatio: 0.3

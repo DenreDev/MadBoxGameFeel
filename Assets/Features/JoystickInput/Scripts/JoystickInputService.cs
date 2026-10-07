@@ -64,7 +64,7 @@ namespace Game.JoystickInput
 
 			if (isPressed)
 			{
-				UpdateState(new JoystickState(inputPosition, Vector2.zero, true));
+				UpdateState(new JoystickState(ClampToThumbZone(inputPosition), Vector2.zero, true));
 			}
 			else if (isReleased)
 			{
@@ -79,6 +79,17 @@ namespace Game.JoystickInput
 
 				UpdateState(new JoystickState(_currentState.JoystickCenter, normalizedMovement, true));
 			}
+		}
+
+		// Keeps the joystick base in the bottom band of the screen (and fully on screen) so it never covers the gameplay.
+		private static Vector2 ClampToThumbZone(Vector2 inputPosition)
+		{
+			float radius = JoystickInputConfig.Instance.MaxRadius;
+			float zoneTop = Mathf.Max(radius, Screen.height * JoystickInputConfig.Instance.ThumbZoneHeightRatio);
+
+			return new Vector2(
+				Mathf.Clamp(inputPosition.x, radius, Screen.width - radius),
+				Mathf.Clamp(inputPosition.y, radius, zoneTop));
 		}
 
 		private void UpdateState(JoystickState newState)
