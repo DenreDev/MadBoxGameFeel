@@ -22,8 +22,10 @@ TO FILL
 | Footstep puffs | 10 min |
 | Archero-style visual pass | 13 min |
 | Great Sword texture | 3 min |
+| Multi-hit Great Sword | 2 min |
 | Run animation speed | not recorded |
-| **Total** | 184 min |
+| Enemy attack telegraph (WIP) | 7 min |
+| **Total** | 193 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -46,24 +48,24 @@ TO FILL
 - **Time:** 8 min
 - **Bottleneck:** the camera was too focused on the player, so enemy spawns came as a surprise.
 
-### Damage numbers — 26 min
+### Damage numbers — 12 min
 - **Implemented:** every hit on an enemy pops a floating damage number: chunky, outlined, with a color gradient. It slams in, drifts and fades. It is bigger for heavier weapons, and the hit that kills prints a bigger, red-orange number. Built on third-party package, so critical hits or scaling damage can reuse it later. Details in [the feature note](Documentation/FeatureNotes/05_DamageNumbers.md).
-- **Time:** 26 min
+- **Time:** 12 min
 - **Bottleneck:** validating in play mode on a Unity editor shared with other sessions, after making the imported third-party package compile.
 - **Addressables:** the damage number prefab is preloaded and pooled from the `VFX` group.
 
-### Start screen and game flow — 31 min
+### Start screen and game flow — 10 min
 - **Implemented:** the game now waits on a "main menu" start screen: the camera frames the hero close up, facing the player, with a "TAP TO START" prompt, and nothing moves or spawns until the tap. A small game manager (Start, Playing, GameOver) drives it, so Restart comes back to the same screen. Details in [the feature note](Documentation/FeatureNotes/06_StartScreen.md).
-- **Time:** 31 min
+- **Time:** 10 min
 
 ### Hit feedback, ragdoll death and screen shake — 25 min
 - **Implemented:** every hit on the hero or a bee flashes the body white, squashes it and spits a small spark burst. Killed bees and the dead hero are knocked away in a flipping, ragdoll-style hop, and the camera gets small shakes when the hero attacks, is hit and dies. Details in [the feature note](Documentation/FeatureNotes/07_HitFeedbackRagdollShake.md).
 - **Time:** 25 min
 - **Addressables:** the spark prefab and the flash material are preloaded from the `VFX` group.
 
-### Enemy spawn — 16 min
+### Enemy spawn — 8 min
 - **Implemented:** bees now pop in from nothing with a springy overshoot while a lavender dust puff, a ground glow and a few sparkles burst at their feet. Details in [the feature note](Documentation/FeatureNotes/08_EnemySpawn.md).
-- **Time:** 16 min
+- **Time:** 8 min
 - **Bottleneck:** not recorded.
 - **Addressables:** the puff prefab is preloaded from the `VFX` group.
 
@@ -99,10 +101,21 @@ TO FILL
 - **Time:** 3 min
 - **Bottleneck:** not recorded.
 
-### Run animation speed — time not recorded
+### Multi-hit Great Sword — 2 min
+- **Implemented:** the Great Sword now hits up to 3 enemies with one swing to give the attack more impact. The slash effect was removed and the screen shake on hits is lower. Details in [the feature note](Documentation/FeatureNotes/13_MultiHitSword.md).
+- **Time:** 2 min
+- **Bottleneck:** not recorded.
+
+### Run animation speed — 2 min
 - **Implemented:** the hero's run animation now plays at a speed based on his real move speed, so the legs match how fast he moves. Details in [the feature note](Documentation/FeatureNotes/14_RunAnimationSpeed.md).
-- **Time:** not recorded
+- **Time:** 2 min
 - **Bottleneck:** not confirmed.
+
+### Enemy attack telegraph — 7 min (WIP)
+- **Implemented:** enemies now stop and warn before attacking: the body blinks red and a red disc grows on the ground to the attack range. Then the attack animation plays, and the hero is hit at its end only if he is still in range, so he can dodge. Still work in progress. Details in [the feature note](Documentation/FeatureNotes/15_EnemyAttackTelegraph.md).
+- **Time:** 7 min
+- **Bottleneck:** tuning the timings.
+- **Addressables:** the red disc prefab and the tint material are preloaded from the `VFX` group.
 
 ## Feedback on the base project
 
