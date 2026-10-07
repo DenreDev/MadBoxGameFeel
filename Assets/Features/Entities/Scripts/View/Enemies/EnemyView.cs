@@ -1,5 +1,6 @@
 using Game.GamePlay.Entities;
 using Game.GamePlay.Heroes;
+using Game.HealthBar;
 using Core.ServicesManager;
 using UnityEngine;
 
@@ -16,7 +17,10 @@ namespace Game.GamePlay.Enemies
 		[SerializeField] private float rotationSpeed = 10f;
 		[SerializeField, Tooltip("Seconds the death animation plays before the enemy is destroyed")]
 		private float deathDuration = 1.5f;
+		[SerializeField, Tooltip("Screen-space height above the enemy pivot where the health bar floats")]
+		private float healthBarHeight = 1f;
 
+		private HealthBarView _healthBar;
 		private HeroController _heroController;
 		private Vector3 _lastPosition;
 		private bool _isDying;
@@ -37,15 +41,23 @@ namespace Game.GamePlay.Enemies
 			if (animator != null) animator.SetTrigger(AttackHash);
 		}
 
-		public void PlayHit()
+		public void CreateHealthBar(HealthBarService healthBarService, int health, int maxHealth)
+		{
+			_healthBar = healthBarService.Create(transform, healthBarHeight, HealthBarTeam.Enemy);
+			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
+		}
+
+		public void PlayHit(int health, int maxHealth)
 		{
 			if (animator != null) animator.SetTrigger(HitHash);
+			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
 
 		// Plays the death animation then destroys the enemy.
 		public void PlayDeath()
 		{
 			_isDying = true;
+			if (_healthBar != null) _healthBar.Hide();
 			if (animator != null) animator.SetTrigger(DieHash);
 			Destroy(gameObject, deathDuration);
 		}

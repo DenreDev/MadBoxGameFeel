@@ -1,4 +1,5 @@
 using Game.GamePlay.Entities;
+using Game.HealthBar;
 using Game.JoystickInput;
 using Game.Weapons;
 using Core.ServicesManager;
@@ -16,7 +17,10 @@ namespace Game.GamePlay.Heroes
 		[SerializeField] private Animator animator;
 		[SerializeField] private float rotationSpeed = 10f;
 		[SerializeField] private Transform weaponSlot;
+		[SerializeField, Tooltip("Screen-space height above the hero pivot where the health bar floats")]
+		private float healthBarHeight = 2.1f;
 
+		private HealthBarView _healthBar;
 		private JoystickInputService _joystickInputService;
 		private HeroController _heroController;
 		private WeaponsService _weaponsService;
@@ -39,6 +43,8 @@ namespace Game.GamePlay.Heroes
 			_heroController.OnAttacked += OnHeroAttacked;
 			_heroController.OnDamaged += OnHeroDamaged;
 			_weaponsService.OnWeaponChanged += OnWeaponChanged;
+
+			_healthBar = ServicesLocator.Instance.GetService<HealthBarService>().Create(transform, healthBarHeight, HealthBarTeam.Hero);
 
 			OnJoystickStateChanged(_joystickInputService.CurrentState);
 			OnHeroStateChanged(_heroController.CurrentState);
@@ -77,6 +83,7 @@ namespace Game.GamePlay.Heroes
 		private void OnHeroStateChanged(HeroState heroState)
 		{
 			transform.position = heroState.Position;
+			if (_healthBar != null) _healthBar.SetHealth(heroState.Health, HeroConfig.Instance.InitialHealth);
 			if (animator == null) return;
 
 			animator.SetBool(IsDeadHash, heroState.IsDead);

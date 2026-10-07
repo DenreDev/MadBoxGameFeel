@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.GamePlay.Entities;
+using Game.HealthBar;
 using Core.ServicesManager;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Game.GamePlay.Enemies
 	public class EnemiesContainerView : MonoBehaviour
 	{
 		private EnemiesController _enemiesController;
+		private HealthBarService _healthBarService;
 		private Dictionary<int, EnemyView> _enemyViews;
 
 		private void Start()
@@ -18,6 +20,7 @@ namespace Game.GamePlay.Enemies
 		private void OnServicesInitialized()
 		{
 			_enemiesController = ServicesLocator.Instance.GetService<EntitiesService>().EnemiesController;
+			_healthBarService = ServicesLocator.Instance.GetService<HealthBarService>();
 			_enemyViews = new Dictionary<int, EnemyView>();
 
 			_enemiesController.OnEnemySpawned += OnEnemySpawned;
@@ -35,7 +38,10 @@ namespace Game.GamePlay.Enemies
 
 		private void OnEnemyDamaged(int enemyId)
 		{
-			if (_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) enemyView.PlayHit();
+			if (!_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) return;
+			if (!_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemyState)) return;
+
+			enemyView.PlayHit(enemyState.Health, enemyState.Config.InitialHealth);
 		}
 
 		// Killed enemies leave the dictionary here and destroy themselves after the death animation,
@@ -49,6 +55,7 @@ namespace Game.GamePlay.Enemies
 		{
 			EnemyView enemyView = Instantiate(enemyState.Config.Prefab, transform);
 			enemyView.transform.position = enemyState.Position;
+			enemyView.CreateHealthBar(_healthBarService, enemyState.Health, enemyState.Config.InitialHealth);
 			_enemyViews[enemyState.Id] = enemyView;
 		}
 

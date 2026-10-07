@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9dd95304e2c1384d9f8a8d53274d1fa, type: 3}
+  m_Name: HealthBarConfig
+  m_EditorClassIdentifier: 
+  prefab:
+    m_AssetGUID: 02e89c4b28db70248a7c14e517f5ce2f
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  heroColor: {r: 0.35, g: 0.85, b: 0.25, a: 1}
+  enemyColor: {r: 0.95, g: 0.25, b: 0.25, a: 1}
+  trailColor: {r: 1, g: 0.85, b: 0.3, a: 1}
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  fillSmoothTime: 0.12
+  trailDelay: 0.4
+  trailDrainSpeed: 1.5
+  flashDuration: 0.12
+  punchScale: 0.3
+  punchDuration: 0.25
