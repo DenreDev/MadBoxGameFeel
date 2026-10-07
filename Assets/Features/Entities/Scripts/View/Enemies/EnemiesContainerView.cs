@@ -23,6 +23,26 @@ namespace Game.GamePlay.Enemies
 			_enemiesController.OnEnemySpawned += OnEnemySpawned;
 			_enemiesController.OnEnemyRemoved += OnEnemyRemoved;
 			_enemiesController.OnEnemyPositionChanged += OnEnemyPositionChanged;
+			_enemiesController.OnEnemyAttacked += OnEnemyAttacked;
+			_enemiesController.OnEnemyDamaged += OnEnemyDamaged;
+			_enemiesController.OnEnemyKilled += OnEnemyKilled;
+		}
+
+		private void OnEnemyAttacked(int enemyId)
+		{
+			if (_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) enemyView.PlayAttack();
+		}
+
+		private void OnEnemyDamaged(int enemyId)
+		{
+			if (_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) enemyView.PlayHit();
+		}
+
+		// Killed enemies leave the dictionary here and destroy themselves after the death animation,
+		// so the OnEnemyRemoved that follows finds nothing. Restart (ClearAllEnemies) skips this and destroys instantly.
+		private void OnEnemyKilled(int enemyId)
+		{
+			if (_enemyViews.Remove(enemyId, out EnemyView enemyView)) enemyView.PlayDeath();
 		}
 
 		private void OnEnemySpawned(EnemyState enemyState)
@@ -56,6 +76,9 @@ namespace Game.GamePlay.Enemies
 				_enemiesController.OnEnemySpawned -= OnEnemySpawned;
 				_enemiesController.OnEnemyRemoved -= OnEnemyRemoved;
 				_enemiesController.OnEnemyPositionChanged -= OnEnemyPositionChanged;
+				_enemiesController.OnEnemyAttacked -= OnEnemyAttacked;
+				_enemiesController.OnEnemyDamaged -= OnEnemyDamaged;
+				_enemiesController.OnEnemyKilled -= OnEnemyKilled;
 			}
 		}
 	}

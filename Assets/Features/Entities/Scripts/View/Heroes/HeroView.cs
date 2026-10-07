@@ -9,6 +9,9 @@ namespace Game.GamePlay.Heroes
 	public class HeroView : MonoBehaviour
 	{
 		private static readonly int SpeedHash = Animator.StringToHash("Speed");
+		private static readonly int AttackHash = Animator.StringToHash("Attack");
+		private static readonly int HitHash = Animator.StringToHash("Hit");
+		private static readonly int IsDeadHash = Animator.StringToHash("IsDead");
 
 		[SerializeField] private Animator animator;
 		[SerializeField] private float rotationSpeed = 10f;
@@ -33,6 +36,8 @@ namespace Game.GamePlay.Heroes
 
 			_joystickInputService.OnStateChanged += OnJoystickStateChanged;
 			_heroController.OnStateChanged += OnHeroStateChanged;
+			_heroController.OnAttacked += OnHeroAttacked;
+			_heroController.OnDamaged += OnHeroDamaged;
 			_weaponsService.OnWeaponChanged += OnWeaponChanged;
 
 			OnJoystickStateChanged(_joystickInputService.CurrentState);
@@ -50,6 +55,8 @@ namespace Game.GamePlay.Heroes
 			if (_heroController != null)
 			{
 				_heroController.OnStateChanged -= OnHeroStateChanged;
+				_heroController.OnAttacked -= OnHeroAttacked;
+				_heroController.OnDamaged -= OnHeroDamaged;
 			}
 			if (_weaponsService != null)
 			{
@@ -70,6 +77,33 @@ namespace Game.GamePlay.Heroes
 		private void OnHeroStateChanged(HeroState heroState)
 		{
 			transform.position = heroState.Position;
+			if (animator == null) return;
+
+			animator.SetBool(IsDeadHash, heroState.IsDead);
+			if (heroState.IsDead)
+			{
+				// Drop a swing/flinch queued in the same frame as the death, otherwise it plays on revive.
+				animator.ResetTrigger(AttackHash);
+				animator.ResetTrigger(HitHash);
+			}
+		}
+
+		private void OnHeroDamaged()
+		{
+			if (animator != null) animator.SetTrigger(HitHash);
+		}
+
+		private void OnHeroAttacked(Vector3 targetPosition)
+		{
+			// Face the target (the model faces -Z, same convention as the movement rotation) then swing.
+			Vector3 direction = targetPosition - transform.position;
+			direction.y = 0f;
+			if (direction.sqrMagnitude > 0.01f)
+			{
+				transform.rotation = Quaternion.LookRotation(-direction);
+			}
+
+			if (animator != null) animator.SetTrigger(AttackHash);
 		}
 
 		private void Update()

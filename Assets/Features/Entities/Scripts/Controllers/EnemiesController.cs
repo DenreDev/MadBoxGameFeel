@@ -15,6 +15,9 @@ namespace Game.GamePlay.Enemies
 		public event Action<EnemyState> OnEnemySpawned;
 		public event Action<int> OnEnemyRemoved;
 		public event Action<EnemyState> OnEnemyPositionChanged;
+		public event Action<int> OnEnemyAttacked; // enemy hit the hero
+		public event Action<int> OnEnemyDamaged; // hit by the hero and survived
+		public event Action<int> OnEnemyKilled; // raised just before OnEnemyRemoved
 
 		// State
 		private Dictionary<int, EnemyState> _enemies;
@@ -74,12 +77,14 @@ namespace Game.GamePlay.Enemies
 			if (newHealth <= 0)
 			{
 				Debug.Log($"Enemy id°{enemyState.Id} is dead. Removing it.");
+				OnEnemyKilled?.Invoke(enemyState.Id);
 				RemoveEnemy(enemyState.Id);
 			}
 			else
 			{
 				EnemyState updatedEnemy = new EnemyState(enemyState.Id, enemyState.Position, newHealth, enemyState.Config);
 				_enemies[enemyState.Id] = updatedEnemy;
+				OnEnemyDamaged?.Invoke(enemyState.Id);
 			}
 		}
 
@@ -165,6 +170,7 @@ namespace Game.GamePlay.Enemies
 
 					EnemyState updatedEnemy = new EnemyState(enemy.Id, enemy.Position, enemy.Health, enemy.Config, Time.time);
 					_enemies[enemy.Id] = updatedEnemy;
+					OnEnemyAttacked?.Invoke(enemy.Id);
 				}
 			}
 		}

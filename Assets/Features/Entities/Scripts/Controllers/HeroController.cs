@@ -24,6 +24,8 @@ namespace Game.GamePlay.Heroes
 
 		// Events
 		public event Action<HeroState> OnStateChanged;
+		public event Action<Vector3> OnAttacked; // target position
+		public event Action OnDamaged; // hit taken and survived (death is reported through OnStateChanged)
 
 		public UniTask<bool> Initialize(EnemiesController enemiesController, JoystickInputService joystickInputService, WeaponsService weaponsService)
 		{
@@ -51,6 +53,10 @@ namespace Game.GamePlay.Heroes
 			if (_currentState.IsDead)
 			{
 				Debug.Log("Hero is dead!");
+			}
+			else
+			{
+				OnDamaged?.Invoke();
 			}
 		}
 
@@ -102,6 +108,7 @@ namespace Game.GamePlay.Heroes
 			{
 				_enemiesController.AttackEnemy(closestEnemy, _weaponsService.CurrentWeapon.Damage);
 				_currentState = new HeroState(_currentState.Position, _currentState.Health, Time.time);
+				OnAttacked?.Invoke(closestEnemy.Position);
 			}
 		}
 
