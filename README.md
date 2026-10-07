@@ -28,7 +28,7 @@ TO FILL
 | Delayed swing and aim | 8 min |
 | Attack impact pass | 3 min |
 | Attack sounds | 7 min |
-| **Total** | 211 min |
+| **Total** | 170 min |
 
 ### Entity animation state machines â€” 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -77,7 +77,7 @@ TO FILL
 - **Time:** 4 min
 - **Bottleneck:** none.
 
-### Hero health value ï¿½ 5 min
+### Hero health value â€” 5 min
 - **Implemented:** the hero's current health number now floats above his health bar, so the player reads exactly how much health is left. Enemies keep the bar only. Details in [the feature note](Documentation/FeatureNotes/10_HeroHealthValue.md).
 - **Time:** 5 min
 - **Bottleneck:** not recorded.
@@ -120,18 +120,18 @@ TO FILL
 - **Bottleneck:** tuning the timings.
 - **Addressables:** the red disc prefab and the tint material are preloaded from the `VFX` group.
 
-### Delayed swing and aim — 8 min
+### Delayed swing and aim â€” 8 min
 - **Implemented:** the hero's attack now waits for the slash high point to deal damage, keeps facing its target for the whole swing and always plays its animation completely. Details in [the feature note](Documentation/FeatureNotes/16_DelayedSwing.md).
 - **Time:** 8 min
 - **Bottleneck:** not confirmed.
 - **Addressables:** a slash effect was added in the `VFX` group, then removed from the game.
 
-### Attack impact pass — 3 min
+### Attack impact pass â€” 3 min
 - **Implemented:** sword hits shove the enemy back, chained kills freeze the game for a few frames, and the camera kicks along the slash. Details in [the feature note](Documentation/FeatureNotes/17_AttackImpactPass.md).
 - **Time:** 3 min
 - **Bottleneck:** not confirmed.
 
-### Attack sounds — 7 min
+### Attack sounds â€” 7 min
 - **Implemented:** the attack now has sound: a swing whoosh, a hit thump and a heavier kill crunch that rises in pitch with the kill streak. Details in [the feature note](Documentation/FeatureNotes/18_AttackSounds.md).
 - **Time:** 7 min
 - **Bottleneck:** not confirmed.

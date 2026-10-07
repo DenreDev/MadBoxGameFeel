@@ -21,9 +21,11 @@ Not documented. The human chose not to give one for this feature.
 | Restart + game-flow architecture + hero facing the camera (implementation and testing, not split) | `3 min` (11:29:59 → 11:32:57) |
 | Menu-style camera framing + hero health bar hidden on Start (compile, play-mode checks) | `5 min` (first capture 16:01:33 → cleanup 16:05:10, plus the compile just before) |
 | Asset generation / integration | `0 min` |
-| **Total** | `31 min` |
+| **Total** | `10 min` (human-corrected, see below) |
 
 Real elapsed time from recorded timestamps. Excluded: waiting on the human to free the shared editor (about 10:50:31 → 11:00:56, bounds taken from Unity's own state timestamps), the idle gaps between the three requests (11:18 → 11:29, 11:33 → about 16:00), and the time spent writing this note. To confirm with the human: the code edits of the last pass (camera pitch and config values) happened before the Unity connection dropped and were not timestamped, so they are not in the 5 min.
+
+**Correction:** the total was corrected by the human to 10 min, the effective working time. The phase rows above are the raw timestamp spans and include waiting time (shared editor, pauses), so they no longer add up to the total.
 
 ## 5. Files changed
 New:
@@ -95,6 +97,6 @@ The game used to start by itself, with no moment for the player to get ready. I 
 
 ## 14. README entry
 
-### Start screen and game flow — 31 min
+### Start screen and game flow — 10 min
 - **Implemented:** the game now waits on a "main menu" start screen: the camera frames the hero close up, facing the player, with a "TAP TO START" prompt, and nothing moves or spawns until the tap. A small game manager (Start, Playing, GameOver) drives it, so Restart comes back to the same screen. Details in [the feature note](Documentation/FeatureNotes/06_StartScreen.md).
-- **Time:** 31 min
+- **Time:** 10 min

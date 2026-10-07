@@ -18,9 +18,11 @@ Not recorded (the human chose to skip it).
 | Implementation | `5 min` (10:50:35 to 10:55:46) |
 | Tuning / testing | `9 min` (16:07:21 to 16:15:58) |
 | Asset generation / integration | included above (no separate timestamp) |
-| **Total** | `16 min` |
+| **Total** | `8 min` (human-corrected, see below) |
 
 Real elapsed time from recorded timestamps: 1 min 46 s + 5 min 11 s + 8 min 37 s = 15 min 34 s, rounded to 16. The gap from 10:55:46 to 16:07:21 is excluded: the work was paused until the human fixed a compile error caused by a third-party asset imported in the same project, and the Unity connection was restored. About a minute spent diagnosing that error right before the pause has no timestamp and is not counted. Tuning / testing includes running the asset builder, the play-mode checks, the tuning pass and the clean-up. To be confirmed by the human.
+
+**Correction:** the total was corrected by the human to 8 min, the effective working time. The phase rows above are the raw timestamp spans and include waiting time (shared editor, pauses), so they no longer add up to the total.
 
 ## 5. Files changed
 - `Assets/Features/GameFeel/Scripts/View/SpawnFeedbackView.cs`: new. Scales the entity root from 0 to full size with an ease-out-back curve and asks the service for the puff.
@@ -97,8 +99,8 @@ Bees used to appear instantly at full size with nothing to mark the moment. Now 
 ## 14. README entry
 Copied into `README.md` under "Features".
 
-### Enemy spawn — 16 min
+### Enemy spawn — 8 min
 - **Implemented:** bees now pop in from nothing with a springy overshoot while a lavender dust puff, a ground glow and a few sparkles burst at their feet. Details in [the feature note](Documentation/FeatureNotes/08_EnemySpawn.md).
-- **Time:** 16 min
+- **Time:** 8 min
 - **Bottleneck:** not recorded.
 - **Addressables:** the puff prefab is preloaded from the `VFX` group.
