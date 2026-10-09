@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: great_sword
   damage: 30
-  range: 3.5
+  range: 4.2
   cooldown: 0.8
   prefab: {fileID: 7602662686883965424, guid: 17cf6e9fc28f3a544bc062d510f66f4a, type: 3}
   hitDelay: 0.33
   swingDuration: 0.86
   maxTargets: 3
-  critChance: 0.15
+  arcAngle: 120
+  critChance: 0.3
   critMultiplier: 1.5
