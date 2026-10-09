@@ -19,7 +19,7 @@ MonoBehaviour:
   attackDamage: 6
   attackRange: 2
   attackWindupDuration: 0.25
-  attackDuration: 0.35
+  attackDuration: 0.58
   lungeDistance: 1
   explodesOnContact: 0
   prefab:

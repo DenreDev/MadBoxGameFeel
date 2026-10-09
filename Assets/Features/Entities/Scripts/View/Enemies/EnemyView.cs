@@ -76,9 +76,11 @@ namespace Game.GamePlay.Enemies
 			if (animator != null) animator.SetTrigger(AttackHash);
 		}
 
-		public void PlayHit(int damage, int health, int maxHealth, bool isCritical)
+		// isAttacking: the enemy is committed to an attack, so the flinch animation is skipped (it would cut the bite short).
+		// The flash, squash, number and health bar still show the hit landed.
+		public void PlayHit(int damage, int health, int maxHealth, bool isCritical, bool isAttacking)
 		{
-			if (animator != null) animator.SetTrigger(HitHash);
+			if (animator != null && !isAttacking) animator.SetTrigger(HitHash);
 			if (hitFeedback != null) hitFeedback.Play(damage, awayDirection: AwayFromHero(), isCritical: isCritical);
 			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
