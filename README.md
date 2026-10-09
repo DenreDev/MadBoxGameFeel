@@ -2,7 +2,11 @@
 
 ## Approach
 
-TO FILL
+I first considered how to use AI effectively within the four-hour limit. I spent some initial time defining focused instructions for architecture, asset generation, and documentation, with the aim of accelerating implementation and leaving room for testing and polish. I remained responsible for the design direction and for understanding and evaluating the generated code.
+
+My first gameplay priority was combat readability. Animations were not connected to gameplay actions, making it difficult to understand what was happening. I started by making those states visible and adding health and damage feedback.
+
+I then focused on making combat more satisfying through hit reactions, effects, sound, and camera feedback. Finally, I refined the presentation and explored additions at the boundary between feel and gameplay design where they could improve clarity and polish. Throughout, the goal was to balance implementation with playtesting, tuning, fixes, and understanding the architecture.
 
 ## Features and time
 
@@ -34,7 +38,8 @@ TO FILL
 | Enemy waves and bee types | 15 min |
 | Wave counter | 7 min |
 | Combo counter | 9 min |
-| **Total** | 195 min |
+| Boot, start and game over screens | 14 min |
+| **Total** | 209 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -177,6 +182,11 @@ TO FILL
 - **Time:** 9 min
 - **Bottleneck:** not confirmed.
 - **Addressables:** three generated sounds preloaded from the `Audio` group.
+
+### Boot, start and game over screens — 14 min
+- **Implemented:** to improve the overall juice of the game from the very first frame, a title cover now hides the loading instead of an empty sky and a dead "TAP TO START". The start screen drops its title in, pops a chunky button and teaches the controls. Game over now plays a short sequence: dim, title slam, round stats, then a "TRY AGAIN" button that only accepts taps once it is visible. Buttons squash under the finger. Details in [the feature note](Documentation/FeatureNotes/25_ScreensPolish.md).
+- **Time:** 14 min
+- **Bottleneck:** checking UI timings in the shared, unfocused editor (deduced, to be confirmed).
 
 ## Feedback on the base project
 
