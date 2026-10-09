@@ -27,7 +27,9 @@ Not given by the human. Deduced from the work, not from their statement: checkin
 Analysis and the first code were not timed separately. Waiting for the human is not counted.
 
 ## 5. Files changed
-- `WaveCounterView.cs`: new, in `Game.UI`. Listens to the wave event, drives the badge and the banner animations.
+- `WaveCounterView.cs`: entry point on WaveCounter; owns service/event subscriptions, references both child views, triggers sound and round resets.
+- `WaveBadgeView.cs`: component on Badge; updates the number, fade, punch and pulse.
+- `WaveBannerView.cs`: component on Banner; animates the announcement.
 - `EnemyWaveSpawner.cs`: new `OnWaveStarted(waveNumber)` event, raised as a wave opens. Nothing else changed (another session's file).
 - `EntitiesService.cs`: exposes the spawner as `WaveSpawner`.
 - `GameFeelService.cs`: loads the stinger, `PlayWaveStart()`, releases it in `Reset`.
@@ -39,19 +41,21 @@ Analysis and the first code were not timed separately. Waiting for the human is 
 ## 6. Technical flow
 1. At startup `GameFeelService` preloads the stinger. `WaveCounterView` subscribes to `EnemyWaveSpawner.OnWaveStarted` and the game flow state.
 2. A round starts: the spawner waits `RoundStartDelay`, then opens wave 1 and raises `OnWaveStarted(1)`.
-3. The view sets the number and the banner text, fades the badge in, restarts both animations and asks the service for the stinger.
+3. WaveCounterView calls ShowWave on both child views and asks GameFeelService for the stinger. The badge sets the number and restarts its fade, punch and pulse; the banner sets the announcement text and restarts its animation.
 4. Number: it starts at `punchScale`, white, and springs back with an overshoot to its gold color. A glow behind the badge grows and fades.
 5. Banner: the text drops in from `bannerStartScale` with an overshoot while the ribbon opens, holds, then drifts up and fades while the ribbon closes.
 6. Each next wave repeats step 3 to 5. The last configured wave never ends, so the counter stops there.
 7. The flow returns to Start (after a game over): the view resets, hidden until wave 1 of the next round.
 
 ## 7. Tuning values
-In `WaveCounterView` (inspector):
+In `WaveBadgeView` (inspector):
 - `punchScale` = `1.7`: how big the number pops on a change.
 - `punchDuration` = `0.5`: seconds to settle back.
 - `punchColor` = white: the flash color of the number.
 - `pulseScale` = `1.6`, `pulseAlpha` = `0.7`: size and opacity of the glow.
 - `badgeFadeDuration` = `0.3`: fade of the badge in and out.
+
+In `WaveBannerView` (inspector):
 - `bannerSlamDuration` = `0.28`, `bannerStartScale` = `2.6`: how the banner text lands.
 - `bannerHoldDuration` = `0.9`, `bannerFadeDuration` = `0.4`: how long it stays and leaves.
 - `bannerRiseDistance` = `70`: pixels the text drifts up while leaving.
@@ -93,13 +97,13 @@ Colors, sizes and layout are the scene objects' own (gold `1, 0.8, 0.2`, badge 3
 
 ## 12. Likely review questions
 - **Why does the view read the spawner and not the gameplay state?** A wave is the spawner's concept. One event with the wave number is the smallest link, and the spawner knows nothing about the UI.
-- **Why is the sound played by the view and not by the spawner?** Presentation never drives gameplay. The view reacts to the event and asks the feedback service for the sound.
+- **Why is the sound played by the view and not by the spawner?** Presentation never drives gameplay. WaveCounterView reacts to the event, drives both children and asks the feedback service for the sound.
 - **Why hand-written easing and no tween library?** Two small functions and one timer per animation cover it. No new dependency, no allocations, and a new wave simply resets the timers.
 - **Why unscaled time?** Hit stop drops the time scale for a few frames. A scaled HUD would stutter exactly when the game feels heaviest.
 - **Why is the HUD not an Addressable prefab?** It is a permanent screen like the start screen and the game over overlay, so it follows their convention. The sound is the only runtime-loaded content.
 
 ## 13. 30-second explanation
-Waves were invisible to the player, so the game's escalation was hard to read. A small badge now shows the wave number and a big banner with a fanfare announces each new one, with a punch and a glow on every change. One view listens to a new `OnWaveStarted` event of the spawner and drives two timer-based animations on unscaled time. The trade-off is that it only announces: no countdown to the next wave and no distinct final wave.
+Waves were invisible to the player, so the game's escalation was hard to read. A small badge now shows the wave number and a big banner with a fanfare announces each new one, with a punch and a glow on every change. One entry view listens to the spawner's wave event, forwards it to the badge and banner views on their own objects, and requests the sound. Each child owns its animation on unscaled time. The trade-off is that it only announces: no countdown to the next wave and no distinct final wave.
 
 ## 14. README entry
 
@@ -108,3 +112,23 @@ Waves were invisible to the player, so the game's escalation was hard to read. A
 - **Time:** 7 min
 - **Bottleneck:** not confirmed.
 - **Addressables:** the generated stinger is preloaded from the `Audio` group.
+
+## View split — 2026-10-09
+Requested as a code refactor: separate badge and banner scripts. WaveCounterView is the entry point on WaveCounter, with serialized badgeView/bannerView references and public Badge/Banner accessors. WaveBadgeView lives on Badge and WaveBannerView on Banner. Child views expose ShowWave and ResetVisuals and have no services or event subscriptions. Existing references, tuning, easing, reset behavior and unscaled timing are preserved; the entry point keeps the original script GUID.
+
+Measured follow-up work (UTC):
+- Analysis: 10:08:04 → 10:08:57, 53 s.
+- Implementation: 10:08:57 → 10:10:35, 1 min 38 s.
+- Validation: 10:10:35 → 10:12:09, 1 min 34 s.
+- Total through validation: 4 min 05 s. Initial instruction-reading/tool recovery and documentation time are not included because they were not separately timed.
+
+Validation: Unity compiled Game.UI successfully and loaded both component types with all serialized UI references assigned. Animation expressions match the original. No new play-mode check was performed. The MCP script validator reported duplicate signatures for method calls; Unity's actual compiler succeeded.
+
+The human requested a wave entry point with access to both child views, with each script on its relevant GameObject. No additional player-facing issue or human bottleneck wording was supplied.
+Entry-point and hierarchy follow-up (UTC):
+- Analysis: 10:14:50 → 10:15:19, 29 s.
+- Implementation: 10:15:19 → 10:16:23, 1 min 04 s.
+- Validation: 10:16:23 → 10:19:39, 3 min 16 s.
+- Follow-up total through validation: 4 min 49 s; combined refactor work: 8 min 54 s. Documentation time is not included.
+- Unity compiled the updated Game.UI assembly successfully. Loaded-scene inspection confirmed the parent has only WaveCounterView, its Badge/Banner properties reference the two child components, and all child UI references/tuning values remain assigned.
+- The Unity connector initially timed out after refresh and recovered when compilation was requested again. No play-mode check was performed.

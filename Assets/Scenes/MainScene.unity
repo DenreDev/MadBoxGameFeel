@@ -349,8 +349,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 141215846}
-  - component: {fileID: 141215847}
-  - component: {fileID: 141215848}
+  - component: {fileID: 141215849}
   m_Layer: 5
   m_Name: WaveCounter
   m_TagString: Untagged
@@ -379,7 +378,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &141215847
+--- !u!114 &141215849
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -389,8 +388,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfdded5c01c34ce46bfa0093c572bef7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
+  badgeView: {fileID: 141215847}
+  bannerView: {fileID: 141215848}
+--- !u!114 &141215847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218778758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 035faf66c0014c7ba290ccc129c9baad, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
   badge: {fileID: 1218778760}
   badgeNumber: {fileID: 150596971}
   badgeNumberText: {fileID: 150596972}
@@ -408,12 +421,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 141215845}
+  m_GameObject: {fileID: 1657640691}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3ef784c99fa45618227ee70e013babc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   banner: {fileID: 1657640693}
   bannerRibbon: {fileID: 1191152400}
   bannerText: {fileID: 1485804337}
@@ -3574,6 +3587,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1218778759}
   - component: {fileID: 1218778760}
+  - component: {fileID: 141215847}
   m_Layer: 5
   m_Name: Badge
   m_TagString: Untagged
@@ -5106,6 +5120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1657640692}
   - component: {fileID: 1657640693}
+  - component: {fileID: 141215848}
   m_Layer: 5
   m_Name: Banner
   m_TagString: Untagged

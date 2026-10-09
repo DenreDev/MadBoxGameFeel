@@ -36,10 +36,10 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 | Critical strikes | 11 min |
 | Currency orbs | 8 min |
 | Enemy waves and bee types | 15 min |
-| Wave counter | 7 min |
+| Wave counter | 7 min + 8 min 54 s refactor |
 | Combo counter | 9 min |
 | Boot, start and game over screens | 14 min |
-| **Total** | 209 min |
+| **Total** | 217 min 54 s |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -171,9 +171,9 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 - **Bottleneck:** placing the spawns around what the player actually sees on a tilted portrait camera (to be confirmed).
 - **Addressables:** the three bee prefabs are preloaded from a new `Enemies` group.
 
-### Wave counter — 7 min
-- **Implemented:** to explain to the player what is going on, a "WAVE n" badge now sits at the top of the screen and a big banner with a short fanfare announces each new wave. The number punches and a glow pulses on every change. Details in [the feature note](Documentation/FeatureNotes/23_WaveCounter.md).
-- **Time:** 7 min
+### Wave counter — 7 min + 8 min 54 s refactor
+- **Implemented:** to explain to the player what is going on, a "WAVE n" badge now sits at the top of the screen and a big banner with a short fanfare announces each new wave. The number punches and a glow pulses on every change. A WaveCounterView entry point drives separate badge and banner scripts on their respective objects. Details in [the feature note](Documentation/FeatureNotes/23_WaveCounter.md).
+- **Time:** 7 min initially; 8 min 54 s to split and validate the views, add their entry point and wire the hierarchy.
 - **Bottleneck:** not confirmed.
 - **Addressables:** the generated stinger is preloaded from the `Audio` group.
 
