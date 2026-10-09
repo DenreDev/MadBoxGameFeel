@@ -144,6 +144,29 @@ namespace Game.GameFeel
 		[Tooltip("Size of the number of the hit that kills, relative to a regular one (1.5 = 50% bigger)")]
 		private float killNumberScale = 1.5f;
 
+		[Header("Critical strike (chance and damage multiplier are on the WeaponConfig)")]
+		[SerializeField]
+		[Tooltip("Size of the hit spark on a critical strike, relative to a regular one")]
+		private float critSparkScale = 1.8f;
+		[SerializeField]
+		[Tooltip("How much stronger the body squash and the shove are on a critical strike (1.6 = 60% more)")]
+		private float critImpactScale = 1.6f;
+		[SerializeField]
+		[Tooltip("Freeze, in real seconds, on every critical strike, even if it does not kill (0 disables). A longer kill streak freeze wins")]
+		private float critStopDuration = 0.08f;
+		[SerializeField]
+		[Tooltip("Camera kick multiplier on a critical strike (2 = twice the regular hit or kill shake)")]
+		private float critShakeMultiplier = 2f;
+		[SerializeField]
+		[Tooltip("Size of a critical number, relative to a regular one (and to the kill size when the crit kills)")]
+		private float critNumberScale = 1.4f;
+		[SerializeField]
+		[Tooltip("Color at the top of a critical number")]
+		private Color critNumberTopColor = new Color(1f, 0.55f, 0.95f);
+		[SerializeField]
+		[Tooltip("Color at the bottom of a critical number")]
+		private Color critNumberBottomColor = new Color(0.55f, 0.1f, 0.85f);
+
 		[Header("Camera shake (impulse strength in world units, 0 disables)")]
 		[SerializeField]
 		[Tooltip("The hero's slash reaches its high point, hit or miss")]
@@ -201,6 +224,13 @@ namespace Game.GameFeel
 		public Color KillNumberTopColor => killNumberTopColor;
 		public Color KillNumberBottomColor => killNumberBottomColor;
 		public float KillNumberScale => killNumberScale;
+		public float CritSparkScale => critSparkScale;
+		public float CritImpactScale => critImpactScale;
+		public float CritStopDuration => critStopDuration;
+		public float CritShakeMultiplier => critShakeMultiplier;
+		public float CritNumberScale => critNumberScale;
+		public Color CritNumberTopColor => critNumberTopColor;
+		public Color CritNumberBottomColor => critNumberBottomColor;
 		public float SpawnDuration => spawnDuration;
 		public float SpawnOvershoot => spawnOvershoot;
 		public float FlashDuration => flashDuration;

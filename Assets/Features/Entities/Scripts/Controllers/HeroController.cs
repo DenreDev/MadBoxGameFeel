@@ -156,7 +156,9 @@ namespace Game.GamePlay.Heroes
 			// Iterating our own list: killing an enemy removes it from the controller, not from here.
 			foreach (EnemyState target in _hitTargets)
 			{
-				_enemiesController.AttackEnemy(target, weapon.Damage);
+				bool isCritical = UnityEngine.Random.value < weapon.CritChance;
+				int damage = isCritical ? Mathf.RoundToInt(weapon.Damage * weapon.CritMultiplier) : weapon.Damage;
+				_enemiesController.AttackEnemy(target, damage, isCritical);
 			}
 
 			OnAttacked?.Invoke(slashPosition);

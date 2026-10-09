@@ -12,6 +12,8 @@ namespace Game.GameFeel
 	// Owns the Addressable handles of the hit feedback content: loaded once at startup, reused for every hit, released on Reset.
 	public class GameFeelService : IService
 	{
+		private const string CritNumberSuffix = "!";
+
 		private readonly List<AsyncOperationHandle> _handles = new List<AsyncOperationHandle>();
 		private GameObject _sparkPrefab;
 		private GameObject _spawnPuffPrefab;
@@ -89,32 +91,42 @@ namespace Game.GameFeel
 			return UniTask.CompletedTask;
 		}
 
-		public void PlayHitSpark(Vector3 position)
+		public void PlayHitSpark(Vector3 position, bool isCritical = false)
 		{
 			if (_sparkPrefab == null) return;
 
 			// The prefab destroys itself when its particles are done (Stop Action = Destroy).
-			Object.Instantiate(_sparkPrefab, position, Quaternion.identity);
+			GameObject spark = Object.Instantiate(_sparkPrefab, position, Quaternion.identity);
+			if (isCritical) spark.transform.localScale *= GameFeelConfig.Instance.CritSparkScale;
 		}
 
 		// Freeze frame, kept for big impacts only: a regular hit or a lone kill never freezes, otherwise every swing would stutter.
 		// Kills chained within the streak window count as a streak (a swing killing several enemies, or a crowd going down).
 		// From HitStopMinKillStreak kills on, each kill freezes the game for a few frames, longer and longer with the streak.
+		// A critical strike always freezes, even a lone hit: CritStopDuration, or the streak freeze when that one is longer.
 		// Overlapping freezes do not stack: the longest one wins.
-		public void PlayHitStop(bool isKillingBlow)
+		public void PlayHitStop(bool isKillingBlow, bool isCritical = false)
 		{
-			if (!isKillingBlow) return;
+			if (!isKillingBlow && !isCritical) return;
 
 			GameFeelConfig config = GameFeelConfig.Instance;
 			if (config == null) return;
 
 			float now = Time.unscaledTime;
-			_killStreak = now - _lastKillTime <= config.KillStreakWindow ? _killStreak + 1 : 1;
-			_lastKillTime = now;
-			if (_killStreak < config.HitStopMinKillStreak) return;
+			float duration = 0f;
+			if (isKillingBlow)
+			{
+				_killStreak = now - _lastKillTime <= config.KillStreakWindow ? _killStreak + 1 : 1;
+				_lastKillTime = now;
+				if (_killStreak >= config.HitStopMinKillStreak)
+				{
+					int extraKills = _killStreak - Mathf.Max(1, config.HitStopMinKillStreak);
+					duration = config.KillStopDuration + extraKills * config.KillStreakStopBonus;
+				}
+			}
 
-			int extraKills = _killStreak - Mathf.Max(1, config.HitStopMinKillStreak);
-			float duration = Mathf.Min(config.KillStopDuration + extraKills * config.KillStreakStopBonus, config.MaxHitStopDuration);
+			if (isCritical) duration = Mathf.Max(duration, config.CritStopDuration);
+			duration = Mathf.Min(duration, config.MaxHitStopDuration);
 			if (duration <= 0f || now + duration <= _hitStopEndTime) return;
 
 			bool alreadyFrozen = _hitStopEndTime > now;
@@ -140,19 +152,21 @@ namespace Game.GameFeel
 			PlaySound(_whooshSource, _whooshClip, config.SwordWhooshVolume, UnityEngine.Random.Range(0.95f, 1.05f));
 		}
 
-		// Thump when the sword hits, heavier crunch when it kills. One of each per frame: a swing hitting several enemies is one blow, not three.
+		// Thump when the sword hits, heavier crunch when it kills or crits. One of each per frame: a swing hitting several enemies is one blow, not three.
 		// The kill sound climbs in pitch with the kill streak, so call this after PlayHitStop (which counts the streak).
-		public void PlayHitSound(bool isKillingBlow)
+		public void PlayHitSound(bool isKillingBlow, bool isCritical = false)
 		{
 			GameFeelConfig config = GameFeelConfig.Instance;
 			if (config == null) return;
 
-			if (isKillingBlow)
+			if (isKillingBlow || isCritical)
 			{
 				if (_killSoundFrame == Time.frameCount) return;
 
 				_killSoundFrame = Time.frameCount;
-				float pitch = Mathf.Min(config.MaxKillPitch, 1f + Mathf.Max(0, _killStreak - 1) * config.KillStreakPitchStep);
+				float pitch = isKillingBlow
+					? Mathf.Min(config.MaxKillPitch, 1f + Mathf.Max(0, _killStreak - 1) * config.KillStreakPitchStep)
+					: UnityEngine.Random.Range(0.95f, 1.05f);
 				PlaySound(_killSource, _killClip, config.KillImpactVolume, pitch);
 			}
 			else
@@ -228,7 +242,8 @@ namespace Game.GameFeel
 		}
 
 		// Floating damage number (third-party package). Position, colors and size come from the config, the motion and fades from the prefab.
-		public void PlayDamageNumber(Vector3 hitPoint, int damage, bool isKillingBlow)
+		// A critical strike gets its own colors, a "!" and is bigger (on top of the kill size).
+		public void PlayDamageNumber(Vector3 hitPoint, int damage, bool isKillingBlow, bool isCritical = false)
 		{
 			if (_damageNumberPrefab == null) return;
 
@@ -237,10 +252,18 @@ namespace Game.GameFeel
 			DamageNumber number = _damageNumberPrefab.Spawn(position, damage);
 
 			// Set on every spawn: pooled numbers keep the look of their previous use.
-			Color top = isKillingBlow ? config.KillNumberTopColor : config.HitNumberTopColor;
-			Color bottom = isKillingBlow ? config.KillNumberBottomColor : config.HitNumberBottomColor;
+			Color top = isCritical ? config.CritNumberTopColor : isKillingBlow ? config.KillNumberTopColor : config.HitNumberTopColor;
+			Color bottom = isCritical ? config.CritNumberBottomColor : isKillingBlow ? config.KillNumberBottomColor : config.HitNumberBottomColor;
 			number.SetGradientColor(top, top, bottom, bottom);
-			number.SetScale(isKillingBlow ? config.HitNumberScale * config.KillNumberScale : config.HitNumberScale);
+
+			float scale = config.HitNumberScale;
+			if (isKillingBlow) scale *= config.KillNumberScale;
+			if (isCritical) scale *= config.CritNumberScale;
+			number.SetScale(scale);
+
+			number.enableRightText = isCritical;
+			number.rightText = isCritical ? CritNumberSuffix : "";
+			number.UpdateText();
 		}
 
 		// The prefab is only the template: third-party package instantiates and pools the numbers from it.

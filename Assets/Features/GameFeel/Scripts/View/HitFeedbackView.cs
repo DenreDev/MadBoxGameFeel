@@ -18,6 +18,7 @@ namespace Game.GameFeel
 		private bool _flashing;
 		private Vector3 _recoilDirection;
 		private Vector3 _recoilApplied; // offset currently added to the model, so it can be removed exactly
+		private float _impactScale = 1f; // squash and shove strength of the current hit: bigger on a critical strike
 
 		private void Awake()
 		{
@@ -34,23 +35,24 @@ namespace Game.GameFeel
 
 		// damage 0 means no number, no freeze frame (the hero's hits). The killing blow gets a bigger, hotter number and, when kills are chained, a freeze.
 		// awayDirection (from the attacker to this body) shoves the model back for a moment. Zero or a killing blow means no shove:
-		// the death launch takes over.
-		public void Play(int damage = 0, bool isKillingBlow = false, Vector3 awayDirection = default)
+		// the death launch takes over. A critical strike makes everything bigger: spark, squash, shove, number, freeze, sound.
+		public void Play(int damage = 0, bool isKillingBlow = false, Vector3 awayDirection = default, bool isCritical = false)
 		{
 			GameFeelService service = ServicesLocator.Instance.GetService<GameFeelService>();
 			if (service == null) return;
 
 			_hitTime = Time.time;
+			_impactScale = isCritical ? GameFeelConfig.Instance.CritImpactScale : 1f;
 			enabled = true;
 
 			Vector3 hitPoint = _renderers.Length > 0 ? _renderers[0].bounds.center : transform.position;
 			if (service.FlashMaterial != null) SetFlash(service.FlashMaterial);
-			service.PlayHitSpark(hitPoint);
+			service.PlayHitSpark(hitPoint, isCritical);
 			if (damage > 0)
 			{
-				service.PlayDamageNumber(hitPoint, damage, isKillingBlow);
-				service.PlayHitStop(isKillingBlow);
-				service.PlayHitSound(isKillingBlow);
+				service.PlayDamageNumber(hitPoint, damage, isKillingBlow, isCritical);
+				service.PlayHitStop(isKillingBlow, isCritical);
+				service.PlayHitSound(isKillingBlow, isCritical);
 			}
 
 			ClearRecoil();
@@ -67,12 +69,12 @@ namespace Game.GameFeel
 			if (_flashing && sinceHit >= config.FlashDuration) ClearFlash();
 
 			float punch = 1f - Mathf.Clamp01(sinceHit / Mathf.Max(0.0001f, config.PunchDuration));
-			float squash = config.PunchSquash * punch * punch;
+			float squash = config.PunchSquash * _impactScale * punch * punch;
 			visual.localScale = Vector3.Scale(_baseScale, new Vector3(1f + squash, 1f - squash, 1f + squash));
 
 			// Shoved instantly, then eases back. Applied as a delta so it adds to whatever else moves the model.
 			float recoil = 1f - Mathf.Clamp01(sinceHit / Mathf.Max(0.0001f, config.RecoilDuration));
-			Vector3 recoilOffset = _recoilDirection * (config.RecoilDistance * recoil * recoil);
+			Vector3 recoilOffset = _recoilDirection * (config.RecoilDistance * _impactScale * recoil * recoil);
 			visual.position += recoilOffset - _recoilApplied;
 			_recoilApplied = recoilOffset;
 

@@ -16,6 +16,10 @@ namespace Game.Weapons
 		private float swingDuration = 0.86f;
 		[SerializeField, Min(1), Tooltip("How many enemies one swing can hit at the same time. The one the hero aims at is always hit first, then the closest ones in range. 1 = single target.")]
 		private int maxTargets = 1;
+		[SerializeField, Range(0f, 1f), Tooltip("Chance for each enemy hit to be a critical strike (0.15 = 15%). Rolled per enemy, so a multi-hit swing can crit on some targets only. 0 disables criticals.")]
+		private float critChance = 0.15f;
+		[SerializeField, Min(1f), Tooltip("Damage multiplier of a critical strike (1.5 = +50%). The result is rounded to a whole number.")]
+		private float critMultiplier = 1.5f;
 
 		public string Id => id;
 		public int Damage => damage;
@@ -25,5 +29,7 @@ namespace Game.Weapons
 		public float HitDelay => hitDelay;
 		public float SwingDuration => swingDuration;
 		public int MaxTargets => Mathf.Max(1, maxTargets);
+		public float CritChance => critChance;
+		public float CritMultiplier => Mathf.Max(1f, critMultiplier);
 	}
 }

@@ -104,3 +104,10 @@ MonoBehaviour:
   startCameraDistance: 5
   startCameraPitch: 12
   cameraPitchSmoothTime: 0.6
+  critSparkScale: 1.8
+  critImpactScale: 1.6
+  critStopDuration: 0.08
+  critShakeMultiplier: 2
+  critNumberScale: 1.4
+  critNumberTopColor: {r: 1, g: 0.55, b: 0.95, a: 1}
+  critNumberBottomColor: {r: 0.55, g: 0.1, b: 0.85, a: 1}

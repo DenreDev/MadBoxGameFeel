@@ -53,8 +53,8 @@ namespace Game.GamePlay.Heroes
 
 		private void OnHeroAttacked(Vector3 targetPosition) => Shake(GameFeelConfig.Instance.AttackShake);
 		private void OnHeroDied() => Shake(GameFeelConfig.Instance.DeathShake);
-		private void OnEnemyDamaged(int enemyId, int damage) => ShakeAlongSlash(enemyId, GameFeelConfig.Instance.EnemyHitShake);
-		private void OnEnemyKilled(int enemyId, int damage) => ShakeAlongSlash(enemyId, GameFeelConfig.Instance.EnemyKillShake);
+		private void OnEnemyDamaged(int enemyId, int damage, bool isCritical) => ShakeAlongSlash(enemyId, GameFeelConfig.Instance.EnemyHitShake, isCritical);
+		private void OnEnemyKilled(int enemyId, int damage, bool isCritical) => ShakeAlongSlash(enemyId, GameFeelConfig.Instance.EnemyKillShake, isCritical);
 
 		private void OnHeroDamaged()
 		{
@@ -68,10 +68,12 @@ namespace Game.GamePlay.Heroes
 		// The kick goes the way the sword went (hero toward the enemy it hit), so the screen takes the blow too.
 		// The enemy is still in the controller when these events are raised.
 		// One swing can hit several enemies in the same frame: only the first one kicks the screen, so a multi-hit is not a bigger shake.
-		private void ShakeAlongSlash(int enemyId, float strength)
+		// A critical strike kicks harder.
+		private void ShakeAlongSlash(int enemyId, float strength, bool isCritical)
 		{
 			if (Time.frameCount == _lastEnemyShakeFrame) return;
 			_lastEnemyShakeFrame = Time.frameCount;
+			if (isCritical) strength *= GameFeelConfig.Instance.CritShakeMultiplier;
 
 			if (_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemy))
 			{

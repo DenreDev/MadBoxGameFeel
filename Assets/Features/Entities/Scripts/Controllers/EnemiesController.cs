@@ -20,8 +20,8 @@ namespace Game.GamePlay.Enemies
 		public event Action<int, float> OnEnemyWindupStarted; // enemy id, windup duration: hero in range, the enemy telegraphs its attack
 		public event Action<int> OnEnemyStrikeStarted; // windup over, the attack animation starts
 		public event Action<int> OnEnemyAttacked; // the strike ended and the hero was still in range: he took the hit
-		public event Action<int, int> OnEnemyDamaged; // enemy id, damage dealt: hit by the hero and survived
-		public event Action<int, int> OnEnemyKilled; // enemy id, damage dealt by the killing blow: raised just before OnEnemyRemoved
+		public event Action<int, int, bool> OnEnemyDamaged; // enemy id, damage dealt, was it a critical strike: hit by the hero and survived
+		public event Action<int, int, bool> OnEnemyKilled; // enemy id, damage dealt by the killing blow, was it a critical strike: raised just before OnEnemyRemoved
 
 		// State
 		private Dictionary<int, EnemyState> _enemies;
@@ -71,7 +71,7 @@ namespace Game.GamePlay.Enemies
 			}
 		}
 
-		public void AttackEnemy(EnemyState enemyState, int damage)
+		public void AttackEnemy(EnemyState enemyState, int damage, bool isCritical = false)
 		{
 			if (!_enemies.ContainsKey(enemyState.Id)) return;
 
@@ -82,14 +82,14 @@ namespace Game.GamePlay.Enemies
 			if (newHealth <= 0)
 			{
 				Debug.Log($"Enemy id°{enemyState.Id} is dead. Removing it.");
-				OnEnemyKilled?.Invoke(enemyState.Id, damage);
+				OnEnemyKilled?.Invoke(enemyState.Id, damage, isCritical);
 				RemoveEnemy(enemyState.Id);
 			}
 			else
 			{
 				// Re-read the state: the caller's copy may predate a phase change. Damage does not interrupt an attack in progress.
 				_enemies[enemyState.Id] = _enemies[enemyState.Id].WithHealth(newHealth);
-				OnEnemyDamaged?.Invoke(enemyState.Id, damage);
+				OnEnemyDamaged?.Invoke(enemyState.Id, damage, isCritical);
 			}
 		}
 

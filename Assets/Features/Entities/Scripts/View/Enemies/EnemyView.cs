@@ -65,22 +65,22 @@ namespace Game.GamePlay.Enemies
 			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
 
-		public void PlayHit(int damage, int health, int maxHealth)
+		public void PlayHit(int damage, int health, int maxHealth, bool isCritical)
 		{
 			if (animator != null) animator.SetTrigger(HitHash);
-			if (hitFeedback != null) hitFeedback.Play(damage, awayDirection: AwayFromHero());
+			if (hitFeedback != null) hitFeedback.Play(damage, awayDirection: AwayFromHero(), isCritical: isCritical);
 			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
 
 		// Plays the death animation while the model is knocked away from the hero, then destroys the enemy.
-		public void PlayDeath(int damage)
+		public void PlayDeath(int damage, bool isCritical)
 		{
 			_isDying = true;
 			if (spawnFeedback != null) spawnFeedback.Finish();
 			if (attackTelegraph != null) attackTelegraph.End();
 			if (_healthBar != null) _healthBar.Hide();
 			if (animator != null) animator.SetTrigger(DieHash);
-			if (hitFeedback != null) hitFeedback.Play(damage, isKillingBlow: true);
+			if (hitFeedback != null) hitFeedback.Play(damage, isKillingBlow: true, isCritical: isCritical);
 			if (deathLaunch != null)
 			{
 				deathLaunch.Play(AwayFromHero());

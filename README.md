@@ -28,7 +28,8 @@ TO FILL
 | Delayed swing and aim | 8 min |
 | Attack impact pass | 3 min |
 | Attack sounds | 7 min |
-| **Total** | 170 min |
+| Critical strikes | 11 min |
+| **Total** | 181 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -136,6 +137,11 @@ TO FILL
 - **Time:** 7 min
 - **Bottleneck:** not confirmed.
 - **Addressables:** three generated sounds preloaded from a new `Audio` group.
+
+### Critical strikes — 11 min
+- **Implemented:** sword hits can now critical strike (15% chance, x1.5 damage). A crit gets a bigger pink damage number with a "!", a bigger spark, a stronger squash and shove, a freeze frame, a harder camera kick and the heavy crunch sound. Details in [the feature note](Documentation/FeatureNotes/20_CriticalStrikes.md).
+- **Time:** 11 min
+- **Bottleneck:** not confirmed.
 
 ## Feedback on the base project
 

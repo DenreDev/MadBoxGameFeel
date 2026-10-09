@@ -20,3 +20,5 @@ MonoBehaviour:
   hitDelay: 0.33
   swingDuration: 0.86
   maxTargets: 3
+  critChance: 0.15
+  critMultiplier: 1.5

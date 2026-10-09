@@ -45,19 +45,19 @@ namespace Game.GamePlay.Enemies
 			if (_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) enemyView.PlayStrike();
 		}
 
-		private void OnEnemyDamaged(int enemyId, int damage)
+		private void OnEnemyDamaged(int enemyId, int damage, bool isCritical)
 		{
 			if (!_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) return;
 			if (!_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemyState)) return;
 
-			enemyView.PlayHit(damage, enemyState.Health, enemyState.Config.InitialHealth);
+			enemyView.PlayHit(damage, enemyState.Health, enemyState.Config.InitialHealth, isCritical);
 		}
 
 		// Killed enemies leave the dictionary here and destroy themselves after the death animation,
 		// so the OnEnemyRemoved that follows finds nothing. Restart (ClearAllEnemies) skips this and destroys instantly.
-		private void OnEnemyKilled(int enemyId, int damage)
+		private void OnEnemyKilled(int enemyId, int damage, bool isCritical)
 		{
-			if (_enemyViews.Remove(enemyId, out EnemyView enemyView)) enemyView.PlayDeath(damage);
+			if (_enemyViews.Remove(enemyId, out EnemyView enemyView)) enemyView.PlayDeath(damage, isCritical);
 		}
 
 		private void OnEnemySpawned(EnemyState enemyState)
