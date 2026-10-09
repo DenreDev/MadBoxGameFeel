@@ -28,7 +28,7 @@ Real elapsed time from timestamps taken during the session. The analysis time lo
 
 ## 5. Files changed
 - `AttackRangeView.cs`: a second fan layer (the fill) under the cone, grown during the windup and faded with the pulse. `BuildCone` takes a center alpha so the fill is even instead of fading toward the hero.
-- `GameFeelConfig.cs`: three tuning values for the fill, next to the other attack range values.
+- `AttackRangeConfig.cs`: three tuning values for the fill (`chargeAlpha`, `chargeEdgeAlpha`, `chargeCurve`), next to the other attack range values. Set in `SwordAttackRange.asset`.
 
 ## 6. Technical flow
 1. At startup the view builds two meshes from the weapon: the faint cone (as before) and the fill. The fill is a child of the cone, so it turns, hides and pops with it.
@@ -45,7 +45,7 @@ Real elapsed time from timestamps taken during the session. The analysis time lo
 - The duration is not a tuning value: it is the weapon's `HitDelay`, so the fill always matches the real hit timing.
 
 ## 8. Addressables
-- **Used?** No new asset. The fill reuses the cone's `VFX/AttackRange` material, already preloaded by `GameFeelService`.
+- **Used?** No new asset. The fill reuses the cone's `VFX/AttackRange` material, already preloaded by `FeedbackAssetsService`.
 - **Why no new asset:** the fill is the same shape and tint as the cone. A property block changes its strength per renderer without touching the shared Addressable material.
 
 ## 9. Generated assets

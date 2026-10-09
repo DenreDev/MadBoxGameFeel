@@ -28,3 +28,8 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  hitFeedback: {fileID: 11400000, guid: 40e97d70f75145048d1c3b8dfdce1e22, type: 2}
+  damageNumbers: {fileID: 11400000, guid: 89635d2f8fea4c25847d06e99ecde891, type: 2}
+  spawnFeedback: {fileID: 11400000, guid: 5568c5991d2e49b9a941ef7682aacc51, type: 2}
+  attackTelegraph: {fileID: 11400000, guid: 31ebefb6cd814287922da08680758e7f, type: 2}
+  currencyDrop: {fileID: 11400000, guid: 92a28027de4d40c4b6f670a3cbfbb795, type: 2}

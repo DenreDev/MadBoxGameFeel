@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.ScriptableObjectSingleton;
+using Game.GameFeel;
 using UnityEngine;
 
 namespace Game.GamePlay.Enemies
@@ -66,6 +67,11 @@ namespace Game.GamePlay.Enemies
 		[Tooltip("List of all available enemies in the game. Their prefabs are loaded at startup")]
 		private List<EnemyConfig> enemies;
 
+		[Header("Feedback (optional: leave it empty and the waves start silently)")]
+		[SerializeField]
+		[Tooltip("Stinger played when a new wave is announced")]
+		private WaveSoundsConfig waveSounds;
+
 		public IReadOnlyList<EnemyWave> Waves => waves;
 		public float RoundStartDelay => roundStartDelay;
 		public float OffscreenMargin => offscreenMargin;
@@ -80,6 +86,7 @@ namespace Game.GamePlay.Enemies
 		public float DeathShoveSpeed => deathShoveSpeed;
 		public float KnockbackFriction => knockbackFriction;
 		public IReadOnlyList<EnemyConfig> Enemies => enemies;
+		public WaveSoundsConfig WaveSounds => waveSounds;
 
 		private Dictionary<string, EnemyConfig> _enemiesMap;
 

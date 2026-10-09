@@ -8,10 +8,11 @@ using UnityEngine;
 namespace Game.GamePlay.Heroes
 {
 	// Small camera kicks when the hero swings, takes a hit and dies. Sits on the World prefab next to the virtual camera,
-	// which carries the CinemachineImpulseListener. Strengths live in GameFeelConfig.
+	// which carries the CinemachineImpulseListener. Strengths live in the CameraShakeConfig plugged in below (none = no shake).
 	public class CameraShakeView : MonoBehaviour
 	{
 		[SerializeField] private CinemachineImpulseSource impulseSource;
+		[SerializeField] private CameraShakeConfig config;
 
 		private HeroController _heroController;
 		private EnemiesController _enemiesController;
@@ -25,6 +26,8 @@ namespace Game.GamePlay.Heroes
 
 		private void OnServicesInitialized()
 		{
+			if (config == null) return; // no config plugged in: the camera never shakes
+
 			EntitiesService entitiesService = ServicesLocator.Instance.GetService<EntitiesService>();
 			_heroController = entitiesService.HeroController;
 			_enemiesController = entitiesService.EnemiesController;
@@ -51,14 +54,13 @@ namespace Game.GamePlay.Heroes
 			}
 		}
 
-		private void OnHeroAttacked(Vector3 targetPosition) => Shake(GameFeelConfig.Instance.AttackShake);
-		private void OnHeroDied() => Shake(GameFeelConfig.Instance.DeathShake);
-		private void OnEnemyDamaged(int enemyId, int damage, bool isCritical) => ShakeAlongSlash(enemyId, GameFeelConfig.Instance.EnemyHitShake, isCritical);
-		private void OnEnemyKilled(int enemyId, int damage, bool isCritical) => ShakeAlongSlash(enemyId, GameFeelConfig.Instance.EnemyKillShake, isCritical);
+		private void OnHeroAttacked(Vector3 targetPosition) => Shake(config.AttackShake);
+		private void OnHeroDied() => Shake(config.DeathShake);
+		private void OnEnemyDamaged(int enemyId, int damage, bool isCritical) => ShakeAlongSlash(enemyId, config.EnemyHitShake, isCritical);
+		private void OnEnemyKilled(int enemyId, int damage, bool isCritical) => ShakeAlongSlash(enemyId, config.EnemyKillShake, isCritical);
 
 		private void OnHeroDamaged()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
 			if (Time.time - _lastHitShakeTime < config.HitShakeCooldown) return;
 
 			_lastHitShakeTime = Time.time;
@@ -73,7 +75,7 @@ namespace Game.GamePlay.Heroes
 		{
 			if (Time.frameCount == _lastEnemyShakeFrame) return;
 			_lastEnemyShakeFrame = Time.frameCount;
-			if (isCritical) strength *= GameFeelConfig.Instance.CritShakeMultiplier;
+			if (isCritical) strength *= config.CritShakeMultiplier;
 
 			if (_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemy))
 			{

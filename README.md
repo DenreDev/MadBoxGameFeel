@@ -40,7 +40,8 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 | Combo counter | 9 min |
 | Boot, start and game over screens | 14 min |
 | Attack range charge fill | 6 min |
-| **Total** | 218 min |
+| Feedback config split (refactor) | 24 min 22 s |
+| **Total** | 242 min 22 s |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -193,6 +194,12 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 - **Implemented:** to highlight the attack, a fill now grows inside the attack cone during the swing and reaches its edge exactly when the hit lands, so the player knows when it hits. Details in [the feature note](Documentation/FeatureNotes/26_AttackRangeChargeFill.md).
 - **Time:** 6 min
 - **Bottleneck:** not confirmed.
+
+### Feedback config split (refactor) — 24 min
+- **Implemented:** the all-in-one `GameFeelConfig` and `GameFeelService` were split by composition: each feedback is its own ScriptableObject, plugged into the enemy, hero or weapon config it belongs to, so each enemy type and weapon can feel different. No player-facing change. Details in [the feature note](Documentation/FeatureNotes/27_FeedbackConfigSplit.md).
+- **Time:** 24 min (19 min refactor, 5 min to merge it with the latest main)
+- **Bottleneck:** not confirmed.
+- **Addressables:** one service owns every game feel handle, preloaded at startup from the content catalogs.
 
 ## Feedback on the base project
 

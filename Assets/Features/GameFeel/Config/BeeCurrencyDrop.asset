@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2c0ec075ab47dd8a02dd75f7083254, type: 3}
+  m_Name: BeeCurrencyDrop
+  m_EditorClassIdentifier: 
+  orbPrefab:
+    m_AssetGUID: c6fe26a3dbb808341b5cdfed6b0532b1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  collectPrefab:
+    m_AssetGUID: 9e1f585f51b375a4fae3b13f62587930
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  dropClip:
+    m_AssetGUID: d8eded8751137dd4fb77fb0b50a51093
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  collectClip:
+    m_AssetGUID: 8c077115e8d6f5b409fc7b8367e4803b
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  orbsPerKill: {x: 3, y: 5}
+  dropHeight: 0.6
+  burstSpeed: {x: 2.5, y: 4.5}
+  burstUpSpeed: 6
+  gravity: 25
+  bounciness: 0.45
+  restHeight: 0.2
+  attractDelay: 0.8
+  attractDelayJitter: 0.35
+  windupDuration: 0.18
+  windupDistance: 0.4
+  attractAcceleration: 45
+  maxSpeed: 20
+  attractCurve: 3
+  targetHeight: 1
+  collectRadius: 0.5
+  dropVolume: 0.5
+  collectVolume: 0.6
+  chainWindow: 0.4
+  chainPitchStep: 0.05
+  maxPitch: 1.6

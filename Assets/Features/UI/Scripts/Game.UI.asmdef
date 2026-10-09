@@ -8,7 +8,8 @@
         "GUID:6d8d31c569ff49f792685c49d5709837",
         "Game.GameFlow",
         "Game.GameFeel",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.Addressables"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

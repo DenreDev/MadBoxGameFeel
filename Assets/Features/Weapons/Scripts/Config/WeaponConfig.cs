@@ -1,3 +1,4 @@
+using Game.GameFeel;
 using UnityEngine;
 
 namespace Game.Weapons
@@ -23,6 +24,14 @@ namespace Game.Weapons
 		[SerializeField, Min(1f), Tooltip("Damage multiplier of a critical strike (1.5 = +50%). The result is rounded to a whole number.")]
 		private float critMultiplier = 1.5f;
 
+		[Header("Feedback (each one is optional: leave it empty and the weapon simply has no such feedback)")]
+		[SerializeField, Tooltip("Swing whoosh and the hit, kill and critical impact sounds")]
+		private WeaponSoundsConfig sounds;
+		[SerializeField, Tooltip("Freeze frame on chained kills and critical strikes")]
+		private HitStopConfig hitStop;
+		[SerializeField, Tooltip("Look of the cone drawn on the ground in front of the hero. Its shape comes from Range and Arc Angle above")]
+		private AttackRangeConfig rangeDisplay;
+
 		public string Id => id;
 		public int Damage => damage;
 		public float Range => range;
@@ -34,5 +43,8 @@ namespace Game.Weapons
 		public float ArcAngle => Mathf.Clamp(arcAngle, 10f, 360f);
 		public float CritChance => critChance;
 		public float CritMultiplier => Mathf.Max(1f, critMultiplier);
+		public WeaponSoundsConfig Sounds => sounds;
+		public HitStopConfig HitStop => hitStop;
+		public AttackRangeConfig RangeDisplay => rangeDisplay;
 	}
 }

@@ -17,3 +17,6 @@ MonoBehaviour:
   range: 2
   cooldown: 0.5
   prefab: {fileID: -654538669453326304, guid: 4d0814cafad460246890ec829fa7071d, type: 3}
+  sounds: {fileID: 11400000, guid: 3838b86e592c429c89346a1a6bbd8d09, type: 2}
+  hitStop: {fileID: 11400000, guid: c28eec191b65465fa8871af8a2ebde45, type: 2}
+  rangeDisplay: {fileID: 11400000, guid: ad68d24476e347c7a4741077088c1576, type: 2}

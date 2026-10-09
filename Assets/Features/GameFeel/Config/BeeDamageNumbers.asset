@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68f2ccdb6b6a49dd9b1e45917ab89177, type: 3}
+  m_Name: BeeDamageNumbers
+  m_EditorClassIdentifier: 
+  prefab:
+    m_AssetGUID: ba0bee72f83f5894682ab9aae5c0ba0a
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  height: 0.5
+  hitScale: 1.8
+  hitTopColor: {r: 1, g: 0.9, b: 0.25, a: 1}
+  hitBottomColor: {r: 1, g: 0.45, b: 0.05, a: 1}
+  killScale: 1.5
+  killTopColor: {r: 1, g: 0.25, b: 0, a: 1}
+  killBottomColor: {r: 0.75, g: 0, b: 0.05, a: 1}
+  critScale: 1.4
+  critTopColor: {r: 1, g: 0.55, b: 0.95, a: 1}
+  critBottomColor: {r: 0.55, g: 0.1, b: 0.85, a: 1}

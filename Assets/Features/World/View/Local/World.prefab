@@ -143,6 +143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   impulseSource: {fileID: 2303107715946320377}
+  config: {fileID: 11400000, guid: a327756268684f9f9bee0be058503c65, type: 2}
 --- !u!114 &4242424242424240001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   virtualCamera: {fileID: 6876971557978427097}
+  config: {fileID: 11400000, guid: 943b9eeb79e4400e825d73332b90c5c3, type: 2}
 --- !u!114 &3581826517966936097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,6 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   virtualCamera: {fileID: 6876971557978427097}
+  config: {fileID: 11400000, guid: 6a9a438b0b2448c7bc3aa2cd0832b344, type: 2}
 --- !u!1 &7124215502109461477
 GameObject:
   m_ObjectHideFlags: 0

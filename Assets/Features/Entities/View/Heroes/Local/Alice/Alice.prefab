@@ -495,6 +495,7 @@ GameObject:
   - component: {fileID: 4310347511843957529}
   - component: {fileID: 5220319081674580048}
   - component: {fileID: 7358201946153820741}
+  - component: {fileID: 6185730249917364412}
   m_Layer: 0
   m_Name: Alice
   m_TagString: Untagged
@@ -538,6 +539,7 @@ MonoBehaviour:
   hitReactionCooldown: 0.5
   healthBarHeight: 2.1
   hitFeedback: {fileID: 1066416052500076519}
+  footsteps: {fileID: 4310347511843957529}
   deathLaunch: {fileID: 2652304111055867068}
 --- !u!114 &1066416052500076519
 MonoBehaviour:
@@ -1122,3 +1124,15 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6101898001689560141}
   m_LocalEulerAnglesHint: {x: -3.8643463, y: -14.635269, z: -6.7095065}
+--- !u!114 &6185730249917364412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206923099687242354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a397f58fc1f467ab43a424ea88dc79d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

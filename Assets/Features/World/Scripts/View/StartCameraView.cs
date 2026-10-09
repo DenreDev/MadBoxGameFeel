@@ -8,10 +8,11 @@ namespace Game.World
 {
 	// "Main menu" framing in the Start state (launch and after a restart): the camera sits low in front of the hero, close up, so the player sees his face.
 	// When the game starts it eases back to the gameplay framing, which is whatever the World prefab is set to (distance on the Framing Transposer, pitch on the virtual camera).
-	// The distance eases through the transposer's Z Damping, the pitch through CameraPitchSmoothTime.
+	// The distance eases through the transposer's Z Damping, the pitch through the StartCameraConfig's PitchSmoothTime.
 	public class StartCameraView : MonoBehaviour
 	{
 		[SerializeField] private CinemachineVirtualCamera virtualCamera;
+		[SerializeField] private StartCameraConfig config;
 
 		private CinemachineFramingTransposer _framing;
 		private GameFlowService _gameFlowService;
@@ -24,11 +25,10 @@ namespace Game.World
 
 		private void Awake()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
 			_framing = virtualCamera != null ? virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>() : null;
 			if (_framing == null || config == null)
 			{
-				Debug.LogWarning("Start camera needs a virtual camera with a Framing Transposer and a GameFeelConfig. The start screen keeps the gameplay framing.");
+				Debug.LogWarning("Start camera needs a virtual camera with a Framing Transposer and a StartCameraConfig. The start screen keeps the gameplay framing.");
 				_framing = null;
 				return;
 			}
@@ -40,8 +40,8 @@ namespace Game.World
 			_gameplayDistance = _framing.m_CameraDistance;
 
 			// Starts in the Start state, snapped: no tilt-in at launch.
-			_framing.m_CameraDistance = config.StartCameraDistance;
-			_currentPitch = _targetPitch = config.StartCameraPitch;
+			_framing.m_CameraDistance = config.Distance;
+			_currentPitch = _targetPitch = config.Pitch;
 			ApplyPitch();
 		}
 
@@ -70,8 +70,8 @@ namespace Game.World
 
 			if (state == GameState.Start)
 			{
-				_framing.m_CameraDistance = GameFeelConfig.Instance.StartCameraDistance;
-				_targetPitch = GameFeelConfig.Instance.StartCameraPitch;
+				_framing.m_CameraDistance = config.Distance;
+				_targetPitch = config.Pitch;
 			}
 			else if (state == GameState.Playing)
 			{
@@ -85,7 +85,7 @@ namespace Game.World
 		{
 			if (_framing == null) return;
 
-			_currentPitch = Mathf.SmoothDampAngle(_currentPitch, _targetPitch, ref _pitchVelocity, GameFeelConfig.Instance.CameraPitchSmoothTime);
+			_currentPitch = Mathf.SmoothDampAngle(_currentPitch, _targetPitch, ref _pitchVelocity, config.PitchSmoothTime);
 			ApplyPitch();
 		}
 

@@ -17,7 +17,8 @@ namespace Game.UI
 		public WaveBannerView Banner => bannerView;
 
 		private GameFlowService _gameFlowService;
-		private GameFeelService _gameFeelService;
+		private FeedbackAssetsService _assets;
+		private FeedbackAudioService _audio;
 		private EnemyWaveSpawner _waveSpawner;
 
 		private void Start()
@@ -27,7 +28,8 @@ namespace Game.UI
 
 		private void OnServicesInitialized()
 		{
-			_gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
+			_assets = ServicesLocator.Instance.GetService<FeedbackAssetsService>();
+			_audio = ServicesLocator.Instance.GetService<FeedbackAudioService>();
 			_waveSpawner = ServicesLocator.Instance.GetService<EntitiesService>().WaveSpawner;
 			_waveSpawner.OnWaveStarted += OnWaveStarted;
 
@@ -42,8 +44,15 @@ namespace Game.UI
 			if (bannerView != null)
 			{
 				bannerView.ShowWave(waveNumber);
-				if (_gameFeelService != null) _gameFeelService.PlayWaveStart();
+				PlayWaveStinger();
 			}
+		}
+
+		// The stinger is the waves' own feedback (EnemiesConfig.WaveSounds).
+		private void PlayWaveStinger()
+		{
+			WaveSoundsConfig sounds = EnemiesConfig.Instance.WaveSounds;
+			if (sounds != null && _audio != null) _audio.Play(_assets.Get(sounds.StartClip), sounds.StartVolume);
 		}
 
 		private void OnGameStateChanged(GameState state)

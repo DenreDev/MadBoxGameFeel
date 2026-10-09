@@ -8,7 +8,7 @@ namespace Game.GamePlay.Heroes
 {
 	// Faint ring on the ground under the hero, so his position reads at a glance among the enemies.
 	// Hidden on the start screen (the camera looks at the hero from the front, the ring would be an edge-on line) and while he is dead.
-	// Size and alpha live on the Addressable ring prefab and its material, nothing here is gameplay.
+	// The ring prefab is HeroConfig's GroundRingPrefab. Size and alpha live on the prefab and its material, nothing here is gameplay.
 	public class HeroRingView : MonoBehaviour
 	{
 		private GameObject _ring;
@@ -22,10 +22,10 @@ namespace Game.GamePlay.Heroes
 
 		private void OnServicesInitialized()
 		{
-			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
-			if (gameFeelService == null) return;
+			FeedbackAssetsService assets = ServicesLocator.Instance.GetService<FeedbackAssetsService>();
+			if (assets == null) return;
 
-			_ring = gameFeelService.CreateHeroRing(transform);
+			_ring = assets.Spawn(HeroConfig.Instance.GroundRingPrefab, transform);
 			if (_ring == null) return;
 
 			_heroController = ServicesLocator.Instance.GetService<EntitiesService>().HeroController;

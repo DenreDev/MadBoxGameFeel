@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8600e9d8aa1f48d7920ec0851af1435a, type: 3}
+  m_Name: HeroComboSounds
+  m_EditorClassIdentifier: 
+  hitClip:
+    m_AssetGUID: 1fbbadb13548c2f4ba3c490b13527bd1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  milestoneClip:
+    m_AssetGUID: e579a54a6192ffb4db2a722b8e3e8a4d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  breakClip:
+    m_AssetGUID: ef4fcb82f16fbca47b505f3864fed186
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  hitVolume: 0.5
+  milestoneVolume: 0.8
+  breakVolume: 0.7
+  maxSemitones: 14

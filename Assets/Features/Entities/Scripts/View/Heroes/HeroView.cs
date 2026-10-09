@@ -28,6 +28,7 @@ namespace Game.GamePlay.Heroes
 		[SerializeField, Tooltip("Screen-space height above the hero pivot where the health bar floats")]
 		private float healthBarHeight = 2.1f;
 		[SerializeField] private HitFeedbackView hitFeedback;
+		[SerializeField] private FootstepFeedbackView footsteps;
 		[SerializeField] private DeathLaunchView deathLaunch;
 
 		private HealthBarView _healthBar;
@@ -36,7 +37,7 @@ namespace Game.GamePlay.Heroes
 		private EnemiesController _enemiesController;
 		private WeaponsService _weaponsService;
 		private GameFlowService _gameFlowService;
-		private GameFeelService _gameFeelService;
+		private CurrencyFeedbackService _currency;
 		private Vector2 _currentMovementInput;
 		private WeaponView _currentWeaponView;
 		private float _lastHitReactionTime = float.NegativeInfinity;
@@ -58,8 +59,12 @@ namespace Game.GamePlay.Heroes
 			_enemiesController = entitiesService.EnemiesController;
 			_weaponsService = ServicesLocator.Instance.GetService<WeaponsService>();
 			_gameFlowService = ServicesLocator.Instance.GetService<GameFlowService>();
-			_gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
-			if (_gameFeelService != null) _gameFeelService.CurrencyTarget = transform; // the currency orbs fly to the hero
+			_currency = ServicesLocator.Instance.GetService<CurrencyFeedbackService>();
+			if (_currency != null) _currency.Target = transform; // the currency orbs fly to the hero
+
+			// The hero's feedback components get the configs HeroConfig plugs in.
+			if (hitFeedback != null) hitFeedback.Bind(HeroConfig.Instance.HitFeedback);
+			if (footsteps != null) footsteps.Bind(HeroConfig.Instance.Footsteps);
 
 			_joystickInputService.OnStateChanged += OnJoystickStateChanged;
 			_heroController.OnStateChanged += OnHeroStateChanged;
@@ -156,7 +161,7 @@ namespace Game.GamePlay.Heroes
 		{
 			if (hitFeedback != null) hitFeedback.Play();
 			if (deathLaunch != null) deathLaunch.Play(DirectionAwayFromClosestEnemy());
-			if (_gameFeelService != null) _gameFeelService.ClearCurrency();
+			if (_currency != null) _currency.Clear();
 		}
 
 		// The closest enemy is the one that landed the killing blow, so the hero is knocked away from it.
@@ -189,7 +194,6 @@ namespace Game.GamePlay.Heroes
 			_swingEndTime = Time.time + (weapon != null ? weapon.SwingDuration : 0f);
 
 			if (animator != null) animator.SetTrigger(AttackHash);
-			if (_gameFeelService != null) _gameFeelService.PlaySwordWhoosh();
 		}
 
 		private void Update()

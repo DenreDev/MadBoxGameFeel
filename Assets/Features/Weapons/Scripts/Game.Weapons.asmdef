@@ -4,7 +4,8 @@
     "references": [
         "GUID:6d8d31c569ff49f792685c49d5709837",
         "GUID:894935dc78c247aba5acdc0e86f7619b",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "Game.GameFeel"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

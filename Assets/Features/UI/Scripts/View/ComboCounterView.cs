@@ -136,7 +136,9 @@ namespace Game.UI
 
 		private readonly ComboTracker _tracker = new ComboTracker();
 		private GameFlowService _gameFlowService;
-		private GameFeelService _gameFeelService;
+		private FeedbackAssetsService _assets;
+		private FeedbackAudioService _audio;
+		private ComboSoundsConfig _sounds; // the hero's (HeroConfig.ComboSounds), null = silent combo
 		private EnemiesController _enemiesController;
 		private HeroController _heroController;
 
@@ -184,7 +186,9 @@ namespace Game.UI
 
 		private void OnServicesInitialized()
 		{
-			_gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
+			_assets = ServicesLocator.Instance.GetService<FeedbackAssetsService>();
+			_audio = ServicesLocator.Instance.GetService<FeedbackAudioService>();
+			_sounds = HeroConfig.Instance.ComboSounds;
 
 			EntitiesService entitiesService = ServicesLocator.Instance.GetService<EntitiesService>();
 			_enemiesController = entitiesService.EnemiesController;
@@ -259,14 +263,14 @@ namespace Game.UI
 			_kickSign = UnityEngine.Random.value < 0.5f ? -1f : 1f;
 			EmitSparks(isNewTier ? tierSparks : killSparks, isNewTier, tier.topColor);
 
-			if (_gameFeelService != null) _gameFeelService.PlayComboHit(count - minShownCount);
+			if (_sounds != null) _audio.Play(_assets.Get(_sounds.HitClip), _sounds.HitVolume, _sounds.GetHitPitch(count - minShownCount));
 
 			if (isNewTier && !string.IsNullOrEmpty(tier.title))
 			{
 				milestoneText.text = tier.title;
 				milestoneText.colorGradient = new VertexGradient(tier.topColor, tier.topColor, tier.bottomColor, tier.bottomColor);
 				_titleTime = 0f;
-				if (_gameFeelService != null) _gameFeelService.PlayComboMilestone();
+				if (_sounds != null) _audio.Play(_assets.Get(_sounds.MilestoneClip), _sounds.MilestoneVolume);
 			}
 		}
 
@@ -289,7 +293,7 @@ namespace Game.UI
 				_ringStrength = 0.8f;
 			}
 
-			if (_gameFeelService != null) _gameFeelService.PlayComboBreak();
+			if (_sounds != null) _audio.Play(_assets.Get(_sounds.BreakClip), _sounds.BreakVolume);
 		}
 
 		private int TierFor(int count)

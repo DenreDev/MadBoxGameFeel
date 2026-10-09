@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1103308d826c4449acb200aaea5aaa1a, type: 3}
+  m_Name: HeroHitFeedback
+  m_EditorClassIdentifier: 
+  sparkPrefab:
+    m_AssetGUID: b763b540cdec1c445ac50b0b8104fb79
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  flashMaterial:
+    m_AssetGUID: bd159ad1d1a768047982997c36c508f0
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  flashDuration: 0.08
+  punchSquash: 0.15
+  punchDuration: 0.18
+  recoilDistance: 0.45
+  recoilDuration: 0.22
+  critSparkScale: 1.8
+  critImpactScale: 1.6

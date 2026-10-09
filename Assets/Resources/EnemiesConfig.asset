@@ -83,3 +83,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
   - {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}
   - {fileID: 11400000, guid: 550201fa841244b37ab7912b243a2e6a, type: 2}
+  waveSounds: {fileID: 11400000, guid: 52423a99794e4206bc59e386417b59ee, type: 2}

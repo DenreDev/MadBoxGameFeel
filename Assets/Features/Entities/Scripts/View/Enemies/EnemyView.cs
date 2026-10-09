@@ -52,6 +52,11 @@ namespace Game.GamePlay.Enemies
 			_isDying = false;
 			_lastPosition = transform.position;
 
+			// Each feedback component gets the config this enemy type plugs in.
+			if (spawnFeedback != null) spawnFeedback.Bind(config.SpawnFeedback);
+			if (attackTelegraph != null) attackTelegraph.Bind(config.AttackTelegraph);
+			if (hitFeedback != null) hitFeedback.Bind(config.HitFeedback, config.DamageNumbers);
+
 			if (hitFeedback != null) hitFeedback.Stop();
 			if (deathPhysics != null) deathPhysics.Restore();
 			if (attackTelegraph != null) attackTelegraph.End();
@@ -94,21 +99,21 @@ namespace Game.GamePlay.Enemies
 			if (deathPhysics != null) deathPhysics.Play(AwayFromHero());
 
 			// The orbs belong to the world, not to this enemy: they outlive it.
-			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
-			if (gameFeelService != null) gameFeelService.PlayCurrencyDrop(transform.position);
+			CurrencyFeedbackService currency = ServicesLocator.Instance.GetService<CurrencyFeedbackService>();
+			if (currency != null && Config != null) currency.Drop(transform.position, Config.CurrencyDrop);
 		}
 
-		// Kamikaze hit: the body bursts in a puff and a spark against the hero. No number, no orbs: the player did not kill it.
-		// The container releases it right away.
+		// Kamikaze hit: the body bursts in a puff and a spark against the hero, reusing this enemy's spawn puff and hit spark.
+		// No number, no orbs: the player did not kill it. The container releases it right away.
 		public void PlayExplode()
 		{
 			StopForDeath();
 
-			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
-			if (gameFeelService == null) return;
+			FeedbackAssetsService assets = ServicesLocator.Instance.GetService<FeedbackAssetsService>();
+			if (assets == null || Config == null) return;
 
-			gameFeelService.PlaySpawnPuff(transform.position);
-			gameFeelService.PlayHitSpark(transform.position + Vector3.up * 0.5f);
+			if (Config.SpawnFeedback != null) assets.Spawn(Config.SpawnFeedback.PuffPrefab, transform.position);
+			if (Config.HitFeedback != null) assets.Spawn(Config.HitFeedback.SparkPrefab, transform.position + Vector3.up * 0.5f);
 		}
 
 		private void StopForDeath()

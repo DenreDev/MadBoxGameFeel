@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game.GameFeel
 {
 	// One currency orb: pops out of a dead enemy, bounces, rests for a moment, winds up, is pulled to the hero and collected.
-	// Pure presentation: it holds no amount and no rule. GameFeelService spawns it, tells it where the hero is and plays the collect feedback.
+	// Pure presentation: it holds no amount and no rule. CurrencyFeedbackService spawns it with the dead enemy's CurrencyDropConfig, tells it where the hero is and plays the collect feedback.
 	public class CurrencyOrbView : MonoBehaviour
 	{
 		private enum Phase { Burst, Rest, Windup, Magnet, Vanish }
@@ -33,7 +33,8 @@ namespace Game.GameFeel
 		[SerializeField, Tooltip("Streak left behind while the orb flies to the hero")]
 		private TrailRenderer trail;
 
-		private GameFeelService _service;
+		private CurrencyFeedbackService _service;
+		private CurrencyDropConfig _config;
 		private Camera _camera;
 		private Phase _phase;
 		private Vector3 _velocity;
@@ -59,15 +60,15 @@ namespace Game.GameFeel
 			trail.emitting = false;
 		}
 
-		// Called right after Instantiate. velocity is the burst, floorY the ground the orb will bounce on.
-		public void Launch(GameFeelService service, Vector3 velocity, float floorY)
+		// Called right after Instantiate. config is the dead enemy's drop, velocity the burst, floorY the ground the orb will bounce on.
+		public void Launch(CurrencyFeedbackService service, CurrencyDropConfig config, Vector3 velocity, float floorY)
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
 			_service = service;
+			_config = config;
 			_velocity = velocity;
 			_floorY = floorY;
 			_spawnTime = Time.time;
-			_attractTime = Time.time + config.CurrencyAttractDelay + Random.value * config.CurrencyAttractDelayJitter;
+			_attractTime = Time.time + _config.AttractDelay + Random.value * _config.AttractDelayJitter;
 			_bobOffset = Random.value * Mathf.PI * 2f;
 			_curveSide = Random.value < 0.5f ? -1f : 1f;
 			SetPhase(Phase.Burst);
@@ -108,10 +109,9 @@ namespace Game.GameFeel
 
 		private void UpdateBurst()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
-			float restY = _floorY + config.CurrencyRestHeight;
+			float restY = _floorY + _config.RestHeight;
 
-			_velocity.y -= config.CurrencyGravity * Time.deltaTime;
+			_velocity.y -= _config.Gravity * Time.deltaTime;
 			Vector3 position = transform.position + _velocity * Time.deltaTime;
 
 			if (position.y <= restY && _velocity.y < 0f)
@@ -126,7 +126,7 @@ namespace Game.GameFeel
 					return;
 				}
 
-				_velocity.y = -_velocity.y * config.CurrencyBounciness;
+				_velocity.y = -_velocity.y * _config.Bounciness;
 				_velocity.x *= BounceFriction;
 				_velocity.z *= BounceFriction;
 			}
@@ -137,7 +137,7 @@ namespace Game.GameFeel
 		// Waits on the floor for its turn, with a slow bob, until the hero is there to be reached.
 		private void UpdateRest()
 		{
-			if (Time.time < _attractTime || _service.CurrencyTarget == null) return;
+			if (Time.time < _attractTime || _service.Target == null) return;
 
 			StartWindup();
 		}
@@ -145,17 +145,15 @@ namespace Game.GameFeel
 		// The orb does not leave straight away: it squashes and recoils from the hero first, like a spring being loaded.
 		private void StartWindup()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
 			Vector3 away = -FlatDirectionToTarget();
 			_windupFrom = transform.position;
-			_windupTo = _windupFrom + away * config.CurrencyWindupDistance + Vector3.up * (config.CurrencyWindupDistance * 0.5f);
+			_windupTo = _windupFrom + away * _config.WindupDistance + Vector3.up * (_config.WindupDistance * 0.5f);
 			SetPhase(Phase.Windup);
 		}
 
 		private void UpdateWindup()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
-			float progress = Mathf.Clamp01((Time.time - _phaseStart) / Mathf.Max(0.0001f, config.CurrencyWindupDuration));
+			float progress = Mathf.Clamp01((Time.time - _phaseStart) / Mathf.Max(0.0001f, _config.WindupDuration));
 			float eased = 1f - (1f - progress) * (1f - progress);
 
 			transform.position = Vector3.Lerp(_windupFrom, _windupTo, eased);
@@ -168,13 +166,12 @@ namespace Game.GameFeel
 		// Leaves with the recoil speed plus a sideways kick, so the path curves into the hero instead of being a straight line.
 		private void StartMagnet()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
 			Vector3 away = (_windupTo - _windupFrom);
 			away.y = 0f;
 			away = away.sqrMagnitude > 0.0001f ? away.normalized : Vector3.back;
 			Vector3 side = Vector3.Cross(Vector3.up, away) * _curveSide;
 
-			_velocity = away * (config.CurrencyAttractCurve * 0.5f) + side * config.CurrencyAttractCurve;
+			_velocity = away * (_config.AttractCurve * 0.5f) + side * _config.AttractCurve;
 			_speed = 0f;
 			trail.Clear();
 			trail.emitting = true;
@@ -183,8 +180,7 @@ namespace Game.GameFeel
 
 		private void UpdateMagnet()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
-			if (_service.CurrencyTarget == null)
+			if (_service.Target == null)
 			{
 				Vanish();
 				return;
@@ -193,11 +189,11 @@ namespace Game.GameFeel
 			Vector3 toTarget = TargetPoint() - transform.position;
 			float distance = toTarget.magnitude;
 
-			_speed = Mathf.Min(config.CurrencyMaxSpeed, _speed + config.CurrencyAttractAcceleration * Time.deltaTime);
+			_speed = Mathf.Min(_config.MaxSpeed, _speed + _config.AttractAcceleration * Time.deltaTime);
 			Vector3 desired = distance > 0.0001f ? toTarget / distance * _speed : Vector3.zero;
 			_velocity = Vector3.Lerp(_velocity, desired, 1f - Mathf.Exp(-SteerRate * Time.deltaTime));
 
-			if (distance <= config.CurrencyCollectRadius || _velocity.magnitude * Time.deltaTime >= distance)
+			if (distance <= _config.CollectRadius || _velocity.magnitude * Time.deltaTime >= distance)
 			{
 				Collect();
 				return;
@@ -220,7 +216,7 @@ namespace Game.GameFeel
 
 		private void Collect()
 		{
-			_service.PlayCurrencyCollected(transform.position);
+			_service.Collect(transform.position, _config);
 			Destroy(gameObject);
 		}
 
@@ -234,7 +230,7 @@ namespace Game.GameFeel
 
 		private Vector3 TargetPoint()
 		{
-			return _service.CurrencyTarget.position + Vector3.up * GameFeelConfig.Instance.CurrencyTargetHeight;
+			return _service.Target.position + Vector3.up * _config.TargetHeight;
 		}
 
 		private Vector3 FlatDirectionToTarget()
@@ -247,7 +243,6 @@ namespace Game.GameFeel
 		// Everything seen on screen: pop-in, landing squash, bob, glow pulse and the ground shadow.
 		private void UpdateVisual()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
 			float time = Time.time;
 
 			float pop = EaseOutBack(Mathf.Clamp01((time - _spawnTime) / PopDuration), PopOvershoot);
@@ -262,7 +257,7 @@ namespace Game.GameFeel
 			glow.localScale = _glowBaseScale * (_glowBoost * pulse * pop);
 
 			// The shadow stays on the floor under the orb and shrinks with the height.
-			float height = Mathf.Max(0f, transform.position.y - (_floorY + config.CurrencyRestHeight));
+			float height = Mathf.Max(0f, transform.position.y - (_floorY + _config.RestHeight));
 			shadow.position = new Vector3(transform.position.x, _floorY + 0.03f, transform.position.z);
 			shadow.localScale = _shadowBaseScale * (Mathf.Lerp(1f, 0.4f, Mathf.Clamp01(height / 3f)) * pop * _phaseScale);
 		}

@@ -11,7 +11,7 @@ namespace Game.GamePlay.Heroes
 	// Anything whose center is inside it when the slash lands is hit, so the player reads what he hits.
 	// During the swing windup a brighter fill grows from the hero to the arc and touches it when the damage lands, then the slash makes the cone pulse once and the fill fades.
 	// The cone is a child of the hero, so it turns with him. It is rebuilt when the weapon changes, and hidden on the start screen and while he is dead.
-	// Only presentation: the hit rule lives in HeroController, this reads the same WeaponConfig values.
+	// Only presentation: the hit rule lives in HeroController, this reads the same WeaponConfig values. The look is the weapon's AttackRangeConfig (none = no cone).
 	public class AttackRangeView : MonoBehaviour
 	{
 		private const float GroundOffset = 0.03f; // just above the hero ring (0.02), under the feet effects
@@ -29,6 +29,8 @@ namespace Game.GamePlay.Heroes
 		private Mesh _fillMesh;
 		private MaterialPropertyBlock _block;
 		private Color _baseColor;
+		private AttackRangeConfig _look; // the current weapon's, null when it has none
+		private FeedbackAssetsService _assets;
 		private HeroController _heroController;
 		private WeaponsService _weaponsService;
 		private GameFlowService _gameFlowService;
@@ -46,15 +48,13 @@ namespace Game.GamePlay.Heroes
 
 		private void OnServicesInitialized()
 		{
-			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
-			if (gameFeelService == null || gameFeelService.AttackRangeMaterial == null) return;
+			_assets = ServicesLocator.Instance.GetService<FeedbackAssetsService>();
+			if (_assets == null) return;
 
-			Material material = gameFeelService.AttackRangeMaterial;
-			_baseColor = material.HasProperty(BaseColorId) ? material.GetColor(BaseColorId) : Color.white;
 			_block = new MaterialPropertyBlock();
 
-			_cone = CreateLayer("AttackRange", transform, GroundOffset, material, out _meshFilter, out _meshRenderer);
-			_fill = CreateLayer("AttackRangeFill", _cone.transform, FillOffset, material, out _fillMeshFilter, out _fillMeshRenderer); // child of the cone: it turns, hides and pops with it
+			_cone = CreateLayer("AttackRange", transform, GroundOffset, out _meshFilter, out _meshRenderer);
+			_fill = CreateLayer("AttackRangeFill", _cone.transform, FillOffset, out _fillMeshFilter, out _fillMeshRenderer); // child of the cone: it turns, hides and pops with it
 
 			_heroController = ServicesLocator.Instance.GetService<EntitiesService>().HeroController;
 			_weaponsService = ServicesLocator.Instance.GetService<WeaponsService>();
@@ -108,7 +108,7 @@ namespace Game.GamePlay.Heroes
 		private void OnHeroAttacked(Vector3 slashPosition)
 		{
 			_isCharging = false;
-			if (_cone == null || !_cone.activeSelf || GameFeelConfig.Instance.AttackRangePulseDuration <= 0f)
+			if (_cone == null || !_cone.activeSelf || _look == null || _look.PulseDuration <= 0f)
 			{
 				ApplyFill(0f, 0f);
 				return;
@@ -121,20 +121,18 @@ namespace Game.GamePlay.Heroes
 
 		private void Update()
 		{
-			GameFeelConfig config = GameFeelConfig.Instance;
-
 			if (_isCharging)
 			{
 				float charge = _chargeDuration > 0f ? Mathf.Clamp01((Time.time - _chargeStartTime) / _chargeDuration) : 1f;
-				ApplyFill(config.AttackRangeChargeCurve.Evaluate(charge), 1f); // stays full if the slash is late
+				ApplyFill(_look.ChargeCurve.Evaluate(charge), 1f); // stays full if the slash is late
 			}
 
 			if (_isPulsing)
 			{
-				float progress = Mathf.Clamp01((Time.time - _pulseStartTime) / config.AttackRangePulseDuration);
+				float progress = Mathf.Clamp01((Time.time - _pulseStartTime) / _look.PulseDuration);
 				float strength = (1f - progress) * (1f - progress); // starts strong, settles slowly
 
-				ApplyPulse(1f + (config.AttackRangePulseBoost - 1f) * strength, 1f + config.AttackRangePulsePop * strength);
+				ApplyPulse(1f + (_look.PulseBoost - 1f) * strength, 1f + _look.PulsePop * strength);
 				if (!_isCharging) ApplyFill(1f, strength); // a new swing already started takes the fill over
 				if (progress >= 1f) _isPulsing = false;
 			}
@@ -190,6 +188,7 @@ namespace Game.GamePlay.Heroes
 			if (!visible) StopAnimations();
 		}
 
+		// No weapon, no look or a material that failed to load: no mesh, so Refresh keeps the cone hidden.
 		private void Rebuild(WeaponConfig weapon)
 		{
 			if (_mesh != null) Destroy(_mesh);
@@ -199,16 +198,21 @@ namespace Game.GamePlay.Heroes
 			_meshFilter.sharedMesh = null;
 			_fillMeshFilter.sharedMesh = null;
 
-			if (weapon != null)
+			_look = weapon != null ? weapon.RangeDisplay : null;
+			Material material = _look != null ? _assets.Get(_look.Material) : null;
+			_meshRenderer.sharedMaterial = material;
+			_fillMeshRenderer.sharedMaterial = material;
+
+			if (material != null)
 			{
-				GameFeelConfig config = GameFeelConfig.Instance;
-				_mesh = BuildCone(weapon.Range, weapon.ArcAngle, config.AttackRangeEdgeWidth, 0f, config.AttackRangeFillAlpha, config.AttackRangeEdgeAlpha);
+				_baseColor = material.HasProperty(BaseColorId) ? material.GetColor(BaseColorId) : Color.white;
+				_mesh = BuildCone(weapon.Range, weapon.ArcAngle, _look.EdgeWidth, 0f, _look.FillAlpha, _look.EdgeAlpha);
 				_meshFilter.sharedMesh = _mesh;
 
-				if (config.AttackRangeChargeAlpha > 0f || config.AttackRangeChargeEdgeAlpha > 0f)
+				if (_look.ChargeAlpha > 0f || _look.ChargeEdgeAlpha > 0f)
 				{
 					// Even strength from the hero to the rim, so it reads as a solid area filling up, with a brighter front.
-					_fillMesh = BuildCone(weapon.Range, weapon.ArcAngle, config.AttackRangeEdgeWidth, config.AttackRangeChargeAlpha, config.AttackRangeChargeAlpha, config.AttackRangeChargeEdgeAlpha);
+					_fillMesh = BuildCone(weapon.Range, weapon.ArcAngle, _look.EdgeWidth, _look.ChargeAlpha, _look.ChargeAlpha, _look.ChargeEdgeAlpha);
 					_fillMeshFilter.sharedMesh = _fillMesh;
 				}
 			}
@@ -217,14 +221,13 @@ namespace Game.GamePlay.Heroes
 			Refresh();
 		}
 
-		private static GameObject CreateLayer(string name, Transform parent, float height, Material material, out MeshFilter meshFilter, out MeshRenderer meshRenderer)
+		private static GameObject CreateLayer(string name, Transform parent, float height, out MeshFilter meshFilter, out MeshRenderer meshRenderer)
 		{
 			GameObject layer = new GameObject(name);
 			layer.transform.SetParent(parent, false);
 			layer.transform.localPosition = new Vector3(0f, height, 0f);
 			meshFilter = layer.AddComponent<MeshFilter>();
 			meshRenderer = layer.AddComponent<MeshRenderer>();
-			meshRenderer.sharedMaterial = material;
 			meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			meshRenderer.receiveShadows = false;
 			return layer;
