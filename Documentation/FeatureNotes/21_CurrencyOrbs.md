@@ -4,14 +4,13 @@
 When an enemy dies it bursts into 3 to 5 tiny blue orbs. They hop out in a ring, bounce, rest for under a second, then recoil, curve into the hero and are collected with a sparkle and a rising blip. Orbs carry no value yet: it is feedback only.
 
 ## 2. Why / issue fixed
-Deduced from the human's request, not confirmed word for word:
-- **Why:** a kill ended with the enemy flying away and nothing else. A drop that is then pulled to the hero gives the kill a follow-up and a small reward moment (drop, attract, gather).
-- **Issue fixed:** kills had no lasting reward feedback.
+- **Why (from the human):** to increase the feeling of killing an enemy.
+- **Issue fixed (deduced from that statement):** a kill ended with the enemy flying away and nothing else, so it lacked a satisfying payoff. A drop that is then pulled to the hero gives the kill a follow-up and a small reward moment (drop, attract, gather).
 
-> To be confirmed by the human.
+> The issue wording is deduced from the human's statement, to be confirmed.
 
 ## 3. Bottleneck
-Not given by the human. Deduced from the work: getting the look right from the gameplay camera. The first orbs were too small to read, then too big, green (read as health) and too present. It took three size and colour passes.
+Not given by the human. Deduced from the work, not from their statement: getting the look right from the gameplay camera. The first orbs were too small to read, then too big, green (read as health) and too present. It took three size and colour passes.
 
 > To be confirmed by the human.
 
@@ -23,9 +22,9 @@ Not given by the human. Deduced from the work: getting the look right from the g
 | Implementation | `4 min 00 s` (10:30:39 → 10:34:39) |
 | Tuning / testing | `5 min 13 s` (10:34:39 → 10:38:52, then 10:40:45 → 10:41:45) |
 | Asset generation / integration | included in implementation (no separate timestamp) |
-| **Total** | `11 min 11 s` |
+| **Total** | `8 min` (human-stated) |
 
-Real elapsed time from recorded timestamps. The last size pass (smaller, fainter orbs) has no end timestamp and is not counted. Waiting for the human's feedback between passes is not counted. Testing is two play-mode probe runs on a shared editor, with another session's play test waited out first.
+The total is the value stated by the human. The phase rows are the recorded timestamps, which sum to `11 min 11 s` and do not add up to the total: the stated total is the one used in the README. The last size pass (smaller, fainter orbs) has no end timestamp and is not counted. Waiting for the human's feedback between passes is not counted. Testing is two play-mode probe runs on a shared editor, with another session's play test waited out first.
 
 ## 5. Files changed
 - `CurrencyOrbView.cs`: new. One orb: phases Burst, Rest, Windup, Magnet, Vanish. Billboard, glow, ground shadow, trail.
@@ -104,8 +103,8 @@ A kill ended with nothing to collect. Now the dead enemy bursts into a few tiny 
 
 ## 14. README entry
 
-### Currency orbs — 11 min
-- **Implemented:** dead enemies now drop a few tiny blue orbs that bounce, rest a moment, then recoil and curve into the hero, with a sparkle and a pitch-rising blip on each pickup. Feedback only: orbs have no value yet. Details in [the feature note](Documentation/FeatureNotes/21_CurrencyOrbs.md).
-- **Time:** 11 min
+### Currency orbs — 8 min
+- **Implemented:** to increase the feeling of killing an enemy, dead enemies now drop a few tiny blue orbs that bounce, rest a moment, then recoil and curve into the hero, with a sparkle and a pitch-rising blip on each pickup. Feedback only: orbs have no value yet. Details in [the feature note](Documentation/FeatureNotes/21_CurrencyOrbs.md).
+- **Time:** 8 min
 - **Bottleneck:** not confirmed.
 - **Addressables:** the orb and sparkle prefabs in `VFX`, two generated sounds in `Audio`, all preloaded.
