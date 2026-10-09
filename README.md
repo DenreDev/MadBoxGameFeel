@@ -32,7 +32,9 @@ TO FILL
 | Critical strikes | 11 min |
 | Currency orbs | 8 min |
 | Enemy waves and bee types | 15 min |
-| **Total** | 179 min |
+| Wave counter | 7 min |
+| Combo counter | 9 min |
+| **Total** | 195 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -163,6 +165,18 @@ TO FILL
 - **Time:** 15 min
 - **Bottleneck:** placing the spawns around what the player actually sees on a tilted portrait camera (to be confirmed).
 - **Addressables:** the three bee prefabs are preloaded from a new `Enemies` group.
+
+### Wave counter — 7 min
+- **Implemented:** to explain to the player what is going on, a "WAVE n" badge now sits at the top of the screen and a big banner with a short fanfare announces each new wave. The number punches and a glow pulses on every change. Details in [the feature note](Documentation/FeatureNotes/23_WaveCounter.md).
+- **Time:** 7 min
+- **Bottleneck:** not confirmed.
+- **Addressables:** the generated stinger is preloaded from the `Audio` group.
+
+### Combo counter — 9 min
+- **Implemented:** to increase again the feeling of killing enemies in a survivor-like, kills in a row now build a combo counter with a time bar. Each kill punches the number, flares a glow and sparks and plays a rising bell, and tiers add colors and a slammed title. The combo breaks with a shaking fall when the time runs out or the hero is hit. Feedback only: it gives no reward yet. Details in [the feature note](Documentation/FeatureNotes/24_ComboCounter.md).
+- **Time:** 9 min
+- **Bottleneck:** not confirmed.
+- **Addressables:** three generated sounds preloaded from the `Audio` group.
 
 ## Feedback on the base project
 

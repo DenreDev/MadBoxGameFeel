@@ -92,6 +92,12 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  waveStartClip:
+    m_AssetGUID: 50c4402a884baa24c9c448f8ddccc2d7
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  waveStartVolume: 0.7
   currencyOrbsPerKill: {x: 3, y: 5}
   currencyDropHeight: 0.6
   currencyBurstSpeed: {x: 2.5, y: 4.5}

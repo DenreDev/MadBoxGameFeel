@@ -15,6 +15,8 @@ namespace Game.GamePlay.Enemies
 	// Where: just outside the screen, read from the camera so it follows the zoom. Sides are rarer than top and bottom (see PickScreenEdgePoint).
 	public class EnemyWaveSpawner
 	{
+		public event System.Action<int> OnWaveStarted; // wave number, counted from 1: raised as the wave opens, before its first burst
+
 		private EnemiesController _enemiesController;
 		private HeroController _heroController;
 		private GameFlowService _gameFlowService;
@@ -94,6 +96,7 @@ namespace Game.GamePlay.Enemies
 
 			EnemyWave wave = EnemiesConfig.Instance.Waves[waveIndex];
 			_nextSpawnTime = wave.SpawnInterval;
+			OnWaveStarted?.Invoke(waveIndex + 1);
 			Spawn(wave, wave.StartBurst);
 		}
 

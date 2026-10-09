@@ -6,7 +6,9 @@
         "GUID:2ba0b2bd275444a9aeb8fc997cf656fa",
         "GUID:0555d359d9c2448e8fcd38237492f38e",
         "GUID:6d8d31c569ff49f792685c49d5709837",
-        "Game.GameFlow"
+        "Game.GameFlow",
+        "Game.GameFeel",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

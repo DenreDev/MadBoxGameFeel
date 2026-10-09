@@ -16,6 +16,7 @@ namespace Game.GamePlay.Entities
 		private GameFlowService _gameFlowService;
 		private EnemyWaveSpawner _waveSpawner;
 
+		public EnemyWaveSpawner WaveSpawner => _waveSpawner;
 		public EnemiesController EnemiesController { get; private set; }
 		public HeroController HeroController { get; private set; }
 

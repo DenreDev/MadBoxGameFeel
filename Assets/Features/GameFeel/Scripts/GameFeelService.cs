@@ -39,6 +39,8 @@ namespace Game.GameFeel
 		private AudioClip _currencyCollectClip;
 		private AudioSource _currencyDropSource;
 		private AudioSource _currencyCollectSource;
+		private AudioClip _waveStartClip;
+		private AudioSource _waveStartSource;
 		private Transform _orbRoot; // every live orb is a child, so a round end can reach them all
 		private float _lastCollectTime = float.NegativeInfinity;
 		private int _collectChain;
@@ -72,6 +74,7 @@ namespace Game.GameFeel
 			_currencyCollectPrefab = await Load(config.CurrencyCollectPrefab);
 			_currencyDropClip = await Load(config.CurrencyDropClip);
 			_currencyCollectClip = await Load(config.CurrencyCollectClip);
+			_waveStartClip = await Load(config.WaveStartClip);
 			await LoadCurrencyOrb(config);
 			CreateAudioSources();
 			await LoadDamageNumber(config);
@@ -104,6 +107,8 @@ namespace Game.GameFeel
 			_collectChain = 0;
 			_currencyDropSource = _currencyCollectSource = null;
 			_currencyDropClip = _currencyCollectClip = null;
+			_waveStartClip = null;
+			_waveStartSource = null;
 			_currencyOrbPrefab = null;
 			_currencyCollectPrefab = null;
 			_sparkPrefab = null;
@@ -216,7 +221,7 @@ namespace Game.GameFeel
 		// Plain 2D sources on one hidden object: the sounds are interface-like feedback, not positional.
 		private void CreateAudioSources()
 		{
-			if (_whooshClip == null && _hitClip == null && _killClip == null && _currencyDropClip == null && _currencyCollectClip == null) return;
+			if (_whooshClip == null && _hitClip == null && _killClip == null && _currencyDropClip == null && _currencyCollectClip == null && _waveStartClip == null) return;
 
 			_audioHost = new GameObject("GameFeelAudio") { hideFlags = HideFlags.DontSave };
 
@@ -228,6 +233,7 @@ namespace Game.GameFeel
 			_killSource = CreateSource();
 			_currencyDropSource = CreateSource();
 			_currencyCollectSource = CreateSource();
+			_waveStartSource = CreateSource();
 		}
 
 		private AudioSource CreateSource()
@@ -236,6 +242,15 @@ namespace Game.GameFeel
 			source.playOnAwake = false;
 			source.spatialBlend = 0f;
 			return source;
+		}
+
+		// Stinger of the wave announcement. WaveCounterView calls it as the banner slams in.
+		public void PlayWaveStart()
+		{
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (config == null) return;
+
+			PlaySound(_waveStartSource, _waveStartClip, config.WaveStartVolume, 1f);
 		}
 
 		// A dead enemy bursts into currency orbs: they hop out around it, bounce, rest, then CurrencyOrbView calls them to CurrencyTarget.

@@ -61,6 +61,14 @@ namespace Game.GameFeel
 		[Tooltip("Addressable blip played when an orb reaches the hero, higher with each orb collected in a row (address Audio/CurrencyCollect, group Audio)")]
 		private AssetReferenceT<AudioClip> currencyCollectClip;
 
+		[Header("Wave counter content")]
+		[SerializeField]
+		[Tooltip("Addressable stinger played when a new wave is announced (address Audio/WaveStart, group Audio)")]
+		private AssetReferenceT<AudioClip> waveStartClip;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the wave stinger")]
+		private float waveStartVolume = 0.7f;
+
 		[Header("Currency orbs: drop")]
 		[SerializeField]
 		[Tooltip("Orbs dropped by one kill (x = fewest, y = most)")]
@@ -335,6 +343,8 @@ namespace Game.GameFeel
 		public AssetReferenceGameObject CurrencyCollectPrefab => currencyCollectPrefab;
 		public AssetReferenceT<AudioClip> CurrencyDropClip => currencyDropClip;
 		public AssetReferenceT<AudioClip> CurrencyCollectClip => currencyCollectClip;
+		public AssetReferenceT<AudioClip> WaveStartClip => waveStartClip;
+		public float WaveStartVolume => waveStartVolume;
 		public Vector2Int CurrencyOrbsPerKill => currencyOrbsPerKill;
 		public float CurrencyDropHeight => currencyDropHeight;
 		public Vector2 CurrencyBurstSpeed => currencyBurstSpeed;
