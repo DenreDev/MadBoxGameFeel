@@ -13,6 +13,7 @@ namespace Game.GameFeel
 	public class GameFeelService : IService
 	{
 		private const string CritNumberSuffix = "!";
+		private static readonly int[] PentatonicSemitones = { 0, 2, 4, 7, 9 }; // major pentatonic: any two notes of it sound good together
 
 		private readonly List<AsyncOperationHandle> _handles = new List<AsyncOperationHandle>();
 		private GameObject _sparkPrefab;
@@ -41,6 +42,12 @@ namespace Game.GameFeel
 		private AudioSource _currencyCollectSource;
 		private AudioClip _waveStartClip;
 		private AudioSource _waveStartSource;
+		private AudioClip _comboHitClip;
+		private AudioClip _comboMilestoneClip;
+		private AudioClip _comboBreakClip;
+		private AudioSource _comboHitSource; // the bell's pitch changes with every kill, so it keeps its own source
+		private AudioSource _comboStingSource; // milestone and break, always at the normal pitch
+		private int _comboHitSoundFrame = -1;
 		private Transform _orbRoot; // every live orb is a child, so a round end can reach them all
 		private float _lastCollectTime = float.NegativeInfinity;
 		private int _collectChain;
@@ -75,6 +82,9 @@ namespace Game.GameFeel
 			_currencyDropClip = await Load(config.CurrencyDropClip);
 			_currencyCollectClip = await Load(config.CurrencyCollectClip);
 			_waveStartClip = await Load(config.WaveStartClip);
+			_comboHitClip = await Load(config.ComboHitClip);
+			_comboMilestoneClip = await Load(config.ComboMilestoneClip);
+			_comboBreakClip = await Load(config.ComboBreakClip);
 			await LoadCurrencyOrb(config);
 			CreateAudioSources();
 			await LoadDamageNumber(config);
@@ -109,6 +119,8 @@ namespace Game.GameFeel
 			_currencyDropClip = _currencyCollectClip = null;
 			_waveStartClip = null;
 			_waveStartSource = null;
+			_comboHitClip = _comboMilestoneClip = _comboBreakClip = null;
+			_comboHitSource = _comboStingSource = null;
 			_currencyOrbPrefab = null;
 			_currencyCollectPrefab = null;
 			_sparkPrefab = null;
@@ -221,7 +233,8 @@ namespace Game.GameFeel
 		// Plain 2D sources on one hidden object: the sounds are interface-like feedback, not positional.
 		private void CreateAudioSources()
 		{
-			if (_whooshClip == null && _hitClip == null && _killClip == null && _currencyDropClip == null && _currencyCollectClip == null && _waveStartClip == null) return;
+			if (_whooshClip == null && _hitClip == null && _killClip == null && _currencyDropClip == null && _currencyCollectClip == null && _waveStartClip == null
+				&& _comboHitClip == null && _comboMilestoneClip == null && _comboBreakClip == null) return;
 
 			_audioHost = new GameObject("GameFeelAudio") { hideFlags = HideFlags.DontSave };
 
@@ -234,6 +247,8 @@ namespace Game.GameFeel
 			_currencyDropSource = CreateSource();
 			_currencyCollectSource = CreateSource();
 			_waveStartSource = CreateSource();
+			_comboHitSource = CreateSource();
+			_comboStingSource = CreateSource();
 		}
 
 		private AudioSource CreateSource()
@@ -251,6 +266,36 @@ namespace Game.GameFeel
 			if (config == null) return;
 
 			PlaySound(_waveStartSource, _waveStartClip, config.WaveStartVolume, 1f);
+		}
+
+		// Bell of a combo kill. Step 0 is the first kill that shows the combo, each next kill climbs one note of the pentatonic scale (up to ComboMaxSemitones).
+		// One bell per frame: a swing killing several enemies is one beat, not a chord.
+		public void PlayComboHit(int step)
+		{
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (config == null || _comboHitSoundFrame == Time.frameCount) return;
+
+			_comboHitSoundFrame = Time.frameCount;
+			step = Mathf.Max(0, step);
+			int semitones = Mathf.Min(config.ComboMaxSemitones, 12 * (step / PentatonicSemitones.Length) + PentatonicSemitones[step % PentatonicSemitones.Length]);
+			PlaySound(_comboHitSource, _comboHitClip, config.ComboHitVolume, Mathf.Pow(2f, semitones / 12f));
+		}
+
+		// Sparkle of a new combo tier.
+		public void PlayComboMilestone()
+		{
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (config == null) return;
+
+			PlaySound(_comboStingSource, _comboMilestoneClip, config.ComboMilestoneVolume, 1f);
+		}
+
+		public void PlayComboBreak()
+		{
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (config == null) return;
+
+			PlaySound(_comboStingSource, _comboBreakClip, config.ComboBreakVolume, 1f);
 		}
 
 		// A dead enemy bursts into currency orbs: they hop out around it, bounce, rest, then CurrencyOrbView calls them to CurrencyTarget.

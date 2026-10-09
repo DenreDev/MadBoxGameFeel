@@ -98,6 +98,25 @@ MonoBehaviour:
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   waveStartVolume: 0.7
+  comboHitClip:
+    m_AssetGUID: 1fbbadb13548c2f4ba3c490b13527bd1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  comboMilestoneClip:
+    m_AssetGUID: e579a54a6192ffb4db2a722b8e3e8a4d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  comboBreakClip:
+    m_AssetGUID: ef4fcb82f16fbca47b505f3864fed186
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  comboHitVolume: 0.5
+  comboMilestoneVolume: 0.8
+  comboBreakVolume: 0.7
+  comboMaxSemitones: 14
   currencyOrbsPerKill: {x: 3, y: 5}
   currencyDropHeight: 0.6
   currencyBurstSpeed: {x: 2.5, y: 4.5}
@@ -169,3 +188,7 @@ MonoBehaviour:
   startCameraDistance: 5
   startCameraPitch: 12
   cameraPitchSmoothTime: 0.6
+  crowdZoomStartCount: 12
+  crowdZoomFullCount: 24
+  crowdZoomFovIncrease: 12
+  crowdZoomSmoothTime: 1.5

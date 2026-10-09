@@ -69,6 +69,29 @@ namespace Game.GameFeel
 		[Tooltip("Volume of the wave stinger")]
 		private float waveStartVolume = 0.7f;
 
+		[Header("Combo counter content")]
+		[SerializeField]
+		[Tooltip("Addressable bell played on every kill of a combo, it climbs the scale with the combo (address Audio/ComboHit, group Audio)")]
+		private AssetReferenceT<AudioClip> comboHitClip;
+		[SerializeField]
+		[Tooltip("Addressable sparkle arpeggio played when the combo reaches a new tier (address Audio/ComboMilestone, group Audio)")]
+		private AssetReferenceT<AudioClip> comboMilestoneClip;
+		[SerializeField]
+		[Tooltip("Addressable falling sound played when the combo breaks (address Audio/ComboBreak, group Audio)")]
+		private AssetReferenceT<AudioClip> comboBreakClip;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the combo bell")]
+		private float comboHitVolume = 0.5f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the tier sparkle")]
+		private float comboMilestoneVolume = 0.8f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the break sound")]
+		private float comboBreakVolume = 0.7f;
+		[SerializeField, Min(0)]
+		[Tooltip("Highest the bell climbs above its normal pitch, in semitones (12 = one octave). It climbs a pentatonic scale, so it always sounds in tune")]
+		private int comboMaxSemitones = 14;
+
 		[Header("Currency orbs: drop")]
 		[SerializeField]
 		[Tooltip("Orbs dropped by one kill (x = fewest, y = most)")]
@@ -345,6 +368,13 @@ namespace Game.GameFeel
 		public AssetReferenceT<AudioClip> CurrencyCollectClip => currencyCollectClip;
 		public AssetReferenceT<AudioClip> WaveStartClip => waveStartClip;
 		public float WaveStartVolume => waveStartVolume;
+		public AssetReferenceT<AudioClip> ComboHitClip => comboHitClip;
+		public AssetReferenceT<AudioClip> ComboMilestoneClip => comboMilestoneClip;
+		public AssetReferenceT<AudioClip> ComboBreakClip => comboBreakClip;
+		public float ComboHitVolume => comboHitVolume;
+		public float ComboMilestoneVolume => comboMilestoneVolume;
+		public float ComboBreakVolume => comboBreakVolume;
+		public int ComboMaxSemitones => comboMaxSemitones;
 		public Vector2Int CurrencyOrbsPerKill => currencyOrbsPerKill;
 		public float CurrencyDropHeight => currencyDropHeight;
 		public Vector2 CurrencyBurstSpeed => currencyBurstSpeed;
