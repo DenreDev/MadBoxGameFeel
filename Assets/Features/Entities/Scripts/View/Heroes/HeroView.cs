@@ -59,6 +59,7 @@ namespace Game.GamePlay.Heroes
 			_weaponsService = ServicesLocator.Instance.GetService<WeaponsService>();
 			_gameFlowService = ServicesLocator.Instance.GetService<GameFlowService>();
 			_gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
+			if (_gameFeelService != null) _gameFeelService.CurrencyTarget = transform; // the currency orbs fly to the hero
 
 			_joystickInputService.OnStateChanged += OnJoystickStateChanged;
 			_heroController.OnStateChanged += OnHeroStateChanged;
@@ -155,6 +156,7 @@ namespace Game.GamePlay.Heroes
 		{
 			if (hitFeedback != null) hitFeedback.Play();
 			if (deathLaunch != null) deathLaunch.Play(DirectionAwayFromClosestEnemy());
+			if (_gameFeelService != null) _gameFeelService.ClearCurrency();
 		}
 
 		// The closest enemy is the one that landed the killing blow, so the hero is knocked away from it.

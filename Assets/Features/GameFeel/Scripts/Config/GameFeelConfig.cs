@@ -44,6 +44,89 @@ namespace Game.GameFeel
 		[Tooltip("Addressable heavier crunch played when the hero's sword kills an enemy (address Audio/KillImpact, group Audio)")]
 		private AssetReferenceT<AudioClip> killImpactClip;
 
+		[Header("Currency orbs content")]
+		[SerializeField]
+		[Tooltip("Addressable currency orb dropped by a dead enemy, a prefab with a CurrencyOrbView (address VFX/CurrencyOrb, group VFX). Its look is the prefab's: billboard, glow, shadow and trail")]
+		private AssetReferenceGameObject currencyOrbPrefab;
+		[SerializeField]
+		[Tooltip("Addressable spark burst played on the hero when an orb reaches him (address VFX/CurrencyCollect, group VFX)")]
+		private AssetReferenceGameObject currencyCollectPrefab;
+		[SerializeField]
+		[Tooltip("Addressable pop played when the orbs burst out of a dead enemy (address Audio/CurrencyDrop, group Audio)")]
+		private AssetReferenceT<AudioClip> currencyDropClip;
+		[SerializeField]
+		[Tooltip("Addressable blip played when an orb reaches the hero, higher with each orb collected in a row (address Audio/CurrencyCollect, group Audio)")]
+		private AssetReferenceT<AudioClip> currencyCollectClip;
+
+		[Header("Currency orbs: drop")]
+		[SerializeField]
+		[Tooltip("Orbs dropped by one kill (x = fewest, y = most)")]
+		private Vector2Int currencyOrbsPerKill = new Vector2Int(3, 5);
+		[SerializeField]
+		[Tooltip("Height above the enemy's feet where the orbs pop out, in world units")]
+		private float currencyDropHeight = 0.6f;
+		[SerializeField]
+		[Tooltip("Sideways speed of the burst (x = slowest, y = fastest), in units per second. Orbs are spread evenly around the enemy")]
+		private Vector2 currencyBurstSpeed = new Vector2(2.5f, 4.5f);
+		[SerializeField]
+		[Tooltip("Upward speed of the burst, in units per second. With the gravity it sets how high the orbs hop")]
+		private float currencyBurstUpSpeed = 6f;
+		[SerializeField]
+		[Tooltip("Gravity pulling the orbs down, in units per second squared")]
+		private float currencyGravity = 25f;
+		[SerializeField, Range(0f, 0.9f)]
+		[Tooltip("Share of its speed an orb keeps when it bounces on the floor (0 = lands dead, 0.5 = a couple of small hops)")]
+		private float currencyBounciness = 0.45f;
+		[SerializeField]
+		[Tooltip("Height of the orb's center above the floor when it rests, in world units")]
+		private float currencyRestHeight = 0.2f;
+
+		[Header("Currency orbs: attract")]
+		[SerializeField]
+		[Tooltip("Seconds an orb rests on the floor before it is called to the hero")]
+		private float currencyAttractDelay = 0.8f;
+		[SerializeField]
+		[Tooltip("Random extra rest, in seconds, so the orbs of one kill leave one after the other instead of as a block")]
+		private float currencyAttractDelayJitter = 0.35f;
+		[SerializeField]
+		[Tooltip("Seconds of the wind-up: the orb squashes and recoils away from the hero before it leaves")]
+		private float currencyWindupDuration = 0.18f;
+		[SerializeField]
+		[Tooltip("How far the orb recoils during the wind-up, in world units")]
+		private float currencyWindupDistance = 0.4f;
+		[SerializeField]
+		[Tooltip("How fast the orb gains speed toward the hero, in units per second squared")]
+		private float currencyAttractAcceleration = 45f;
+		[SerializeField]
+		[Tooltip("Top speed of an orb flying to the hero, in units per second. Keep it above the hero's move speed")]
+		private float currencyMaxSpeed = 20f;
+		[SerializeField]
+		[Tooltip("Sideways kick the orb leaves with, in units per second: 0 = a straight line, more = a wider curve into the hero")]
+		private float currencyAttractCurve = 3f;
+		[SerializeField]
+		[Tooltip("Height above the hero's feet where the orbs fly to and are collected, in world units")]
+		private float currencyTargetHeight = 1f;
+		[SerializeField]
+		[Tooltip("Distance to the hero at which an orb counts as collected, in world units")]
+		private float currencyCollectRadius = 0.5f;
+
+		[Header("Currency orbs: sound")]
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the pop when the orbs burst out")]
+		private float currencyDropVolume = 0.5f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Volume of the collect blip")]
+		private float currencyCollectVolume = 0.6f;
+		[SerializeField]
+		[Tooltip("Seconds after a collect during which the next one counts as part of the chain")]
+		private float currencyChainWindow = 0.4f;
+		[SerializeField]
+		[Tooltip("Pitch gained by the collect blip for each orb collected in the chain")]
+		private float currencyChainPitchStep = 0.05f;
+		[SerializeField]
+		[Tooltip("Highest pitch of the collect blip, whatever the chain")]
+		private float currencyMaxPitch = 1.6f;
+
 		[Header("Attack sounds")]
 		[SerializeField, Range(0f, 1f)]
 		[Tooltip("Volume of the swing whoosh")]
@@ -211,6 +294,31 @@ namespace Game.GameFeel
 		public float KillImpactVolume => killImpactVolume;
 		public float KillStreakPitchStep => killStreakPitchStep;
 		public float MaxKillPitch => maxKillPitch;
+		public AssetReferenceGameObject CurrencyOrbPrefab => currencyOrbPrefab;
+		public AssetReferenceGameObject CurrencyCollectPrefab => currencyCollectPrefab;
+		public AssetReferenceT<AudioClip> CurrencyDropClip => currencyDropClip;
+		public AssetReferenceT<AudioClip> CurrencyCollectClip => currencyCollectClip;
+		public Vector2Int CurrencyOrbsPerKill => currencyOrbsPerKill;
+		public float CurrencyDropHeight => currencyDropHeight;
+		public Vector2 CurrencyBurstSpeed => currencyBurstSpeed;
+		public float CurrencyBurstUpSpeed => currencyBurstUpSpeed;
+		public float CurrencyGravity => currencyGravity;
+		public float CurrencyBounciness => currencyBounciness;
+		public float CurrencyRestHeight => currencyRestHeight;
+		public float CurrencyAttractDelay => currencyAttractDelay;
+		public float CurrencyAttractDelayJitter => currencyAttractDelayJitter;
+		public float CurrencyWindupDuration => currencyWindupDuration;
+		public float CurrencyWindupDistance => currencyWindupDistance;
+		public float CurrencyAttractAcceleration => currencyAttractAcceleration;
+		public float CurrencyMaxSpeed => currencyMaxSpeed;
+		public float CurrencyAttractCurve => currencyAttractCurve;
+		public float CurrencyTargetHeight => currencyTargetHeight;
+		public float CurrencyCollectRadius => currencyCollectRadius;
+		public float CurrencyDropVolume => currencyDropVolume;
+		public float CurrencyCollectVolume => currencyCollectVolume;
+		public float CurrencyChainWindow => currencyChainWindow;
+		public float CurrencyChainPitchStep => currencyChainPitchStep;
+		public float CurrencyMaxPitch => currencyMaxPitch;
 		public AssetReferenceGameObject AttackWarningPrefab => attackWarningPrefab;
 		public AssetReferenceT<Material> AttackWarnMaterial => attackWarnMaterial;
 		public float AttackWarnBlinkRate => attackWarnBlinkRate;

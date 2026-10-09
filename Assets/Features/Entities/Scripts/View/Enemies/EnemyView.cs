@@ -85,6 +85,10 @@ namespace Game.GamePlay.Enemies
 			{
 				deathLaunch.Play(AwayFromHero());
 			}
+
+			// The orbs belong to the world, not to this enemy: they outlive it.
+			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
+			if (gameFeelService != null) gameFeelService.PlayCurrencyDrop(transform.position);
 			Destroy(gameObject, deathDuration);
 		}
 

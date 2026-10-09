@@ -29,7 +29,8 @@ TO FILL
 | Attack impact pass | 3 min |
 | Attack sounds | 7 min |
 | Critical strikes | 11 min |
-| **Total** | 181 min |
+| Currency orbs | 11 min |
+| **Total** | 192 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -150,3 +151,9 @@ TO FILL
 ## Comments
 
 TO FILL
+### Currency orbs — 11 min
+- **Implemented:** dead enemies now drop a few tiny blue orbs that bounce, rest a moment, then recoil and curve into the hero, with a sparkle and a pitch-rising blip on each pickup. Feedback only: orbs have no value yet. Details in [the feature note](Documentation/FeatureNotes/21_CurrencyOrbs.md).
+- **Time:** 11 min
+- **Bottleneck:** not confirmed.
+- **Addressables:** the orb and sparkle prefabs in `VFX`, two generated sounds in `Audio`, all preloaded.
+

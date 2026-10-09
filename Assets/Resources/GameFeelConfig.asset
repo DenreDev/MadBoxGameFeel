@@ -72,6 +72,47 @@ MonoBehaviour:
   killImpactVolume: 1
   killStreakPitchStep: 0.06
   maxKillPitch: 1.5
+  currencyOrbPrefab:
+    m_AssetGUID: c6fe26a3dbb808341b5cdfed6b0532b1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  currencyCollectPrefab:
+    m_AssetGUID: 9e1f585f51b375a4fae3b13f62587930
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  currencyDropClip:
+    m_AssetGUID: d8eded8751137dd4fb77fb0b50a51093
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  currencyCollectClip:
+    m_AssetGUID: 8c077115e8d6f5b409fc7b8367e4803b
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  currencyOrbsPerKill: {x: 3, y: 5}
+  currencyDropHeight: 0.6
+  currencyBurstSpeed: {x: 2.5, y: 4.5}
+  currencyBurstUpSpeed: 6
+  currencyGravity: 25
+  currencyBounciness: 0.45
+  currencyRestHeight: 0.2
+  currencyAttractDelay: 0.8
+  currencyAttractDelayJitter: 0.35
+  currencyWindupDuration: 0.18
+  currencyWindupDistance: 0.4
+  currencyAttractAcceleration: 45
+  currencyMaxSpeed: 20
+  currencyAttractCurve: 3
+  currencyTargetHeight: 1
+  currencyCollectRadius: 0.5
+  currencyDropVolume: 0.5
+  currencyCollectVolume: 0.6
+  currencyChainWindow: 0.4
+  currencyChainPitchStep: 0.05
+  currencyMaxPitch: 1.6
   attackWarnBlinkRate: 6
   attackWarnStartScale: 0.3
   stepDistance: 1.2

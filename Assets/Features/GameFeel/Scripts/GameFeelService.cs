@@ -33,7 +33,19 @@ namespace Game.GameFeel
 		private AudioSource _killSource;
 		private int _hitSoundFrame = -1;
 		private int _killSoundFrame = -1;
+		private CurrencyOrbView _currencyOrbPrefab;
+		private GameObject _currencyCollectPrefab;
+		private AudioClip _currencyDropClip;
+		private AudioClip _currencyCollectClip;
+		private AudioSource _currencyDropSource;
+		private AudioSource _currencyCollectSource;
+		private Transform _orbRoot; // every live orb is a child, so a round end can reach them all
+		private float _lastCollectTime = float.NegativeInfinity;
+		private int _collectChain;
+		private int _collectSoundFrame = -1;
 
+		// Where the currency orbs fly to (the hero). Set by the hero's view, null while there is nobody to reach.
+		public Transform CurrencyTarget { get; set; }
 		public Material FlashMaterial { get; private set; }
 		public Material AttackWarnMaterial { get; private set; }
 
@@ -55,6 +67,10 @@ namespace Game.GameFeel
 			_whooshClip = await Load(config.SwordWhooshClip);
 			_hitClip = await Load(config.HitImpactClip);
 			_killClip = await Load(config.KillImpactClip);
+			_currencyCollectPrefab = await Load(config.CurrencyCollectPrefab);
+			_currencyDropClip = await Load(config.CurrencyDropClip);
+			_currencyCollectClip = await Load(config.CurrencyCollectClip);
+			await LoadCurrencyOrb(config);
 			CreateAudioSources();
 			await LoadDamageNumber(config);
 
@@ -80,6 +96,14 @@ namespace Game.GameFeel
 			_audioHost = null;
 			_whooshSource = _hitSource = _killSource = null;
 			_whooshClip = _hitClip = _killClip = null;
+			if (_orbRoot != null) Object.Destroy(_orbRoot.gameObject);
+			_orbRoot = null;
+			CurrencyTarget = null;
+			_collectChain = 0;
+			_currencyDropSource = _currencyCollectSource = null;
+			_currencyDropClip = _currencyCollectClip = null;
+			_currencyOrbPrefab = null;
+			_currencyCollectPrefab = null;
 			_sparkPrefab = null;
 			_spawnPuffPrefab = null;
 			_stepPuffPrefab = null;
@@ -189,7 +213,7 @@ namespace Game.GameFeel
 		// Plain 2D sources on one hidden object: the sounds are interface-like feedback, not positional.
 		private void CreateAudioSources()
 		{
-			if (_whooshClip == null && _hitClip == null && _killClip == null) return;
+			if (_whooshClip == null && _hitClip == null && _killClip == null && _currencyDropClip == null && _currencyCollectClip == null) return;
 
 			_audioHost = new GameObject("GameFeelAudio") { hideFlags = HideFlags.DontSave };
 
@@ -199,6 +223,8 @@ namespace Game.GameFeel
 			_whooshSource = CreateSource();
 			_hitSource = CreateSource();
 			_killSource = CreateSource();
+			_currencyDropSource = CreateSource();
+			_currencyCollectSource = CreateSource();
 		}
 
 		private AudioSource CreateSource()
@@ -207,6 +233,59 @@ namespace Game.GameFeel
 			source.playOnAwake = false;
 			source.spatialBlend = 0f;
 			return source;
+		}
+
+		// A dead enemy bursts into currency orbs: they hop out around it, bounce, rest, then CurrencyOrbView calls them to CurrencyTarget.
+		// Nothing is dropped without a target or after a failed load: the kill just has no orbs.
+		public void PlayCurrencyDrop(Vector3 position)
+		{
+			if (_currencyOrbPrefab == null || CurrencyTarget == null) return;
+
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (_orbRoot == null) _orbRoot = new GameObject("CurrencyOrbs").transform;
+
+			int count = UnityEngine.Random.Range(config.CurrencyOrbsPerKill.x, config.CurrencyOrbsPerKill.y + 1);
+			float firstAngle = UnityEngine.Random.value * 360f;
+			Vector3 spawnPosition = position + Vector3.up * config.CurrencyDropHeight;
+
+			for (int i = 0; i < count; i++)
+			{
+				// Evenly spread around the enemy with a little jitter, so the burst reads as a ring, not a clump.
+				float angle = (firstAngle + (i + UnityEngine.Random.Range(-0.2f, 0.2f)) * 360f / count) * Mathf.Deg2Rad;
+				float speed = UnityEngine.Random.Range(config.CurrencyBurstSpeed.x, config.CurrencyBurstSpeed.y);
+				Vector3 velocity = new Vector3(Mathf.Cos(angle) * speed, config.CurrencyBurstUpSpeed * UnityEngine.Random.Range(0.8f, 1.2f), Mathf.Sin(angle) * speed);
+
+				CurrencyOrbView orb = Object.Instantiate(_currencyOrbPrefab, spawnPosition, Quaternion.identity, _orbRoot);
+				orb.Launch(this, velocity, position.y);
+			}
+
+			PlaySound(_currencyDropSource, _currencyDropClip, config.CurrencyDropVolume, UnityEngine.Random.Range(0.95f, 1.05f));
+		}
+
+		// An orb reached the hero: sparkle burst at the contact point and a blip that climbs in pitch with each orb of the chain.
+		// One blip per frame, so orbs arriving together do not stack into a louder sound.
+		public void PlayCurrencyCollected(Vector3 position)
+		{
+			GameFeelConfig config = GameFeelConfig.Instance;
+			if (_currencyCollectPrefab != null) Object.Instantiate(_currencyCollectPrefab, position, Quaternion.identity);
+
+			float now = Time.unscaledTime;
+			_collectChain = now - _lastCollectTime <= config.CurrencyChainWindow ? _collectChain + 1 : 0;
+			_lastCollectTime = now;
+
+			if (_collectSoundFrame == Time.frameCount) return;
+
+			_collectSoundFrame = Time.frameCount;
+			float pitch = Mathf.Min(config.CurrencyMaxPitch, 1f + _collectChain * config.CurrencyChainPitchStep);
+			PlaySound(_currencyCollectSource, _currencyCollectClip, config.CurrencyCollectVolume, pitch);
+		}
+
+		// The hero died: orbs still on the floor or in flight shrink away instead of waiting for a hero who is gone.
+		public void ClearCurrency()
+		{
+			if (_orbRoot == null) return;
+
+			foreach (CurrencyOrbView orb in _orbRoot.GetComponentsInChildren<CurrencyOrbView>()) orb.Vanish();
 		}
 
 		public void PlaySpawnPuff(Vector3 position)
@@ -264,6 +343,17 @@ namespace Game.GameFeel
 			number.enableRightText = isCritical;
 			number.rightText = isCritical ? CritNumberSuffix : "";
 			number.UpdateText();
+		}
+
+		private async UniTask LoadCurrencyOrb(GameFeelConfig config)
+		{
+			GameObject prefab = await Load(config.CurrencyOrbPrefab);
+			if (prefab == null) return;
+
+			if (!prefab.TryGetComponent(out _currencyOrbPrefab))
+			{
+				Debug.LogWarning("Currency orb prefab has no CurrencyOrbView component. Currency orbs are disabled.");
+			}
 		}
 
 		// The prefab is only the template: third-party package instantiates and pools the numbers from it.
