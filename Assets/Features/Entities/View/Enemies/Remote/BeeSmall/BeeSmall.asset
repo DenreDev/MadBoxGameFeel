@@ -14,8 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: bee_small
   initialHealth: 25
-  speed: 15
-  attackCooldown: 2
-  attackDamage: 5
-  attackRange: 1.5
-  prefab: {fileID: 3790887112881915835, guid: c605a87b10fa34814b06ea7aa5178cd1, type: 3}
+  speed: 7
+  attackCooldown: 0
+  attackDamage: 3
+  attackRange: 1
+  attackWindupDuration: 0
+  attackDuration: 0
+  lungeDistance: 0
+  explodesOnContact: 1
+  prefab:
+    m_AssetGUID: c605a87b10fa34814b06ea7aa5178cd1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

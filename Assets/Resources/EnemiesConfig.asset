@@ -12,9 +12,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f5f18e0fed3e4745b44e82601378a56, type: 3}
   m_Name: EnemiesConfig
   m_EditorClassIdentifier: 
-  spawnInterval: 1.2
+  waves:
+  - duration: 12
+    startBurst: 3
+    spawnInterval: 1.2
+    groupSize: 1
+    maxAlive: 6
+    enemies:
+    - enemy: {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
+      weight: 1
+  - duration: 18
+    startBurst: 4
+    spawnInterval: 1.0
+    groupSize: 2
+    maxAlive: 10
+    enemies:
+    - enemy: {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
+      weight: 3
+    - enemy: {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}
+      weight: 1
+  - duration: 25
+    startBurst: 5
+    spawnInterval: 0.9
+    groupSize: 2
+    maxAlive: 14
+    enemies:
+    - enemy: {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
+      weight: 3
+    - enemy: {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}
+      weight: 2
+    - enemy: {fileID: 11400000, guid: 550201fa841244b37ab7912b243a2e6a, type: 2}
+      weight: 0.5
+  - duration: 30
+    startBurst: 6
+    spawnInterval: 0.8
+    groupSize: 3
+    maxAlive: 20
+    enemies:
+    - enemy: {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
+      weight: 3
+    - enemy: {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}
+      weight: 2
+    - enemy: {fileID: 11400000, guid: 550201fa841244b37ab7912b243a2e6a, type: 2}
+      weight: 0.6
+  - duration: 30
+    startBurst: 6
+    spawnInterval: 0.6
+    groupSize: 3
+    maxAlive: 28
+    enemies:
+    - enemy: {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
+      weight: 3
+    - enemy: {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}
+      weight: 3
+    - enemy: {fileID: 11400000, guid: 550201fa841244b37ab7912b243a2e6a, type: 2}
+      weight: 0.8
+  roundStartDelay: 1
+  offscreenMargin: 2
+  topEdgeWeight: 5
+  bottomEdgeWeight: 3
+  sideEdgeWeight: 2
+  groupSpread: 1.2
   spawnRadius: 10
-  maxEnemies: 30
   enemies:
   - {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
   - {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}

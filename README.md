@@ -31,7 +31,8 @@ TO FILL
 | Attack cone and range display | 2 min |
 | Critical strikes | 11 min |
 | Currency orbs | 8 min |
-| **Total** | 164 min |
+| Enemy waves and bee types | 15 min |
+| **Total** | 179 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -156,6 +157,12 @@ TO FILL
 - **Time:** 8 min
 - **Bottleneck:** not confirmed.
 - **Addressables:** the orb and sparkle prefabs in `VFX`, two generated sounds in `Audio`, all preloaded.
+
+### Enemy waves and bee types — 15 min
+- **Implemented:** the game felt empty and enemies were too easy to dodge. Enemies now come in waves that start one second after the tap and ramp up, from just outside the screen and rarely from the close portrait sides. Small bees are fast kamikazes, normal bees attack sooner and lunge so they actually land hits, and strong bees are huge, slow tanks. The camera zooms out when the crowd grows, and enemy views are pooled. Details in [the feature note](Documentation/FeatureNotes/22_EnemyWaves.md).
+- **Time:** 15 min
+- **Bottleneck:** placing the spawns around what the player actually sees on a tilted portrait camera (to be confirmed).
+- **Addressables:** the three bee prefabs are preloaded from a new `Enemies` group.
 
 ## Feedback on the base project
 

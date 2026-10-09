@@ -304,6 +304,20 @@ namespace Game.GameFeel
 		[Tooltip("Seconds the camera takes to tilt between the start pitch and the gameplay pitch")]
 		private float cameraPitchSmoothTime = 0.6f;
 
+		[Header("Crowd zoom (the camera widens its view when many enemies are alive)")]
+		[SerializeField]
+		[Tooltip("Alive enemies at which the camera starts to zoom out")]
+		private int crowdZoomStartCount = 12;
+		[SerializeField]
+		[Tooltip("Alive enemies at which the zoom out is complete")]
+		private int crowdZoomFullCount = 24;
+		[SerializeField]
+		[Tooltip("Degrees added to the camera's field of view at full zoom out. 0 disables the crowd zoom")]
+		private float crowdZoomFovIncrease = 12f;
+		[SerializeField]
+		[Tooltip("Seconds the field of view takes to follow the crowd size: slow, so the camera breathes instead of pumping with each kill")]
+		private float crowdZoomSmoothTime = 1.5f;
+
 		public AssetReferenceGameObject HitSparkPrefab => hitSparkPrefab;
 		public AssetReferenceT<Material> HitFlashMaterial => hitFlashMaterial;
 		public AssetReferenceGameObject SpawnPuffPrefab => spawnPuffPrefab;
@@ -391,5 +405,9 @@ namespace Game.GameFeel
 		public float StartCameraDistance => startCameraDistance;
 		public float StartCameraPitch => startCameraPitch;
 		public float CameraPitchSmoothTime => cameraPitchSmoothTime;
+		public int CrowdZoomStartCount => crowdZoomStartCount;
+		public int CrowdZoomFullCount => crowdZoomFullCount;
+		public float CrowdZoomFovIncrease => crowdZoomFovIncrease;
+		public float CrowdZoomSmoothTime => crowdZoomSmoothTime;
 	}
 }

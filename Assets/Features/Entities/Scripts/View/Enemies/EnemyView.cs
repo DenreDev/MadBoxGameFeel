@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Game.GamePlay.Enemies
 {
+	// Pooled by EnemiesContainerView: Appear() is called on every spawn, also on an instance that already lived and died.
 	public class EnemyView : MonoBehaviour
 	{
 		private static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -16,7 +17,7 @@ namespace Game.GamePlay.Enemies
 
 		[SerializeField] private Animator animator;
 		[SerializeField] private float rotationSpeed = 10f;
-		[SerializeField, Tooltip("Seconds the death animation plays before the enemy is destroyed")]
+		[SerializeField, Tooltip("Seconds the death animation plays before the enemy goes back to the pool")]
 		private float deathDuration = 1.5f;
 		[SerializeField, Tooltip("Screen-space height above the enemy pivot where the health bar floats")]
 		private float healthBarHeight = 1f;
@@ -30,9 +31,11 @@ namespace Game.GamePlay.Enemies
 		private Vector3 _lastPosition;
 		private bool _isDying;
 
+		public EnemyConfig Config { get; private set; } // which enemy this instance shows, so it goes back to the right pool
+		public float DeathDuration => deathDuration;
+
 		private void Start()
 		{
-			_lastPosition = transform.position;
 			ServicesLocator.Instance.OnAllServicesInitialized += OnServicesInitialized;
 		}
 
@@ -41,8 +44,22 @@ namespace Game.GamePlay.Enemies
 			_heroController = ServicesLocator.Instance.GetService<EntitiesService>().HeroController;
 		}
 
-		public void PlaySpawn()
+		// Spawn, fresh or from the pool: undo whatever the previous life left (death launch, flash, telegraph), then pop in.
+		// The Animator needs no reset: deactivating the object in the pool already sent it back to its default state.
+		public void Appear(EnemyConfig config, HealthBarService healthBarService, int health, int maxHealth)
 		{
+			Config = config;
+			_isDying = false;
+			_lastPosition = transform.position;
+
+			if (hitFeedback != null) hitFeedback.Stop();
+			if (deathLaunch != null) deathLaunch.Restore();
+			if (attackTelegraph != null) attackTelegraph.End();
+			FaceHero(instantly: true);
+
+			if (_healthBar == null) _healthBar = healthBarService.Create(transform, healthBarHeight, HealthBarTeam.Enemy);
+			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
+
 			if (spawnFeedback != null) spawnFeedback.Play();
 		}
 
@@ -59,12 +76,6 @@ namespace Game.GamePlay.Enemies
 			if (animator != null) animator.SetTrigger(AttackHash);
 		}
 
-		public void CreateHealthBar(HealthBarService healthBarService, int health, int maxHealth)
-		{
-			_healthBar = healthBarService.Create(transform, healthBarHeight, HealthBarTeam.Enemy);
-			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
-		}
-
 		public void PlayHit(int damage, int health, int maxHealth, bool isCritical)
 		{
 			if (animator != null) animator.SetTrigger(HitHash);
@@ -72,13 +83,10 @@ namespace Game.GamePlay.Enemies
 			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
 
-		// Plays the death animation while the model is knocked away from the hero, then destroys the enemy.
+		// Plays the death animation while the model is knocked away from the hero. The container releases it after DeathDuration.
 		public void PlayDeath(int damage, bool isCritical)
 		{
-			_isDying = true;
-			if (spawnFeedback != null) spawnFeedback.Finish();
-			if (attackTelegraph != null) attackTelegraph.End();
-			if (_healthBar != null) _healthBar.Hide();
+			StopForDeath();
 			if (animator != null) animator.SetTrigger(DieHash);
 			if (hitFeedback != null) hitFeedback.Play(damage, isKillingBlow: true, isCritical: isCritical);
 			if (deathLaunch != null)
@@ -89,7 +97,27 @@ namespace Game.GamePlay.Enemies
 			// The orbs belong to the world, not to this enemy: they outlive it.
 			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
 			if (gameFeelService != null) gameFeelService.PlayCurrencyDrop(transform.position);
-			Destroy(gameObject, deathDuration);
+		}
+
+		// Kamikaze hit: the body bursts in a puff and a spark against the hero. No number, no orbs: the player did not kill it.
+		// The container releases it right away.
+		public void PlayExplode()
+		{
+			StopForDeath();
+
+			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();
+			if (gameFeelService == null) return;
+
+			gameFeelService.PlaySpawnPuff(transform.position);
+			gameFeelService.PlayHitSpark(transform.position + Vector3.up * 0.5f);
+		}
+
+		private void StopForDeath()
+		{
+			_isDying = true;
+			if (spawnFeedback != null) spawnFeedback.Finish();
+			if (attackTelegraph != null) attackTelegraph.End();
+			if (_healthBar != null) _healthBar.Hide();
 		}
 
 		private Vector3 AwayFromHero()
@@ -104,14 +132,19 @@ namespace Game.GamePlay.Enemies
 			if (_isDying) return;
 			if (_heroController == null || _heroController.CurrentState.IsDead) return;
 
-			Vector3 heroPosition = _heroController.CurrentState.Position;
-			Vector3 direction = (heroPosition - transform.position).normalized;
+			FaceHero(instantly: false);
+		}
 
-			if (direction.sqrMagnitude > 0.01f)
-			{
-				Quaternion targetRotation = Quaternion.LookRotation(direction);
-				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-			}
+		private void FaceHero(bool instantly)
+		{
+			if (_heroController == null) return;
+
+			Vector3 direction = _heroController.CurrentState.Position - transform.position;
+			direction.y = 0f;
+			if (direction.sqrMagnitude <= 0.01f) return;
+
+			Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
+			transform.rotation = instantly ? targetRotation : Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 		}
 
 		// Movement is driven by the controller, so the view derives its speed from the actual displacement.
@@ -126,7 +159,7 @@ namespace Game.GamePlay.Enemies
 
 		private void OnDestroy()
 		{
-			ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
+			if (ServicesLocator.Instance != null) ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
 		}
 	}
 }

@@ -8,8 +8,12 @@ using UnityEngine;
 
 namespace Game.GamePlay.Enemies
 {
+	// Owns the living enemies and their behaviour (chase, attack, take damage). EnemyWaveSpawner decides when, what and where they spawn.
 	public class EnemiesController
 	{
+		// Lunging enemies stop this far from where the hero stood, so the bodies do not overlap.
+		private const float LungeStopDistance = 0.8f;
+
 		private HeroController _heroController;
 		private GameFlowService _gameFlowService;
 
@@ -22,6 +26,7 @@ namespace Game.GamePlay.Enemies
 		public event Action<int> OnEnemyAttacked; // the strike ended and the hero was still in range: he took the hit
 		public event Action<int, int, bool> OnEnemyDamaged; // enemy id, damage dealt, was it a critical strike: hit by the hero and survived
 		public event Action<int, int, bool> OnEnemyKilled; // enemy id, damage dealt by the killing blow, was it a critical strike: raised just before OnEnemyRemoved
+		public event Action<int> OnEnemyExploded; // a kamikaze enemy reached the hero and hit him: it dies without being killed, raised just before OnEnemyRemoved
 
 		// State
 		private Dictionary<int, EnemyState> _enemies;
@@ -39,7 +44,6 @@ namespace Game.GamePlay.Enemies
 			_nextEnemyId = 0;
 			_cancellationTokenSource = new CancellationTokenSource();
 
-			SpawnLoop(_cancellationTokenSource.Token).Forget();
 			UpdateLoop(_cancellationTokenSource.Token).Forget();
 
 			return UniTask.FromResult(true);
@@ -52,6 +56,15 @@ namespace Game.GamePlay.Enemies
 			_enemies.Clear();
 
 			return UniTask.CompletedTask;
+		}
+
+		public void SpawnEnemy(EnemyConfig enemyConfig, Vector3 position)
+		{
+			int enemyId = _nextEnemyId++;
+			EnemyState newEnemy = new EnemyState(enemyId, position, enemyConfig.InitialHealth, enemyConfig);
+
+			_enemies[enemyId] = newEnemy;
+			OnEnemySpawned?.Invoke(newEnemy);
 		}
 
 		public void ClearAllEnemies()
@@ -93,50 +106,6 @@ namespace Game.GamePlay.Enemies
 			}
 		}
 
-		private async UniTaskVoid SpawnLoop(CancellationToken cancellationToken)
-		{
-			while (!cancellationToken.IsCancellationRequested)
-			{
-				// Nothing spawns outside of gameplay. Polling each frame keeps the first bee immediate when a round starts.
-				if (!_gameFlowService.IsPlaying)
-				{
-					await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
-					continue;
-				}
-
-				if (!_heroController.CurrentState.IsDead && _enemies.Count < EnemiesConfig.Instance.MaxEnemies)
-				{
-					SpawnEnemy();
-				}
-
-				await UniTask.Delay(TimeSpan.FromSeconds(EnemiesConfig.Instance.SpawnInterval), cancellationToken: cancellationToken);
-			}
-		}
-
-		private void SpawnEnemy()
-		{
-			if (EnemiesConfig.Instance.Enemies.Count == 0) return;
-
-			Vector3 playerPosition = _heroController.CurrentState.Position;
-			Vector3 spawnPosition = GetRandomPositionAroundPlayer(playerPosition);
-
-			int enemyId = _nextEnemyId++;
-			EnemyConfig enemyConfig = EnemiesConfig.Instance.Enemies[0];
-			EnemyState newEnemy = new EnemyState(enemyId, spawnPosition, enemyConfig.InitialHealth, enemyConfig);
-
-			_enemies[enemyId] = newEnemy;
-			OnEnemySpawned?.Invoke(newEnemy);
-		}
-
-		private Vector3 GetRandomPositionAroundPlayer(Vector3 playerPosition)
-		{
-			float angle = UnityEngine.Random.Range(0f, 360f) * Mathf.Deg2Rad;
-			float x = playerPosition.x + EnemiesConfig.Instance.SpawnRadius * Mathf.Cos(angle);
-			float z = playerPosition.z + EnemiesConfig.Instance.SpawnRadius * Mathf.Sin(angle);
-
-			return new Vector3(x, playerPosition.y, z);
-		}
-
 		private async UniTaskVoid UpdateLoop(CancellationToken cancellationToken)
 		{
 			while (!cancellationToken.IsCancellationRequested)
@@ -160,8 +129,9 @@ namespace Game.GamePlay.Enemies
 			}
 		}
 
-		// Chase until in range, then Windup (telegraph) -> Strike (attack animation) -> hit if the hero is still in range.
-		// Once the windup starts the enemy is committed: it does not move, so the hero can dodge by walking out of range.
+		// Chase until in range, then Windup (telegraph) -> Strike (attack animation, with a lunge) -> hit if the hero is still in range.
+		// Once the windup starts the enemy is committed: it stops chasing, so the hero can dodge by walking out of range.
+		// A kamikaze enemy skips all that: it hits the moment it reaches its range and dies.
 		private void UpdateEnemy(EnemyState enemy)
 		{
 			switch (enemy.AttackPhase)
@@ -171,14 +141,15 @@ namespace Game.GamePlay.Enemies
 					break;
 				case EnemyAttackPhase.Strike:
 					if (Time.time >= enemy.PhaseEndTime) FinishStrike(enemy);
+					else Lunge(enemy);
 					break;
 				default:
-					ChaseOrStartWindup(enemy);
+					ChaseOrAttack(enemy);
 					break;
 			}
 		}
 
-		private void ChaseOrStartWindup(EnemyState enemy)
+		private void ChaseOrAttack(EnemyState enemy)
 		{
 			Vector3 heroPosition = _heroController.CurrentState.Position;
 			float distanceToHero = Vector3.Distance(enemy.Position, heroPosition);
@@ -192,6 +163,10 @@ namespace Game.GamePlay.Enemies
 				_enemies[enemy.Id] = updatedEnemy;
 				OnEnemyPositionChanged?.Invoke(updatedEnemy);
 			}
+			else if (enemy.Config.ExplodesOnContact)
+			{
+				Explode(enemy);
+			}
 			else if (Time.time - enemy.LastAttackTime >= enemy.Config.AttackCooldown)
 			{
 				_enemies[enemy.Id] = enemy.WithPhase(EnemyAttackPhase.Windup, Time.time + enemy.Config.AttackWindupDuration);
@@ -199,10 +174,27 @@ namespace Game.GamePlay.Enemies
 			}
 		}
 
+		// The lunge aims at where the hero stands when the strike starts, not where he goes next: stepping aside still dodges it.
 		private void StartStrike(EnemyState enemy)
 		{
-			_enemies[enemy.Id] = enemy.WithPhase(EnemyAttackPhase.Strike, Time.time + enemy.Config.AttackDuration);
+			Vector3 toHero = _heroController.CurrentState.Position - enemy.Position;
+			toHero.y = 0f;
+			float lunge = Mathf.Clamp(toHero.magnitude - LungeStopDistance, 0f, enemy.Config.LungeDistance);
+			Vector3 lungeTarget = enemy.Position + toHero.normalized * lunge;
+
+			_enemies[enemy.Id] = enemy.WithStrike(Time.time + enemy.Config.AttackDuration, lungeTarget);
 			OnEnemyStrikeStarted?.Invoke(enemy.Id);
+		}
+
+		// The dash takes the first half of the attack animation: a quick jump forward, then the bite.
+		private void Lunge(EnemyState enemy)
+		{
+			if (enemy.Position == enemy.LungeTarget) return;
+
+			float lungeSpeed = enemy.Config.LungeDistance / Mathf.Max(0.01f, enemy.Config.AttackDuration * 0.5f);
+			EnemyState updatedEnemy = enemy.WithPosition(Vector3.MoveTowards(enemy.Position, enemy.LungeTarget, lungeSpeed * Time.deltaTime));
+			_enemies[enemy.Id] = updatedEnemy;
+			OnEnemyPositionChanged?.Invoke(updatedEnemy);
 		}
 
 		// The end of the attack animation is the moment of impact: the hero is hit only if he is still in range.
@@ -215,6 +207,15 @@ namespace Game.GamePlay.Enemies
 
 			_heroController.TakeHit(enemy.Config.AttackDamage);
 			OnEnemyAttacked?.Invoke(enemy.Id);
+		}
+
+		// Kamikaze: the hit and the death are the same moment. No OnEnemyKilled, so the hero gets no kill feedback nor reward for it.
+		private void Explode(EnemyState enemy)
+		{
+			_heroController.TakeHit(enemy.Config.AttackDamage);
+			OnEnemyAttacked?.Invoke(enemy.Id);
+			OnEnemyExploded?.Invoke(enemy.Id);
+			RemoveEnemy(enemy.Id);
 		}
 	}
 }

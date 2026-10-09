@@ -60,6 +60,15 @@ namespace Game.GameFeel
 			if (!isKillingBlow && awayDirection.sqrMagnitude > 0.0001f) _recoilDirection = awayDirection.normalized;
 		}
 
+		// Cuts the reaction in progress and puts the model back as the prefab had it (a pooled enemy coming back to life).
+		public void Stop()
+		{
+			if (_flashing) ClearFlash();
+			ClearRecoil();
+			visual.localScale = _baseScale;
+			enabled = false;
+		}
+
 		// LateUpdate so the Animator can never overwrite the squash.
 		private void LateUpdate()
 		{
