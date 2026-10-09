@@ -494,6 +494,7 @@ GameObject:
   - component: {fileID: 2652304111055867068}
   - component: {fileID: 4310347511843957529}
   - component: {fileID: 5220319081674580048}
+  - component: {fileID: 7358201946153820741}
   m_Layer: 0
   m_Name: Alice
   m_TagString: Untagged
@@ -592,6 +593,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 040ff60c2b55dc6449bae4182464cf74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7358201946153820741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206923099687242354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d4f2b7e1a3c4586b0e7c5a8d2f61e93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3512741108777884559

@@ -48,6 +48,7 @@ namespace Game.GameFeel
 		public Transform CurrencyTarget { get; set; }
 		public Material FlashMaterial { get; private set; }
 		public Material AttackWarnMaterial { get; private set; }
+		public Material AttackRangeMaterial { get; private set; }
 
 		public Type[] GetDependencies() => null;
 
@@ -64,6 +65,7 @@ namespace Game.GameFeel
 			_heroRingPrefab = await Load(config.HeroRingPrefab);
 			_attackWarningPrefab = await Load(config.AttackWarningPrefab);
 			AttackWarnMaterial = await Load(config.AttackWarnMaterial);
+			AttackRangeMaterial = await Load(config.AttackRangeMaterial);
 			_whooshClip = await Load(config.SwordWhooshClip);
 			_hitClip = await Load(config.HitImpactClip);
 			_killClip = await Load(config.KillImpactClip);
@@ -112,6 +114,7 @@ namespace Game.GameFeel
 			_damageNumberPrefab = null;
 			FlashMaterial = null;
 			AttackWarnMaterial = null;
+			AttackRangeMaterial = null;
 			return UniTask.CompletedTask;
 		}
 

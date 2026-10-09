@@ -52,6 +52,11 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  attackRangeMaterial:
+    m_AssetGUID: a7c3e91d5b2f4a60b8d1e4f2c9036a15
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   swordWhooshClip:
     m_AssetGUID: 5f37f0b9708030d46b608d4ff259ee1b
     m_SubObjectName: 
@@ -67,11 +72,6 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  swordWhooshVolume: 0.5
-  hitImpactVolume: 0.8
-  killImpactVolume: 1
-  killStreakPitchStep: 0.06
-  maxKillPitch: 1.5
   currencyOrbPrefab:
     m_AssetGUID: c6fe26a3dbb808341b5cdfed6b0532b1
     m_SubObjectName: 
@@ -113,8 +113,19 @@ MonoBehaviour:
   currencyChainWindow: 0.4
   currencyChainPitchStep: 0.05
   currencyMaxPitch: 1.6
+  swordWhooshVolume: 0.5
+  hitImpactVolume: 0.8
+  killImpactVolume: 1
+  killStreakPitchStep: 0.06
+  maxKillPitch: 1.5
   attackWarnBlinkRate: 6
   attackWarnStartScale: 0.3
+  attackRangeFillAlpha: 0.14
+  attackRangeEdgeAlpha: 0.45
+  attackRangeEdgeWidth: 0.1
+  attackRangePulseDuration: 0.25
+  attackRangePulseBoost: 3
+  attackRangePulsePop: 0.06
   stepDistance: 1.2
   spawnDuration: 0.4
   spawnOvershoot: 2.5
@@ -136,6 +147,13 @@ MonoBehaviour:
   killNumberTopColor: {r: 1, g: 0.25, b: 0, a: 1}
   killNumberBottomColor: {r: 0.75, g: 0, b: 0.05, a: 1}
   killNumberScale: 1.5
+  critSparkScale: 1.8
+  critImpactScale: 1.6
+  critStopDuration: 0.08
+  critShakeMultiplier: 2
+  critNumberScale: 1.4
+  critNumberTopColor: {r: 1, g: 0.55, b: 0.95, a: 1}
+  critNumberBottomColor: {r: 0.55, g: 0.1, b: 0.85, a: 1}
   attackShake: 0.02
   enemyHitShake: 0.1
   enemyKillShake: 0.2
@@ -145,10 +163,3 @@ MonoBehaviour:
   startCameraDistance: 5
   startCameraPitch: 12
   cameraPitchSmoothTime: 0.6
-  critSparkScale: 1.8
-  critImpactScale: 1.6
-  critStopDuration: 0.08
-  critShakeMultiplier: 2
-  critNumberScale: 1.4
-  critNumberTopColor: {r: 1, g: 0.55, b: 0.95, a: 1}
-  critNumberBottomColor: {r: 0.55, g: 0.1, b: 0.85, a: 1}

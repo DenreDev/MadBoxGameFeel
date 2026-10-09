@@ -32,6 +32,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7c3e91d5b2f4a60b8d1e4f2c9036a15
+    m_Address: VFX/AttackRange
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ab25c33471e347bd932759157c1f5dfa
     m_Address: VFX/AttackWarning
     m_ReadOnly: 0
@@ -67,14 +72,14 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  m_ReadOnly: 0
-  m_Settings: {fileID: 11400000, guid: 2c2a01d9444a5c343a774372540cda35, type: 2}
-  m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: fb10a3e4727b1ee4d89ed0d24c94c737, type: 2}
   - m_GUID: c6fe26a3dbb808341b5cdfed6b0532b1
     m_Address: VFX/CurrencyOrb
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2c2a01d9444a5c343a774372540cda35, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: fb10a3e4727b1ee4d89ed0d24c94c737, type: 2}
     - {fileID: 11400000, guid: c1309b972e2eb3a4a881d4b6452c432c, type: 2}

@@ -28,9 +28,10 @@ TO FILL
 | Delayed swing and aim | 8 min |
 | Attack impact pass | 3 min |
 | Attack sounds | 7 min |
+| Attack cone and range display | 2 min |
 | Critical strikes | 11 min |
 | Currency orbs | 11 min |
-| **Total** | 192 min |
+| **Total** | 194 min |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -139,10 +140,22 @@ TO FILL
 - **Bottleneck:** not confirmed.
 - **Addressables:** three generated sounds preloaded from a new `Audio` group.
 
+### Attack cone and range display — 2 min
+- **Implemented:** the sword now only hits enemies in a cone in front of the hero instead of all around him. The cone is drawn on the ground as a faint fan that pulses when the slash lands, so the player sees what will be hit. Details in [the feature note](Documentation/FeatureNotes/19_AttackConeAndRange.md).
+- **Time:** 2 min
+- **Bottleneck:** not confirmed.
+- **Addressables:** the cone material is preloaded from the `VFX` group.
+
 ### Critical strikes — 11 min
 - **Implemented:** sword hits can now critical strike (15% chance, x1.5 damage). A crit gets a bigger pink damage number with a "!", a bigger spark, a stronger squash and shove, a freeze frame, a harder camera kick and the heavy crunch sound. Details in [the feature note](Documentation/FeatureNotes/20_CriticalStrikes.md).
 - **Time:** 11 min
 - **Bottleneck:** not confirmed.
+
+### Currency orbs — 11 min
+- **Implemented:** dead enemies now drop a few tiny blue orbs that bounce, rest a moment, then recoil and curve into the hero, with a sparkle and a pitch-rising blip on each pickup. Feedback only: orbs have no value yet. Details in [the feature note](Documentation/FeatureNotes/21_CurrencyOrbs.md).
+- **Time:** 11 min
+- **Bottleneck:** not confirmed.
+- **Addressables:** the orb and sparkle prefabs in `VFX`, two generated sounds in `Audio`, all preloaded.
 
 ## Feedback on the base project
 
@@ -151,9 +164,3 @@ TO FILL
 ## Comments
 
 TO FILL
-### Currency orbs — 11 min
-- **Implemented:** dead enemies now drop a few tiny blue orbs that bounce, rest a moment, then recoil and curve into the hero, with a sparkle and a pitch-rising blip on each pickup. Feedback only: orbs have no value yet. Details in [the feature note](Documentation/FeatureNotes/21_CurrencyOrbs.md).
-- **Time:** 11 min
-- **Bottleneck:** not confirmed.
-- **Addressables:** the orb and sparkle prefabs in `VFX`, two generated sounds in `Audio`, all preloaded.
-

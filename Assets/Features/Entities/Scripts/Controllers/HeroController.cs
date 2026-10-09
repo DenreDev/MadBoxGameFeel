@@ -23,6 +23,7 @@ namespace Game.GamePlay.Heroes
 		private HeroState _currentState;
 		private bool _isSwinging;
 		private readonly List<EnemyState> _hitTargets = new List<EnemyState>(); // reused by every swing
+		private Vector3 _aimDirection = Vector3.back; // flat, normalized: where the swing points, toward the enemy the hero aims at (back = the model's front at rest)
 
 		// Public State
 		public HeroState CurrentState => _currentState;
@@ -129,6 +130,7 @@ namespace Game.GamePlay.Heroes
 		{
 			_isSwinging = true;
 			_currentState = new HeroState(_currentState.Position, _currentState.Health, Time.time);
+			UpdateAim(target.Position);
 			OnAttackStarted?.Invoke(target.Id);
 
 			try
@@ -144,11 +146,15 @@ namespace Game.GamePlay.Heroes
 			}
 		}
 
-		// Every enemy in range takes the hit, up to the weapon's max targets: the one the hero aimed at first (unless it died or left the range
-		// during the windup), then the closest ones. The slash is announced even when nothing is left in range, so a missed swing still looks like a swing.
+		// Every enemy in range and inside the weapon's cone takes the hit, up to the weapon's max targets: the one the hero aimed at first (unless it died or left
+		// the range during the windup), then the closest ones. Nothing behind the hero is hit. The slash is announced even when nothing is left in range, so a missed swing still looks like a swing.
 		private void Slash(WeaponConfig weapon, EnemyState swingTarget)
 		{
 			if (_currentState.IsDead || !_gameFlowService.IsPlaying) return;
+
+			// The aim follows the target like the hero's body does (HeroView), so the cone points where he looks when the sword lands.
+			// A target that died keeps the last aim.
+			if (_enemiesController.Enemies.TryGetValue(swingTarget.Id, out EnemyState currentTarget)) UpdateAim(currentTarget.Position);
 
 			FindTargetsInRange(weapon, swingTarget.Id);
 			Vector3 slashPosition = _hitTargets.Count > 0 ? _hitTargets[0].Position : swingTarget.Position;
@@ -167,11 +173,12 @@ namespace Game.GamePlay.Heroes
 		private void FindTargetsInRange(WeaponConfig weapon, int aimedEnemyId)
 		{
 			Vector3 heroPosition = _currentState.Position;
+			float halfArc = weapon.ArcAngle * 0.5f;
 			_hitTargets.Clear();
 
 			foreach (EnemyState enemy in _enemiesController.Enemies.Values)
 			{
-				if (Vector3.Distance(heroPosition, enemy.Position) < weapon.Range) _hitTargets.Add(enemy);
+				if (Vector3.Distance(heroPosition, enemy.Position) < weapon.Range && IsInsideArc(enemy.Position - heroPosition, halfArc)) _hitTargets.Add(enemy);
 			}
 
 			// The aimed enemy sorts first, the others by distance.
@@ -179,6 +186,22 @@ namespace Game.GamePlay.Heroes
 			if (_hitTargets.Count > weapon.MaxTargets) _hitTargets.RemoveRange(weapon.MaxTargets, _hitTargets.Count - weapon.MaxTargets);
 
 			float SortKey(EnemyState enemy) => enemy.Id == aimedEnemyId ? -1f : Vector3.Distance(heroPosition, enemy.Position);
+		}
+
+		// An enemy on top of the hero has no direction, he is always hit.
+		private bool IsInsideArc(Vector3 offset, float halfArc)
+		{
+			offset.y = 0f;
+			if (offset.sqrMagnitude < 0.0001f) return true;
+
+			return Vector3.Angle(_aimDirection, offset) <= halfArc;
+		}
+
+		private void UpdateAim(Vector3 targetPosition)
+		{
+			Vector3 direction = targetPosition - _currentState.Position;
+			direction.y = 0f;
+			if (direction.sqrMagnitude > 0.01f) _aimDirection = direction.normalized;
 		}
 
 		private bool TryFindClosestEnemy(out EnemyState closestEnemy)

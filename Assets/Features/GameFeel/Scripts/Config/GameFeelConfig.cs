@@ -33,6 +33,9 @@ namespace Game.GameFeel
 		[SerializeField]
 		[Tooltip("Addressable unlit material the enemy body blinks to while winding up an attack (address VFX/AttackWarnTint, group VFX)")]
 		private AssetReferenceT<Material> attackWarnMaterial;
+		[SerializeField]
+		[Tooltip("Addressable unlit material of the hero's attack range drawn on the ground (address VFX/AttackRange, group VFX). Its Base Color is the tint, the strengths below are vertex alphas")]
+		private AssetReferenceT<Material> attackRangeMaterial;
 
 		[SerializeField]
 		[Tooltip("Addressable whoosh played when the hero starts a swing, its loudest moment lands just before the slash (address Audio/SwordWhoosh, group Audio)")]
@@ -151,6 +154,26 @@ namespace Game.GameFeel
 		[SerializeField, Range(0f, 1f)]
 		[Tooltip("Size of the ground disc when the windup starts, relative to the full attack range (it grows to 1 over the windup)")]
 		private float attackWarnStartScale = 0.3f;
+
+		[Header("Attack range (the cone the hero's sword covers, drawn on the ground)")]
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Strength of the cone's fill at its far end (0 = no fill). It fades to nothing toward the hero, so the area stays discreet")]
+		private float attackRangeFillAlpha = 0.14f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Strength of the outer arc at the exact reach of the sword (0 = no arc)")]
+		private float attackRangeEdgeAlpha = 0.45f;
+		[SerializeField, Min(0.01f)]
+		[Tooltip("Thickness of the outer arc, in world units")]
+		private float attackRangeEdgeWidth = 0.1f;
+		[SerializeField]
+		[Tooltip("Seconds of the pulse played when the slash lands, hit or miss (0 disables)")]
+		private float attackRangePulseDuration = 0.25f;
+		[SerializeField, Min(1f)]
+		[Tooltip("How many times stronger the cone is at the start of the pulse (1 = no change)")]
+		private float attackRangePulseBoost = 3f;
+		[SerializeField, Min(0f)]
+		[Tooltip("How much bigger the cone is at the start of the pulse (0.06 = 6% bigger), it settles back with the pulse")]
+		private float attackRangePulsePop = 0.06f;
 
 		[Header("Footsteps")]
 		[SerializeField]
@@ -321,6 +344,13 @@ namespace Game.GameFeel
 		public float CurrencyMaxPitch => currencyMaxPitch;
 		public AssetReferenceGameObject AttackWarningPrefab => attackWarningPrefab;
 		public AssetReferenceT<Material> AttackWarnMaterial => attackWarnMaterial;
+		public AssetReferenceT<Material> AttackRangeMaterial => attackRangeMaterial;
+		public float AttackRangeFillAlpha => attackRangeFillAlpha;
+		public float AttackRangeEdgeAlpha => attackRangeEdgeAlpha;
+		public float AttackRangeEdgeWidth => attackRangeEdgeWidth;
+		public float AttackRangePulseDuration => attackRangePulseDuration;
+		public float AttackRangePulseBoost => attackRangePulseBoost;
+		public float AttackRangePulsePop => attackRangePulsePop;
 		public float AttackWarnBlinkRate => attackWarnBlinkRate;
 		public float AttackWarnStartScale => attackWarnStartScale;
 		public AssetReferenceGameObject DamageNumberPrefab => damageNumberPrefab;
