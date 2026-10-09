@@ -157,6 +157,12 @@ namespace Game.GamePlay.Enemies
 			animator.SetFloat(SpeedHash, speed);
 		}
 
+		// Back to the pool by any path (kill, explosion, restart): the bar is not our child, so it must be hidden explicitly.
+		private void OnDisable()
+		{
+			if (_healthBar != null) _healthBar.Hide();
+		}
+
 		private void OnDestroy()
 		{
 			if (ServicesLocator.Instance != null) ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
