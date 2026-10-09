@@ -19,9 +19,11 @@ The player had no feedback on enemy health.
 | Tuning / testing | `2 min` (10:31:58 to 10:34:25) |
 | Feedback iterations | `10 min` (10:34:25 to 10:43:58) |
 | Asset generation / integration (if any) | included above (no generated art) |
-| **Total** | `17 min` |
+| **Total** | `9 min` (human-corrected, see below) |
 
-Real elapsed time from recorded timestamps (10:27:14 to 10:43:58 = 16 min 44 s). The feedback iterations row covers three changes requested after the first delivery (bigger and higher hero bar, hide enemy bars at full health, draw bars on top of meshes). It also includes the review time between rounds and about 1 min spent waiting for an unrelated config asset from other work, so it is an upper bound. To be confirmed by the human.
+Real elapsed time from recorded timestamps (10:27:14 to 10:43:58 = 16 min 44 s). The feedback iterations row covers three changes requested after the first delivery (bigger and higher hero bar, hide enemy bars at full health, draw bars on top of meshes). It also includes the review time between rounds and about 1 min spent waiting for an unrelated config asset from other work, so it is an upper bound.
+
+**Correction:** the total was corrected by the human to 9 min, the effective working time. The phase rows above preserve the original timestamp spans, including review and waiting time, and do not add up to the corrected total. No revised phase breakdown was supplied.
 
 ## 5. Files changed
 - `Assets/Features/HealthBar/Scripts/HealthBarService.cs`: `IService` that preloads the Addressable prefab and creates bars.
@@ -106,8 +108,8 @@ The player could not tell how hurt the hero or the enemies were. Each entity now
 ## 14. README entry
 Copied into `README.md` under "Features".
 
-### Health bars — 17 min
+### Health bars — 9 min
 - **Implemented:** every entity has a health bar above its head: green and bigger for the hero, red for enemies (shown once damaged). Hits are animated with a sliding fill, flash, pop and a lagging trail, and the bar disappears on death.
-- **Time:** 17 min
+- **Time:** 9 min
 - **Bottleneck:** the player had no feedback on enemy health.
 - **Addressables:** the bar prefab is preloaded from a new `UI` group.

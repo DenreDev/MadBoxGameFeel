@@ -20,9 +20,11 @@ Not recorded (the human chose to skip it).
 | Implementation | `4 min` (10:39:17 to 10:43:20) |
 | Tuning / testing | `16 min` (10:43:20 to 10:59:11) |
 | Asset generation / integration | included in implementation (no separate timestamp) |
-| **Total** | `25 min` |
+| **Total** | `12 min` (human-corrected, see below) |
 
-Real elapsed time from recorded timestamps (10:34:08 to 10:59:11 = 25 min 3 s). Tuning / testing is an upper bound: it includes time lost on an editor shared with other sessions (play mode reset by their recompiles, then a compile block caused by a third-party asset imported by someone else). To be confirmed by the human.
+Real elapsed time from recorded timestamps (10:34:08 to 10:59:11 = 25 min 3 s). Tuning / testing is an upper bound: it includes time lost on an editor shared with other sessions (play mode reset by their recompiles, then a compile block caused by a third-party asset imported by someone else).
+
+**Correction:** the total was corrected by the human to 12 min, the effective working time. The phase rows above preserve the original timestamp spans, including waiting time, and do not add up to the corrected total. No revised phase breakdown was supplied.
 
 ## 5. Files changed
 - `Assets/Features/GameFeel/Scripts/GameFeelService.cs`: new `IService`. Preloads the spark prefab and the flash material through Addressables, owns the handles, spawns sparks.
@@ -116,7 +118,7 @@ The player could not tell when the hero was hit by the enemies. Every hit on the
 
 ## 14. README entry
 
-### Hit feedback, ragdoll death and screen shake — 25 min
+### Hit feedback, ragdoll death and screen shake — 12 min
 - **Implemented:** every hit on the hero or a bee flashes the body white, squashes it and spits a small spark burst. Killed bees and the dead hero are knocked away in a flipping, ragdoll-style hop, and the camera gets small shakes when the hero attacks, is hit and dies. Details in [the feature note](Documentation/FeatureNotes/07_HitFeedbackRagdollShake.md).
-- **Time:** 25 min
+- **Time:** 12 min
 - **Addressables:** the spark prefab and the flash material are preloaded from the `VFX` group.

@@ -22,11 +22,11 @@ Getting a number on screen was quick (implementation took less time than checkin
 | Implementation | `8 min` (11:02:00 to 11:10:28) |
 | Tuning / testing | `13 min` (11:10:28 to 11:23:26) |
 | Asset generation / integration (if any) | included above (no generated art) |
-| **Total** | `12 min` (human-corrected, see below) |
+| **Total** | `9 min` (human-corrected, see below) |
 
 Real elapsed time from recorded timestamps (10:56:58 to 11:23:26 = 26 min 28 s). Analysis includes the compile fix of the imported asset. Tuning / testing includes waiting for the shared Unity editor, so it is an upper bound.
 
-**Correction:** the total was corrected by the human to 12 min, the effective working time. The phase rows above are the raw timestamp spans and include waiting time (shared editor, pauses), so they no longer add up to the total.
+**Correction:** the total was corrected by the human to 9 min, the effective working time. The phase rows above are the raw timestamp spans and include waiting time (shared editor, pauses), so they no longer add up to the total. No revised phase breakdown was supplied.
 
 ## 5. Files changed
 - `Assets/Features/GameFeel/Scripts/GameFeelService.cs`: loads the damage number prefab (Addressables), prewarms its pool, `PlayDamageNumber(hitPoint, damage, isKillingBlow)` spawns one.
@@ -110,8 +110,8 @@ Hits had no juice at the moment of impact. Now every hit on an enemy pops a dama
 ## 14. README entry
 Copied into `README.md` under "Features".
 
-### Damage numbers — 12 min
+### Damage numbers — 9 min
 - **Implemented:** every hit on an enemy pops a floating damage number: chunky, outlined, with a color gradient. It slams in, drifts and fades. It is bigger for heavier weapons, and the hit that kills prints a bigger, red-orange number. Built on third-party package, so critical hits or scaling damage can reuse it later. Details in [the feature note](Documentation/FeatureNotes/05_DamageNumbers.md).
-- **Time:** 12 min
+- **Time:** 9 min
 - **Bottleneck:** validating in play mode on a Unity editor shared with other sessions, after making the imported third-party package compile.
 - **Addressables:** the damage number prefab is preloaded and pooled from the `VFX` group.

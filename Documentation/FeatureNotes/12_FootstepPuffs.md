@@ -18,9 +18,11 @@ No real bottleneck.
 | Implementation | `1 min` (16:30:28 to 16:31:05) |
 | Tuning / testing | `8 min` (16:31:05 to 16:39:14) |
 | Asset generation / integration | included above (no separate timestamp) |
-| **Total** | `10 min` |
+| **Total** | `7 min` (human-corrected, see below) |
 
-Real elapsed time from recorded timestamps: 47 s + 37 s + 8 min 9 s = 9 min 33 s, rounded to 10. Tuning / testing is mostly waiting for, and working around, a Unity editor shared with other sessions (the play-mode probe had to be rewritten several times, and a last play-mode capture was refused). The follow-up change that raised the puffs off the floor (shape offset 0.22 in the prefab) has no timestamp and is not counted. To be confirmed by the human.
+Real elapsed time from recorded timestamps: 47 s + 37 s + 8 min 9 s = 9 min 33 s, rounded to 10. Tuning / testing is mostly waiting for, and working around, a Unity editor shared with other sessions (the play-mode probe had to be rewritten several times, and a last play-mode capture was refused). The follow-up change that raised the puffs off the floor (shape offset 0.22 in the prefab) has no timestamp and is not counted.
+
+**Correction:** the total was corrected by the human to 7 min, the effective working time. The phase rows above preserve the original timestamp spans, including waiting time, and do not add up to the corrected total. No revised phase breakdown was supplied.
 
 ## 5. Files changed
 - `Assets/Features/GameFeel/Scripts/View/FootstepFeedbackView.cs`: new. Watches the ground distance walked by the entity it sits on and asks the service for a puff every `StepDistance`.
@@ -89,8 +91,8 @@ Walking had no contact with the ground. Now a small component on the hero counts
 ## 14. README entry
 Copied into `README.md` under "Features".
 
-### Footstep puffs — 10 min
+### Footstep puffs — 7 min
 - **Implemented:** a small dust puff pops at the hero's feet every few steps while he walks, to highlight the feeling of walking. Details in [the feature note](Documentation/FeatureNotes/12_FootstepPuffs.md).
-- **Time:** 10 min
+- **Time:** 7 min
 - **Bottleneck:** no real bottleneck.
 - **Addressables:** the puff prefab is preloaded from the `VFX` group.
