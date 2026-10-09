@@ -15,6 +15,7 @@ MonoBehaviour:
   id: bee_normal
   initialHealth: 60
   speed: 4
+  bodyRadius: 0.6
   attackCooldown: 0.5
   attackDamage: 6
   attackRange: 2

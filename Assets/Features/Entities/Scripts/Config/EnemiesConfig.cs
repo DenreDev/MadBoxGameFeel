@@ -40,6 +40,28 @@ namespace Game.GamePlay.Enemies
 		[Tooltip("Fallback when there is no camera to read the screen from: enemies spawn on a circle of this radius around the hero")]
 		private float spawnRadius = 10f;
 
+		[Header("Crowd movement")]
+		[SerializeField, Min(0f)]
+		[Tooltip("Meters of free space enemies try to keep between their bodies. They start steering away from a neighbour this far before touching it")]
+		private float avoidanceMargin = 0.6f;
+
+		[SerializeField, Min(0f)]
+		[Tooltip("How hard enemies steer away from close neighbours compared to chasing the hero. Low = they bump and get shoved, high = they spread wide and flow around each other")]
+		private float avoidanceStrength = 1.5f;
+
+		[Header("Death shove")]
+		[SerializeField, Min(0f)]
+		[Tooltip("Meters around a killed enemy within which living enemies get shoved. 0 = no shove")]
+		private float deathShoveRadius = 2.5f;
+
+		[SerializeField, Min(0f)]
+		[Tooltip("Starting slide speed (m/s) of a neighbour right next to the corpse when both weigh the same. Fades with distance; lighter bees fly further, heavy corpses shove harder")]
+		private float deathShoveSpeed = 6f;
+
+		[SerializeField, Min(0.01f)]
+		[Tooltip("Ground friction (m/s²) that slows a shoved enemy down. Slide distance = speed² / (2 × friction)")]
+		private float knockbackFriction = 15f;
+
 		[SerializeField]
 		[Tooltip("List of all available enemies in the game. Their prefabs are loaded at startup")]
 		private List<EnemyConfig> enemies;
@@ -52,6 +74,11 @@ namespace Game.GamePlay.Enemies
 		public float SideEdgeWeight => sideEdgeWeight;
 		public float GroupSpread => groupSpread;
 		public float SpawnRadius => spawnRadius;
+		public float AvoidanceMargin => avoidanceMargin;
+		public float AvoidanceStrength => avoidanceStrength;
+		public float DeathShoveRadius => deathShoveRadius;
+		public float DeathShoveSpeed => deathShoveSpeed;
+		public float KnockbackFriction => knockbackFriction;
 		public IReadOnlyList<EnemyConfig> Enemies => enemies;
 
 		private Dictionary<string, EnemyConfig> _enemiesMap;

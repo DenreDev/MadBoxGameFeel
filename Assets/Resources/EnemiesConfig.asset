@@ -74,6 +74,11 @@ MonoBehaviour:
   sideEdgeWeight: 2
   groupSpread: 1.2
   spawnRadius: 10
+  avoidanceMargin: 0.6
+  avoidanceStrength: 1.5
+  deathShoveRadius: 2.5
+  deathShoveSpeed: 6
+  knockbackFriction: 15
   enemies:
   - {fileID: 11400000, guid: be561b41b0b37406281685f0daceaa81, type: 2}
   - {fileID: 11400000, guid: 72575589acde143858765603cd63d900, type: 2}

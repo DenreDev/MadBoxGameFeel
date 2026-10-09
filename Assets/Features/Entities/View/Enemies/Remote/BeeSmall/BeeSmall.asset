@@ -15,6 +15,7 @@ MonoBehaviour:
   id: bee_small
   initialHealth: 25
   speed: 7
+  bodyRadius: 0.4
   attackCooldown: 0
   attackDamage: 3
   attackRange: 1

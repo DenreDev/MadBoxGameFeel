@@ -24,7 +24,7 @@ namespace Game.GamePlay.Enemies
 		[SerializeField] private SpawnFeedbackView spawnFeedback;
 		[SerializeField] private AttackTelegraphView attackTelegraph;
 		[SerializeField] private HitFeedbackView hitFeedback;
-		[SerializeField] private DeathLaunchView deathLaunch;
+		[SerializeField] private DeathPhysicsView deathPhysics;
 
 		private HealthBarView _healthBar;
 		private HeroController _heroController;
@@ -44,7 +44,7 @@ namespace Game.GamePlay.Enemies
 			_heroController = ServicesLocator.Instance.GetService<EntitiesService>().HeroController;
 		}
 
-		// Spawn, fresh or from the pool: undo whatever the previous life left (death launch, flash, telegraph), then pop in.
+		// Spawn, fresh or from the pool: undo whatever the previous life left (physics corpse, flash, telegraph), then pop in.
 		// The Animator needs no reset: deactivating the object in the pool already sent it back to its default state.
 		public void Appear(EnemyConfig config, HealthBarService healthBarService, int health, int maxHealth)
 		{
@@ -53,7 +53,7 @@ namespace Game.GamePlay.Enemies
 			_lastPosition = transform.position;
 
 			if (hitFeedback != null) hitFeedback.Stop();
-			if (deathLaunch != null) deathLaunch.Restore();
+			if (deathPhysics != null) deathPhysics.Restore();
 			if (attackTelegraph != null) attackTelegraph.End();
 			FaceHero(instantly: true);
 
@@ -85,16 +85,13 @@ namespace Game.GamePlay.Enemies
 			if (_healthBar != null) _healthBar.SetHealth(health, maxHealth);
 		}
 
-		// Plays the death animation while the model is knocked away from the hero. The container releases it after DeathDuration.
+		// Plays the death animation while the body is launched away from the hero as a physics corpse. The container releases it after DeathDuration.
 		public void PlayDeath(int damage, bool isCritical)
 		{
 			StopForDeath();
 			if (animator != null) animator.SetTrigger(DieHash);
 			if (hitFeedback != null) hitFeedback.Play(damage, isKillingBlow: true, isCritical: isCritical);
-			if (deathLaunch != null)
-			{
-				deathLaunch.Play(AwayFromHero());
-			}
+			if (deathPhysics != null) deathPhysics.Play(AwayFromHero());
 
 			// The orbs belong to the world, not to this enemy: they outlive it.
 			GameFeelService gameFeelService = ServicesLocator.Instance.GetService<GameFeelService>();

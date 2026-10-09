@@ -32,6 +32,8 @@ namespace Game.GamePlay.Enemies
 		private Dictionary<int, EnemyState> _enemies;
 		private CancellationTokenSource _cancellationTokenSource;
 		private int _nextEnemyId;
+		private readonly List<int> _bodyIds = new List<int>(); // reused by ResolveOverlaps and ShoveNeighbours
+		private readonly HashSet<int> _pushedIds = new HashSet<int>();
 
 		public IReadOnlyDictionary<int, EnemyState> Enemies => _enemies;
 
@@ -96,6 +98,7 @@ namespace Game.GamePlay.Enemies
 			{
 				Debug.Log($"Enemy id°{enemyState.Id} is dead. Removing it.");
 				OnEnemyKilled?.Invoke(enemyState.Id, damage, isCritical);
+				ShoveNeighbours(_enemies[enemyState.Id]);
 				RemoveEnemy(enemyState.Id);
 			}
 			else
@@ -125,6 +128,8 @@ namespace Game.GamePlay.Enemies
 					UpdateEnemy(enemy);
 				}
 
+				ResolveOverlaps();
+
 				await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
 			}
 		}
@@ -134,6 +139,8 @@ namespace Game.GamePlay.Enemies
 		// A kamikaze enemy skips all that: it hits the moment it reaches its range and dies.
 		private void UpdateEnemy(EnemyState enemy)
 		{
+			if (enemy.Knockback != Vector3.zero) enemy = Slide(enemy);
+
 			switch (enemy.AttackPhase)
 			{
 				case EnemyAttackPhase.Windup:
@@ -156,8 +163,12 @@ namespace Game.GamePlay.Enemies
 
 			if (distanceToHero > enemy.Config.AttackRange)
 			{
-				Vector3 direction = (heroPosition - enemy.Position).normalized;
-				Vector3 newPosition = enemy.Position + direction * (enemy.Config.Speed * Time.deltaTime);
+				// Chase while steering away from close neighbours: the crowd spreads and flows around itself instead of queuing in one line.
+				// Clamped, not normalized: an enemy boxed in by its neighbours slows down instead of jittering at full speed.
+				Vector3 toHero = heroPosition - enemy.Position;
+				toHero.y = 0f;
+				Vector3 steering = toHero.normalized + AvoidNeighbours(enemy) * EnemiesConfig.Instance.AvoidanceStrength;
+				Vector3 newPosition = enemy.Position + Vector3.ClampMagnitude(steering, 1f) * (enemy.Config.Speed * Time.deltaTime);
 
 				EnemyState updatedEnemy = enemy.WithPosition(newPosition);
 				_enemies[enemy.Id] = updatedEnemy;
@@ -207,6 +218,122 @@ namespace Game.GamePlay.Enemies
 
 			_heroController.TakeHit(enemy.Config.AttackDamage);
 			OnEnemyAttacked?.Invoke(enemy.Id);
+		}
+
+		// The killing blow carries through the corpse into the crowd: each neighbour is shoved away from the corpse and along the blow
+		// (enemies behind it fly back, enemies beside it are pushed aside). The speed follows a billiard-ball (elastic) collision,
+		// 2 × corpse mass / (corpse mass + neighbour mass), so a light bee flies further and a big corpse shoves harder.
+		private void ShoveNeighbours(EnemyState corpse)
+		{
+			EnemiesConfig config = EnemiesConfig.Instance;
+			if (config.DeathShoveRadius <= 0f) return;
+
+			Vector3 blow = corpse.Position - _heroController.CurrentState.Position;
+			blow.y = 0f;
+			blow = blow.normalized;
+			float corpseMass = corpse.Config.BodyRadius * corpse.Config.BodyRadius;
+
+			_bodyIds.Clear();
+			_bodyIds.AddRange(_enemies.Keys);
+			foreach (int enemyId in _bodyIds)
+			{
+				if (enemyId == corpse.Id) continue;
+
+				EnemyState other = _enemies[enemyId];
+				Vector3 away = other.Position - corpse.Position;
+				away.y = 0f;
+				float distance = away.magnitude;
+				if (distance >= config.DeathShoveRadius) continue;
+
+				float otherMass = other.Config.BodyRadius * other.Config.BodyRadius;
+				float transfer = 2f * corpseMass / (corpseMass + otherMass);
+				float falloff = 1f - distance / config.DeathShoveRadius;
+				Vector3 direction = (Direction(away, distance, enemyId) + blow).normalized;
+				Vector3 knockback = other.Knockback + direction * (config.DeathShoveSpeed * transfer * falloff);
+
+				// Capped so a cleave killing several bees at once cannot fling a survivor across the arena.
+				_enemies[enemyId] = other.WithKnockback(Vector3.ClampMagnitude(knockback, config.DeathShoveSpeed * 2f));
+			}
+		}
+
+		// A shoved enemy slides on top of whatever it is doing, slowed by friction. Attacking enemies slide too:
+		// knocking back a bee that is about to bite can carry it out of range, so its hit misses.
+		private EnemyState Slide(EnemyState enemy)
+		{
+			Vector3 knockback = Vector3.MoveTowards(enemy.Knockback, Vector3.zero, EnemiesConfig.Instance.KnockbackFriction * Time.deltaTime);
+			EnemyState updatedEnemy = enemy.WithPosition(enemy.Position + enemy.Knockback * Time.deltaTime).WithKnockback(knockback);
+			_enemies[enemy.Id] = updatedEnemy;
+			OnEnemyPositionChanged?.Invoke(updatedEnemy);
+			return updatedEnemy;
+		}
+
+		// Sum of the pushes away from the neighbours within the avoidance margin: 0 at the edge of the margin, 1 when the bodies touch.
+		private Vector3 AvoidNeighbours(EnemyState enemy)
+		{
+			float margin = Mathf.Max(0.01f, EnemiesConfig.Instance.AvoidanceMargin);
+			Vector3 avoidance = Vector3.zero;
+
+			foreach (EnemyState other in _enemies.Values)
+			{
+				if (other.Id == enemy.Id) continue;
+
+				Vector3 away = enemy.Position - other.Position;
+				away.y = 0f;
+				float distance = away.magnitude;
+				float gap = distance - (enemy.Config.BodyRadius + other.Config.BodyRadius);
+				if (gap >= margin) continue;
+
+				avoidance += Direction(away, distance, enemy.Id) * (1f - Mathf.Clamp01(gap / margin));
+			}
+
+			return avoidance;
+		}
+
+		// The collision step, run once per frame after everyone moved: whatever the steering could not avoid (a lunge, a crowd pressing in)
+		// is pushed apart until the bodies just touch. Mass is the body area, so a big bee shoves a small one more than it gets shoved.
+		// An enemy committed to an attack is planted: a chaser cannot push it, so its telegraph and lunge stay where the player saw them.
+		// Two planted enemies (one lunging into the other) are split by mass like two chasers.
+		private void ResolveOverlaps()
+		{
+			_bodyIds.Clear();
+			_bodyIds.AddRange(_enemies.Keys);
+			_pushedIds.Clear();
+
+			for (int i = 0; i < _bodyIds.Count; i++)
+			{
+				for (int j = i + 1; j < _bodyIds.Count; j++)
+				{
+					EnemyState a = _enemies[_bodyIds[i]];
+					EnemyState b = _enemies[_bodyIds[j]];
+
+					Vector3 offset = b.Position - a.Position;
+					offset.y = 0f;
+					float distance = offset.magnitude;
+					float overlap = a.Config.BodyRadius + b.Config.BodyRadius - distance;
+					if (overlap <= 0f) continue;
+
+					bool aPlanted = a.AttackPhase != EnemyAttackPhase.None;
+					bool bPlanted = b.AttackPhase != EnemyAttackPhase.None;
+					float massA = a.Config.BodyRadius * a.Config.BodyRadius;
+					float massB = b.Config.BodyRadius * b.Config.BodyRadius;
+					float aShare = aPlanted == bPlanted ? massB / (massA + massB) : aPlanted ? 0f : 1f; // share of the push that moves a
+					Vector3 push = Direction(offset, distance, b.Id) * overlap;
+
+					_enemies[a.Id] = a.WithPosition(a.Position - push * aShare);
+					_enemies[b.Id] = b.WithPosition(b.Position + push * (1f - aShare));
+					if (aShare > 0f) _pushedIds.Add(a.Id);
+					if (aShare < 1f) _pushedIds.Add(b.Id);
+				}
+			}
+
+			foreach (int enemyId in _pushedIds) OnEnemyPositionChanged?.Invoke(_enemies[enemyId]);
+		}
+
+		// Normalized offset. Two bodies on the exact same spot (a group spawn) get a fixed direction per id, so they still split apart.
+		private static Vector3 Direction(Vector3 offset, float distance, int enemyId)
+		{
+			if (distance > 0.001f) return offset / distance;
+			return Quaternion.Euler(0f, enemyId * 137.5f, 0f) * Vector3.forward;
 		}
 
 		// Kamikaze: the hit and the death are the same moment. No OnEnemyKilled, so the hero gets no kill feedback nor reward for it.

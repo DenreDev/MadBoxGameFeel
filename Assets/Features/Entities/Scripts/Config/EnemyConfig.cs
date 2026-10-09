@@ -9,6 +9,8 @@ namespace Game.GamePlay.Enemies
 		[SerializeField] private string id;
 		[SerializeField] private int initialHealth;
 		[SerializeField] private float speed;
+		[SerializeField, Min(0.05f), Tooltip("Radius of the body on the ground, in meters. Enemies steer around each other and never overlap closer than their radii. Bigger bodies are heavier: they shove small ones aside")]
+		private float bodyRadius = 0.5f;
 		[SerializeField] private float attackCooldown;
 		[SerializeField] private int attackDamage;
 		[SerializeField, Tooltip("Distance to the hero at which the enemy starts its attack, and within which the hero must still be when the hit lands")]
@@ -27,6 +29,7 @@ namespace Game.GamePlay.Enemies
 		public string Id => id;
 		public int InitialHealth => initialHealth;
 		public float Speed => speed;
+		public float BodyRadius => bodyRadius;
 		public float AttackCooldown => attackCooldown;
 		public int AttackDamage => attackDamage;
 		public float AttackRange => attackRange;
