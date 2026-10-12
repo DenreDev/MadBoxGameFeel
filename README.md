@@ -39,7 +39,8 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 | Wave counter | 7 min + 8 min 54 s refactor |
 | Combo counter | 9 min |
 | Boot, start and game over screens | 14 min |
-| **Total** | 217 min 54 s |
+| Attack range charge fill | 6 min |
+| **Total** | 223 min 54 s |
 
 ### Entity animation state machines — 9 min
 - **Implemented:** hero and bees now play Idle, Move, Attack, Damage and Death at the right moment, driven by events from the gameplay controllers. Details in [the feature note](Documentation/FeatureNotes/01_EntityAnimations.md).
@@ -187,6 +188,11 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 - **Implemented:** to improve the overall juice of the game from the very first frame, a title cover now hides the loading instead of an empty sky and a dead "TAP TO START". The start screen drops its title in, pops a chunky button and teaches the controls. Game over now plays a short sequence: dim, title slam, round stats, then a "TRY AGAIN" button that only accepts taps once it is visible. Buttons squash under the finger. Details in [the feature note](Documentation/FeatureNotes/25_ScreensPolish.md).
 - **Time:** 14 min
 - **Bottleneck:** checking UI timings in the shared, unfocused editor (deduced, to be confirmed).
+
+### Attack range charge fill — 6 min
+- **Implemented:** to highlight the attack, a fill now grows inside the attack cone during the swing and reaches its edge exactly when the hit lands, so the player knows when it hits. Details in [the feature note](Documentation/FeatureNotes/26_AttackRangeChargeFill.md).
+- **Time:** 6 min
+- **Bottleneck:** not confirmed.
 
 ## Feedback on the base project
 

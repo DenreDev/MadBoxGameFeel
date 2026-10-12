@@ -205,6 +205,15 @@ namespace Game.GameFeel
 		[SerializeField, Min(0f)]
 		[Tooltip("How much bigger the cone is at the start of the pulse (0.06 = 6% bigger), it settles back with the pulse")]
 		private float attackRangePulsePop = 0.06f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Strength of the fill that grows from the hero to the reach during the swing windup: it touches the arc exactly when the damage lands, then fades with the pulse (0 = no fill)")]
+		private float attackRangeChargeAlpha = 0.22f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Strength of the bright front at the leading edge of the growing fill")]
+		private float attackRangeChargeEdgeAlpha = 0.75f;
+		[SerializeField]
+		[Tooltip("How the fill grows over the windup (time 0..1 to size 0..1). Ease-in makes it rush into the hit")]
+		private AnimationCurve attackRangeChargeCurve = new AnimationCurve(new Keyframe(0f, 0f, 0f, 0f), new Keyframe(1f, 1f, 2f, 2f));
 
 		[Header("Footsteps")]
 		[SerializeField]
@@ -405,6 +414,9 @@ namespace Game.GameFeel
 		public float AttackRangePulseDuration => attackRangePulseDuration;
 		public float AttackRangePulseBoost => attackRangePulseBoost;
 		public float AttackRangePulsePop => attackRangePulsePop;
+		public float AttackRangeChargeAlpha => attackRangeChargeAlpha;
+		public float AttackRangeChargeEdgeAlpha => attackRangeChargeEdgeAlpha;
+		public AnimationCurve AttackRangeChargeCurve => attackRangeChargeCurve;
 		public float AttackWarnBlinkRate => attackWarnBlinkRate;
 		public float AttackWarnStartScale => attackWarnStartScale;
 		public AssetReferenceGameObject DamageNumberPrefab => damageNumberPrefab;
