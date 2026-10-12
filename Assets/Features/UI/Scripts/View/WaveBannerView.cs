@@ -1,3 +1,4 @@
+using Game.GameFeel;
 using TMPro;
 using UnityEngine;
 
@@ -53,19 +54,10 @@ namespace Game.UI
 			float fade = Mathf.Clamp01((_bannerTime - bannerSlamDuration - bannerHoldDuration) / bannerFadeDuration);
 
 			banner.alpha = Mathf.Clamp01(slam * 2f) * (1f - fade);
-			bannerText.localScale = Vector3.one * Mathf.LerpUnclamped(bannerStartScale, 1f, EaseOutBack(slam));
-			bannerText.anchoredPosition = new Vector2(0f, bannerRiseDistance * EaseOutCubic(fade));
-			bannerRibbon.localScale = new Vector3(1f, EaseOutCubic(slam) * (1f - fade * fade), 1f);
+			bannerText.localScale = Vector3.one * Mathf.LerpUnclamped(bannerStartScale, 1f, Easing.OutBack(slam));
+			bannerText.anchoredPosition = new Vector2(0f, bannerRiseDistance * Easing.OutCubic(fade));
+			bannerRibbon.localScale = new Vector3(1f, Easing.OutCubic(slam) * (1f - fade * fade), 1f);
 		}
 
-		private static float EaseOutCubic(float t) => 1f - Mathf.Pow(1f - t, 3f);
-
-		// Overshoots 1 before settling, which gives the slam its bounce.
-		private static float EaseOutBack(float t)
-		{
-			const float overshoot = 1.70158f;
-			float shifted = t - 1f;
-			return 1f + (overshoot + 1f) * shifted * shifted * shifted + overshoot * shifted * shifted;
-		}
 	}
 }

@@ -1,4 +1,5 @@
 using Core.ServicesManager;
+using Game.GameFeel;
 using Game.GameFlow;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -104,14 +105,14 @@ namespace Game.UI
 			canvasGroup.alpha = 1f;
 
 			float titleProgress = Mathf.Clamp01((elapsed - titleDelay) / titleDropDuration);
-			title.anchoredPosition = _titleRestPosition + Vector2.up * (1f - EaseOutBack(titleProgress)) * titleDropHeight;
+			title.anchoredPosition = _titleRestPosition + Vector2.up * (1f - Easing.OutBack(titleProgress, 1.9f)) * titleDropHeight;
 			float sway = Mathf.Sin(Time.unscaledTime * 1.3f) * titleSwayAngle * titleProgress;
 			title.localRotation = Quaternion.Euler(0f, 0f, sway);
 			title.localScale = Vector3.one;
 
 			float promptProgress = Mathf.Clamp01((elapsed - titleDelay - promptDelay) / promptPopDuration);
 			float pulse = (Mathf.Sin(Time.unscaledTime * pulseSpeed * Mathf.PI * 2f) + 1f) * 0.5f;
-			prompt.localScale = Vector3.one * (EaseOutBack(promptProgress) * (1f + pulse * pulseScale));
+			prompt.localScale = Vector3.one * (Easing.OutBack(promptProgress, 1.9f) * (1f + pulse * pulseScale));
 
 			if (hint != null) hint.alpha = Mathf.Clamp01((elapsed - titleDelay - promptDelay - promptPopDuration) / 0.3f);
 		}
@@ -126,12 +127,5 @@ namespace Game.UI
 			title.anchoredPosition = _titleRestPosition + Vector2.up * progress * progress * titleExitRise;
 		}
 
-		// Overshoots past 1 then settles: the classic cartoon "pop".
-		private static float EaseOutBack(float t)
-		{
-			const float overshoot = 1.9f;
-			float u = t - 1f;
-			return 1f + (overshoot + 1f) * u * u * u + overshoot * u * u;
-		}
 	}
 }

@@ -1,3 +1,4 @@
+using Game.GameFeel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,23 +66,13 @@ namespace Game.UI
 		{
 			float t = Mathf.Clamp01(_punchTime / punchDuration);
 
-			badgeNumber.localScale = Vector3.one * Mathf.LerpUnclamped(punchScale, 1f, EaseOutBack(t));
-			badgeNumberText.color = Color.Lerp(punchColor, _numberColor, EaseOutCubic(t));
+			badgeNumber.localScale = Vector3.one * Mathf.LerpUnclamped(punchScale, 1f, Easing.OutBack(t));
+			badgeNumberText.color = Color.Lerp(punchColor, _numberColor, Easing.OutCubic(t));
 
-			badgePulse.localScale = Vector3.one * Mathf.Lerp(1f, pulseScale, EaseOutCubic(t));
+			badgePulse.localScale = Vector3.one * Mathf.Lerp(1f, pulseScale, Easing.OutCubic(t));
 			Color ringColor = badgePulseImage.color;
 			ringColor.a = pulseAlpha * (1f - t);
 			badgePulseImage.color = ringColor;
-		}
-
-		private static float EaseOutCubic(float t) => 1f - Mathf.Pow(1f - t, 3f);
-
-		// Overshoots 1 before settling, which gives the number its bounce.
-		private static float EaseOutBack(float t)
-		{
-			const float overshoot = 1.70158f;
-			float shifted = t - 1f;
-			return 1f + (overshoot + 1f) * shifted * shifted * shifted + overshoot * shifted * shifted;
 		}
 	}
 }

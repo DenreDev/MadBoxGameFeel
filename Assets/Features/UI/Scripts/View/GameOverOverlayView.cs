@@ -1,4 +1,5 @@
 using Core.ServicesManager;
+using Game.GameFeel;
 using Game.GameFlow;
 using Game.GamePlay.Entities;
 using TMPro;
@@ -111,16 +112,8 @@ namespace Game.UI
 			_statsRect.anchoredPosition = _statsRestPosition + Vector2.down * (1f - statsProgress) * statsRiseDistance;
 
 			float buttonProgress = Mathf.Clamp01((t - titleSlamDuration - statsDelay - buttonDelay) / buttonPopDuration);
-			restartGroup.localScale = Vector3.one * EaseOutBack(buttonProgress);
+			restartGroup.localScale = Vector3.one * Easing.OutBack(buttonProgress, 1.9f);
 			restartButton.interactable = buttonProgress >= 1f;
-		}
-
-		// Overshoots past 1 then settles: the classic cartoon "pop".
-		private static float EaseOutBack(float t)
-		{
-			const float overshoot = 1.9f;
-			float u = t - 1f;
-			return 1f + (overshoot + 1f) * u * u * u + overshoot * u * u;
 		}
 
 		private void OnRestartButtonClicked()

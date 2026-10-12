@@ -43,16 +43,9 @@ namespace Game.GameFeel
 		private void Update()
 		{
 			float progress = Mathf.Clamp01((Time.time - _spawnTime) / _config.Duration);
-			transform.localScale = _baseScale * EaseOutBack(progress, _config.Overshoot);
+			transform.localScale = _baseScale * Easing.OutBack(progress, _config.Overshoot);
 
 			if (progress >= 1f) enabled = false;
-		}
-
-		// 0 -> 1 with a swing past 1 that settles back. overshoot = 0 is a plain ease-out.
-		private static float EaseOutBack(float t, float overshoot)
-		{
-			float u = t - 1f;
-			return 1f + u * u * ((overshoot + 1f) * u + overshoot);
 		}
 	}
 }

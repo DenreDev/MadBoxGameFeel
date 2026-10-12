@@ -358,7 +358,7 @@ namespace Game.UI
 			float breakT = _state == State.Breaking ? Mathf.Clamp01(_breakTime / breakDuration) : 0f;
 			float fall = Mathf.Clamp01((breakT - breakShakeShare) / Mathf.Max(0.01f, 1f - breakShakeShare));
 
-			panel.anchoredPosition = _panelHome + new Vector2(Mathf.LerpUnclamped(appearOffset, 0f, EaseOutBack(appear)), -breakFallDistance * fall * fall);
+			panel.anchoredPosition = _panelHome + new Vector2(Mathf.LerpUnclamped(appearOffset, 0f, Easing.OutBack(appear)), -breakFallDistance * fall * fall);
 			panel.localRotation = Quaternion.Euler(0f, 0f, _panelTilt - breakSpin * fall);
 			panelGroup.alpha = Mathf.Clamp01(appear * 3f) * (1f - fall * fall);
 		}
@@ -367,7 +367,7 @@ namespace Game.UI
 		private void ApplyNumber()
 		{
 			float punchT = Mathf.Clamp01(_punchTime / punchDuration);
-			float punch = Mathf.LerpUnclamped(1f + (punchScale - 1f) * _punchStrength, 1f, EaseOutBack(punchT));
+			float punch = Mathf.LerpUnclamped(1f + (punchScale - 1f) * _punchStrength, 1f, Easing.OutBack(punchT));
 			float breathing = 1f + idlePulse * Mathf.Sin(Time.unscaledTime * 7f);
 			float tierScale = 1f + tierScaleStep * _tierIndex;
 
@@ -383,14 +383,14 @@ namespace Game.UI
 
 			// The glow flares on a kill and settles; the ring grows off the number and fades.
 			Color glowColor = glow.color;
-			glowColor.a = Mathf.Lerp(1f, glowRestAlpha, EaseOutCubic(punchT));
+			glowColor.a = Mathf.Lerp(1f, glowRestAlpha, Easing.OutCubic(punchT));
 			glow.color = glowColor;
-			glow.rectTransform.localScale = Vector3.one * Mathf.Lerp(1.5f, 1f, EaseOutCubic(punchT)) * tierScale;
+			glow.rectTransform.localScale = Vector3.one * Mathf.Lerp(1.5f, 1f, Easing.OutCubic(punchT)) * tierScale;
 
 			Color ringColor = ring.color;
 			ringColor.a = _ringStrength * (1f - punchT);
 			ring.color = ringColor;
-			ring.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.8f, ringScale, EaseOutCubic(punchT));
+			ring.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.8f, ringScale, Easing.OutCubic(punchT));
 		}
 
 		// The bar drains until the next kill, flashes white on a kill, and blinks red when the combo is about to break.
@@ -400,7 +400,7 @@ namespace Game.UI
 			barFill.localScale = new Vector3(fill, 1f, 1f);
 
 			ComboTier tier = tiers[_tierIndex];
-			Color color = Color.Lerp(Color.white, tier.bottomColor, EaseOutCubic(Mathf.Clamp01(_punchTime / 0.2f)));
+			Color color = Color.Lerp(Color.white, tier.bottomColor, Easing.OutCubic(Mathf.Clamp01(_punchTime / 0.2f)));
 			if (_state == State.Active && fill < lowTimeThreshold)
 			{
 				bool blink = Mathf.Repeat(Time.unscaledTime * lowTimeBlinkRate, 1f) < 0.5f;
@@ -417,8 +417,8 @@ namespace Game.UI
 			float fade = Mathf.Clamp01((_titleTime - titleSlamDuration - titleHoldDuration) / titleFadeDuration);
 
 			milestone.alpha = Mathf.Clamp01(slam * 3f) * (1f - fade);
-			milestoneRect.localScale = Vector3.one * Mathf.LerpUnclamped(titleStartScale, 1f, EaseOutBack(slam));
-			milestoneRect.anchoredPosition = _titleHome + new Vector2(0f, titleRiseDistance * EaseOutCubic(fade));
+			milestoneRect.localScale = Vector3.one * Mathf.LerpUnclamped(titleStartScale, 1f, Easing.OutBack(slam));
+			milestoneRect.anchoredPosition = _titleHome + new Vector2(0f, titleRiseDistance * Easing.OutCubic(fade));
 		}
 
 		// A regular kill throws a few sparks to the left (into the screen). A new tier bursts all around.
@@ -463,14 +463,5 @@ namespace Game.UI
 			}
 		}
 
-		private static float EaseOutCubic(float t) => 1f - Mathf.Pow(1f - t, 3f);
-
-		// Overshoots 1 before settling, which gives the slam and the punch their bounce.
-		private static float EaseOutBack(float t)
-		{
-			const float overshoot = 1.70158f;
-			float shifted = t - 1f;
-			return 1f + (overshoot + 1f) * shifted * shifted * shifted + overshoot * shifted * shifted;
-		}
 	}
 }
