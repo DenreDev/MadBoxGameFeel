@@ -48,7 +48,7 @@ namespace Game.GamePlay.Enemies
 			if (!_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) return;
 			if (!_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemyState)) return;
 
-			enemyView.PlayWindup(duration, enemyState.Config.AttackRange + enemyState.Config.LungeDistance);
+			enemyView.PlayWindup(duration, enemyState.Config.AttackReach);
 		}
 
 		private void OnEnemyStrikeStarted(int enemyId)
@@ -61,8 +61,7 @@ namespace Game.GamePlay.Enemies
 			if (!_enemyViews.TryGetValue(enemyId, out EnemyView enemyView)) return;
 			if (!_enemiesController.Enemies.TryGetValue(enemyId, out EnemyState enemyState)) return;
 
-			bool isAttacking = enemyState.AttackPhase != EnemyAttackPhase.None;
-			enemyView.PlayHit(damage, enemyState.Health, enemyState.Config.InitialHealth, isCritical, isAttacking);
+			enemyView.PlayHit(damage, enemyState.Health, enemyState.Config.InitialHealth, isCritical, enemyState.IsAttacking);
 		}
 
 		// Killed enemies leave the dictionary here and go back to the pool after the death animation,

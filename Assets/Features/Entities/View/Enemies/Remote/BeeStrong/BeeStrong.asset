@@ -19,10 +19,7 @@ MonoBehaviour:
   attackCooldown: 0.8
   attackDamage: 30
   attackRange: 6
-  attackWindupDuration: 1.15
-  attackDuration: 0.58
-  lungeDistance: 0
-  explodesOnContact: 0
+  attack: {fileID: 11400000, guid: ec300fc38804644478feecd267c50710, type: 2}
   prefab:
     m_AssetGUID: ca1a34fa598404dffb62f942ff786abb
     m_SubObjectName: 
