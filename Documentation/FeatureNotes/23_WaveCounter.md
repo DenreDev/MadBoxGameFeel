@@ -107,28 +107,16 @@ Waves were invisible to the player, so the game's escalation was hard to read. A
 
 ## 14. README entry
 
-### Wave counter — 7 min
+### Wave counter — 7 min + 3 min refactor
 - **Implemented:** to explain to the player what is going on, a "WAVE n" badge now sits at the top of the screen and a big banner with a short fanfare announces each new wave. The number punches and a glow pulses on every change. Details in [the feature note](Documentation/FeatureNotes/23_WaveCounter.md).
-- **Time:** 7 min
+- **Time:** 7 min initially; 3 min for the view refactor (provided by the human).
 - **Bottleneck:** not confirmed.
 - **Addressables:** the generated stinger is preloaded from the `Audio` group.
 
 ## View split — 2026-10-09
 Requested as a code refactor: separate badge and banner scripts. WaveCounterView is the entry point on WaveCounter, with serialized badgeView/bannerView references and public Badge/Banner accessors. WaveBadgeView lives on Badge and WaveBannerView on Banner. Child views expose ShowWave and ResetVisuals and have no services or event subscriptions. Existing references, tuning, easing, reset behavior and unscaled timing are preserved; the entry point keeps the original script GUID.
 
-Measured follow-up work (UTC):
-- Analysis: 10:08:04 → 10:08:57, 53 s.
-- Implementation: 10:08:57 → 10:10:35, 1 min 38 s.
-- Validation: 10:10:35 → 10:12:09, 1 min 34 s.
-- Total through validation: 4 min 05 s. Initial instruction-reading/tool recovery and documentation time are not included because they were not separately timed.
-
-Validation: Unity compiled Game.UI successfully and loaded both component types with all serialized UI references assigned. Animation expressions match the original. No new play-mode check was performed. The MCP script validator reported duplicate signatures for method calls; Unity's actual compiler succeeded.
-
-The human requested a wave entry point with access to both child views, with each script on its relevant GameObject. No additional player-facing issue or human bottleneck wording was supplied.
-Entry-point and hierarchy follow-up (UTC):
-- Analysis: 10:14:50 → 10:15:19, 29 s.
-- Implementation: 10:15:19 → 10:16:23, 1 min 04 s.
-- Validation: 10:16:23 → 10:19:39, 3 min 16 s.
-- Follow-up total through validation: 4 min 49 s; combined refactor work: 8 min 54 s. Documentation time is not included.
-- Unity compiled the updated Game.UI assembly successfully. Loaded-scene inspection confirmed the parent has only WaveCounterView, its Badge/Banner properties reference the two child components, and all child UI references/tuning values remain assigned.
-- The Unity connector initially timed out after refresh and recovered when compilation was requested again. No play-mode check was performed.
+- **Refactor time:** 3 min, provided by the human. Combined recorded wave-counter time: 10 min. No phase breakdown was supplied.
+- **Validation:** Unity compiled Game.UI successfully. Loaded-scene inspection confirmed WaveCounterView references the badge and banner components on their respective objects; all UI references and tuning values remain assigned. No new play-mode check was performed.
+- **Reason:** the human requested a wave entry point with access to both child views, each on its relevant GameObject.
+- **Bottleneck:** no human wording supplied.
