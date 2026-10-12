@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: bee_small
   initialHealth: 25
-  speed: 7
+  speed: 6.5
   bodyRadius: 0.4
   attackCooldown: 0
   attackDamage: 3

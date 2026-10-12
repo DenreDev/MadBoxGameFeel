@@ -18,9 +18,9 @@ MonoBehaviour:
   bodyRadius: 0.6
   attackCooldown: 0.5
   attackDamage: 6
-  attackRange: 2
-  attackWindupDuration: 0.25
-  attackDuration: 0.58
+  attackRange: 1.5
+  attackWindupDuration: 0.7
+  attackDuration: 0.7
   lungeDistance: 1
   explodesOnContact: 0
   prefab:

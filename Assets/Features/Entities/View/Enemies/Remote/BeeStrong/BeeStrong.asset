@@ -17,9 +17,9 @@ MonoBehaviour:
   speed: 2.7
   bodyRadius: 1.1
   attackCooldown: 0.8
-  attackDamage: 20
-  attackRange: 3.5
-  attackWindupDuration: 0.9
+  attackDamage: 30
+  attackRange: 6
+  attackWindupDuration: 1.15
   attackDuration: 0.58
   lungeDistance: 0
   explodesOnContact: 0
