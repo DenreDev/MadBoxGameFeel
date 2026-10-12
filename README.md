@@ -186,4 +186,3 @@ Times are rounded estimates based on recorded sessions and corrections for waiti
 ## Comments
 
 - I went about 30 minutes over the four-hour limit. I went too deep into the features and spent about 1 hour on refactoring and robustness (config split, Addressables preload, view lifetimes).
-- No paid Asset Store package is used. All in-game text uses Liberation Sans (open-source, shipped with TextMeshPro).
