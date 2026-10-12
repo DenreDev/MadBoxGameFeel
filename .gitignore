@@ -69,3 +69,6 @@ env
 last-built-commit
 android_account_key
 ./tmp*
+
+# Private review preparation notes and screenshots
+/Documentation/FeatureNotes/
