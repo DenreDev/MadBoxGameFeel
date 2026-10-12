@@ -62,11 +62,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bf4dd906ca10d594a833f0c57fc468df
-    m_Address: VFX/SwordSlash
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c622901844d1e2b4bbfcf85033246607
     m_Address: VFX/StepPuff
     m_ReadOnly: 0
