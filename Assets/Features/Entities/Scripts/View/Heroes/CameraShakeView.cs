@@ -33,7 +33,7 @@ namespace Game.GamePlay.Heroes
 			_enemiesController = entitiesService.EnemiesController;
 			_enemiesController.OnEnemyDamaged += OnEnemyDamaged;
 			_enemiesController.OnEnemyKilled += OnEnemyKilled;
-			_heroController.OnAttacked += OnHeroAttacked;
+			_heroController.Attack.OnAttacked += OnHeroAttacked;
 			_heroController.OnDamaged += OnHeroDamaged;
 			_heroController.OnDied += OnHeroDied;
 		}
@@ -48,7 +48,7 @@ namespace Game.GamePlay.Heroes
 			}
 			if (_heroController != null)
 			{
-				_heroController.OnAttacked -= OnHeroAttacked;
+				_heroController.Attack.OnAttacked -= OnHeroAttacked;
 				_heroController.OnDamaged -= OnHeroDamaged;
 				_heroController.OnDied -= OnHeroDied;
 			}

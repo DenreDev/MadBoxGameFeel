@@ -9,7 +9,7 @@ namespace Game.GamePlay.Heroes
 {
 	// The feel of the hero's current weapon when it swings and lands: the whoosh, the impact sounds and the freeze frame on big blows.
 	// Every value comes from the weapon's own configs (WeaponConfig.Sounds and HitStop), so switching weapons switches the feel.
-	// Only presentation: it listens to the gameplay events, the damage rules live in HeroController and EnemiesController.
+	// Only presentation: it listens to the gameplay events, the damage rules live in HeroAttack and EnemiesController.
 	public class WeaponFeedbackView : MonoBehaviour
 	{
 		private HeroController _heroController;
@@ -36,7 +36,7 @@ namespace Game.GamePlay.Heroes
 			_audio = ServicesLocator.Instance.GetService<FeedbackAudioService>();
 			_hitStop = ServicesLocator.Instance.GetService<HitStopService>();
 
-			_heroController.OnAttackStarted += OnHeroAttackStarted;
+			_heroController.Attack.OnAttackStarted += OnHeroAttackStarted;
 			_enemiesController.OnEnemyDamaged += OnEnemyDamaged;
 			_enemiesController.OnEnemyKilled += OnEnemyKilled;
 		}
@@ -44,7 +44,7 @@ namespace Game.GamePlay.Heroes
 		private void OnDestroy()
 		{
 			ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
-			if (_heroController != null) _heroController.OnAttackStarted -= OnHeroAttackStarted;
+			if (_heroController != null) _heroController.Attack.OnAttackStarted -= OnHeroAttackStarted;
 			if (_enemiesController != null)
 			{
 				_enemiesController.OnEnemyDamaged -= OnEnemyDamaged;

@@ -58,7 +58,7 @@ namespace Game.GamePlay.Entities
 			if (weapon == null) return;
 
 			if (weapon.Sounds != null) await weapon.Sounds.PreloadAssets(_assets);
-			if (weapon.RangeDisplay != null) await weapon.RangeDisplay.PreloadAssets(_assets);
+			if (weapon.Attack != null) await weapon.Attack.PreloadAssets(_assets);
 		}
 	}
 }

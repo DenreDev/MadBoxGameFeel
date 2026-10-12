@@ -11,7 +11,7 @@ namespace Game.GamePlay.Heroes
 	// Anything whose center is inside it when the slash lands is hit, so the player reads what he hits.
 	// During the swing windup a brighter fill grows from the hero to the arc and touches it when the damage lands, then the slash makes the cone pulse once and the fill fades.
 	// The cone is a child of the hero, so it turns with him. It is rebuilt when the weapon changes, and hidden on the start screen and while he is dead.
-	// Only presentation: the hit rule lives in HeroController, this reads the same WeaponConfig values. The look is the weapon's AttackRangeConfig (none = no cone).
+	// Only presentation: the hit rule lives in HeroAttack, this reads the same WeaponConfig values. The look is the weapon's SlashAttack.RangeDisplay (none, or another kind of attack = no cone).
 	public class AttackRangeView : MonoBehaviour
 	{
 		private const float GroundOffset = 0.03f; // just above the hero ring (0.02), under the feet effects
@@ -60,8 +60,8 @@ namespace Game.GamePlay.Heroes
 			_weaponsService = ServicesLocator.Instance.GetService<WeaponsService>();
 			_gameFlowService = ServicesLocator.Instance.GetService<GameFlowService>();
 			_heroController.OnStateChanged += OnHeroStateChanged;
-			_heroController.OnAttackStarted += OnHeroAttackStarted;
-			_heroController.OnAttacked += OnHeroAttacked;
+			_heroController.Attack.OnAttackStarted += OnHeroAttackStarted;
+			_heroController.Attack.OnAttacked += OnHeroAttacked;
 			_weaponsService.OnWeaponChanged += OnWeaponChanged;
 			_gameFlowService.OnStateChanged += OnGameStateChanged;
 
@@ -74,8 +74,8 @@ namespace Game.GamePlay.Heroes
 			if (_heroController != null)
 			{
 				_heroController.OnStateChanged -= OnHeroStateChanged;
-				_heroController.OnAttackStarted -= OnHeroAttackStarted;
-				_heroController.OnAttacked -= OnHeroAttacked;
+				_heroController.Attack.OnAttackStarted -= OnHeroAttackStarted;
+				_heroController.Attack.OnAttacked -= OnHeroAttacked;
 			}
 			if (_weaponsService != null) _weaponsService.OnWeaponChanged -= OnWeaponChanged;
 			if (_gameFlowService != null) _gameFlowService.OnStateChanged -= OnGameStateChanged;
@@ -93,15 +93,15 @@ namespace Game.GamePlay.Heroes
 			Refresh();
 		}
 
-		// The fill grows over the windup, so it reaches the arc when the damage lands (HeroController waits HitDelay before the slash).
+		// The fill grows over the windup, so it reaches the arc when the damage lands (the slash waits HitDelay before it hits).
 		private void OnHeroAttackStarted(int targetId)
 		{
-			WeaponConfig weapon = _weaponsService.CurrentWeapon;
-			if (_cone == null || !_cone.activeSelf || _fillMeshFilter.sharedMesh == null || weapon == null) return;
+			SlashAttack slash = _weaponsService.CurrentWeapon != null ? _weaponsService.CurrentWeapon.Attack as SlashAttack : null;
+			if (_cone == null || !_cone.activeSelf || _fillMeshFilter.sharedMesh == null || slash == null) return;
 
 			_isCharging = true;
 			_chargeStartTime = Time.time;
-			_chargeDuration = weapon.HitDelay;
+			_chargeDuration = slash.HitDelay;
 			enabled = true;
 		}
 
@@ -198,7 +198,9 @@ namespace Game.GamePlay.Heroes
 			_meshFilter.sharedMesh = null;
 			_fillMeshFilter.sharedMesh = null;
 
-			_look = weapon != null ? weapon.RangeDisplay : null;
+			// Only a slash has a cone to show: any other attack leaves the weapon without one.
+			SlashAttack slash = weapon != null ? weapon.Attack as SlashAttack : null;
+			_look = slash != null ? slash.RangeDisplay : null;
 			Material material = _look != null ? _assets.Get(_look.Material) : null;
 			_meshRenderer.sharedMaterial = material;
 			_fillMeshRenderer.sharedMaterial = material;
@@ -206,13 +208,13 @@ namespace Game.GamePlay.Heroes
 			if (material != null)
 			{
 				_baseColor = material.HasProperty(BaseColorId) ? material.GetColor(BaseColorId) : Color.white;
-				_mesh = BuildCone(weapon.Range, weapon.ArcAngle, _look.EdgeWidth, 0f, _look.FillAlpha, _look.EdgeAlpha);
+				_mesh = BuildCone(weapon.Range, slash.ArcAngle, _look.EdgeWidth, 0f, _look.FillAlpha, _look.EdgeAlpha);
 				_meshFilter.sharedMesh = _mesh;
 
 				if (_look.ChargeAlpha > 0f || _look.ChargeEdgeAlpha > 0f)
 				{
 					// Even strength from the hero to the rim, so it reads as a solid area filling up, with a brighter front.
-					_fillMesh = BuildCone(weapon.Range, weapon.ArcAngle, _look.EdgeWidth, _look.ChargeAlpha, _look.ChargeAlpha, _look.ChargeEdgeAlpha);
+					_fillMesh = BuildCone(weapon.Range, slash.ArcAngle, _look.EdgeWidth, _look.ChargeAlpha, _look.ChargeAlpha, _look.ChargeEdgeAlpha);
 					_fillMeshFilter.sharedMesh = _fillMesh;
 				}
 			}

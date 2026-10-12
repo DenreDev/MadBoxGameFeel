@@ -17,6 +17,8 @@ MonoBehaviour:
   range: 5
   cooldown: 2
   prefab: {fileID: -3291902027411944700, guid: bac79aa2a0057e5429a664d3f336da3d, type: 3}
+  attack: {fileID: 11400000, guid: 39b89ac0c2dacea49964f671c444dfda, type: 2}
+  critChance: 0.15
+  critMultiplier: 1.5
   sounds: {fileID: 11400000, guid: 3838b86e592c429c89346a1a6bbd8d09, type: 2}
   hitStop: {fileID: 11400000, guid: c28eec191b65465fa8871af8a2ebde45, type: 2}
-  rangeDisplay: {fileID: 11400000, guid: ad68d24476e347c7a4741077088c1576, type: 2}

@@ -17,12 +17,8 @@ MonoBehaviour:
   range: 4.2
   cooldown: 0.8
   prefab: {fileID: 7602662686883965424, guid: 17cf6e9fc28f3a544bc062d510f66f4a, type: 3}
-  hitDelay: 0.33
-  swingDuration: 0.86
-  maxTargets: 3
-  arcAngle: 120
+  attack: {fileID: 11400000, guid: eb49ddf0cb497674f89f28f784a4dd60, type: 2}
   critChance: 0.3
   critMultiplier: 1.5
   sounds: {fileID: 11400000, guid: 3838b86e592c429c89346a1a6bbd8d09, type: 2}
   hitStop: {fileID: 11400000, guid: c28eec191b65465fa8871af8a2ebde45, type: 2}
-  rangeDisplay: {fileID: 11400000, guid: ad68d24476e347c7a4741077088c1576, type: 2}

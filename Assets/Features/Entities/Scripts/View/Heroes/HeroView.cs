@@ -41,9 +41,6 @@ namespace Game.GamePlay.Heroes
 		private Vector2 _currentMovementInput;
 		private WeaponView _currentWeaponView;
 		private float _lastHitReactionTime = float.NegativeInfinity;
-		private Vector3 _attackDirection;
-		private int _swingTargetId;
-		private float _swingEndTime = float.NegativeInfinity;
 		private bool _isDead;
 
 		private void Start()
@@ -68,7 +65,7 @@ namespace Game.GamePlay.Heroes
 
 			_joystickInputService.OnStateChanged += OnJoystickStateChanged;
 			_heroController.OnStateChanged += OnHeroStateChanged;
-			_heroController.OnAttackStarted += OnHeroAttackStarted;
+			_heroController.Attack.OnAttackStarted += OnHeroAttackStarted;
 			_heroController.OnDamaged += OnHeroDamaged;
 			_heroController.OnDied += OnHeroDied;
 			_weaponsService.OnWeaponChanged += OnWeaponChanged;
@@ -101,7 +98,7 @@ namespace Game.GamePlay.Heroes
 			if (_heroController != null)
 			{
 				_heroController.OnStateChanged -= OnHeroStateChanged;
-				_heroController.OnAttackStarted -= OnHeroAttackStarted;
+				_heroController.Attack.OnAttackStarted -= OnHeroAttackStarted;
 				_heroController.OnDamaged -= OnHeroDamaged;
 				_heroController.OnDied -= OnHeroDied;
 			}
@@ -133,7 +130,6 @@ namespace Game.GamePlay.Heroes
 			// Restart: bring the launched model back before the Death animation blends out.
 			if (_isDead && !heroState.IsDead && deathLaunch != null) deathLaunch.Restore();
 			_isDead = heroState.IsDead;
-			if (_isDead) _swingEndTime = float.NegativeInfinity;
 
 			if (animator == null) return;
 
@@ -152,8 +148,8 @@ namespace Game.GamePlay.Heroes
 
 			_lastHitReactionTime = Time.time;
 
-			// The flinch would cut the swing short: the flash and punch still play, the animation does not.
-			if (animator != null && Time.time >= _swingEndTime) animator.SetTrigger(HitHash);
+			// The flinch would cut the attack short: the flash and punch still play, the animation does not.
+			if (animator != null && !_heroController.Attack.IsAttacking) animator.SetTrigger(HitHash);
 			if (hitFeedback != null) hitFeedback.Play();
 		}
 
@@ -183,16 +179,9 @@ namespace Game.GamePlay.Heroes
 			return away;
 		}
 
-		// The swing starts: play the animation and keep the hero turned toward his target until it is over.
+		// The attack starts: play the animation. The turn toward the target is handled in Update, for as long as the attack lasts.
 		private void OnHeroAttackStarted(int targetEnemyId)
 		{
-			_swingTargetId = targetEnemyId;
-			_attackDirection = -transform.forward; // fallback when the target is on top of the hero or gone
-			TrackSwingTarget();
-
-			WeaponConfig weapon = _weaponsService.CurrentWeapon;
-			_swingEndTime = Time.time + (weapon != null ? weapon.SwingDuration : 0f);
-
 			if (animator != null) animator.SetTrigger(AttackHash);
 		}
 
@@ -207,28 +196,16 @@ namespace Game.GamePlay.Heroes
 				return;
 			}
 
-			// A swing wins over the movement direction until it is over, so the hero visibly aims at what he hits.
-			if (Time.time < _swingEndTime)
+			// An attack wins over the movement direction until it is over, so the hero visibly aims at what he hits.
+			if (_heroController.Attack.IsAttacking)
 			{
-				TrackSwingTarget();
-				TurnToward(_attackDirection);
+				TurnToward(_heroController.Attack.AimDirection);
 				return;
 			}
 
 			if (_currentMovementInput.sqrMagnitude <= 0.01f) return;
 
 			TurnToward(new Vector3(-_currentMovementInput.x, 0f, -_currentMovementInput.y));
-		}
-
-		// The aim follows the target while the hero walks and the enemy chases: a direction fixed at the start of the swing would be stale when the sword lands.
-		// A target that died keeps the last direction.
-		private void TrackSwingTarget()
-		{
-			if (!_enemiesController.Enemies.TryGetValue(_swingTargetId, out EnemyState target)) return;
-
-			Vector3 direction = target.Position - transform.position;
-			direction.y = 0f;
-			if (direction.sqrMagnitude > 0.01f) _attackDirection = direction;
 		}
 
 		private void FaceCamera()
