@@ -29,6 +29,7 @@ namespace Game.GamePlay.Enemies
 		private Dictionary<int, EnemyState> _enemies;
 		private CancellationTokenSource _cancellationTokenSource;
 		private int _nextEnemyId;
+		private readonly List<int> _updateIds = new List<int>(); // reused by UpdateLoop: no allocation per frame
 		private readonly List<int> _bodyIds = new List<int>(); // reused by ResolveOverlaps and ShoveNeighbours
 		private readonly HashSet<int> _pushedIds = new HashSet<int>();
 
@@ -116,10 +117,12 @@ namespace Game.GamePlay.Enemies
 					continue;
 				}
 
-				List<int> enemiesToUpdate = new List<int>(_enemies.Keys);
-				for (int i = 0; i < enemiesToUpdate.Count; i++)
+				// A copy of the ids: an enemy can be removed during the update (a kamikaze explodes).
+				_updateIds.Clear();
+				_updateIds.AddRange(_enemies.Keys);
+				for (int i = 0; i < _updateIds.Count; i++)
 				{
-					int enemyId = enemiesToUpdate[i];
+					int enemyId = _updateIds[i];
 					if (!_enemies.TryGetValue(enemyId, out EnemyState enemy)) continue;
 
 					UpdateEnemy(enemy);

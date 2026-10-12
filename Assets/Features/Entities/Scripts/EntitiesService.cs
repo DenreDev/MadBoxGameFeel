@@ -43,12 +43,14 @@ namespace Game.GamePlay.Entities
 			return true;
 		}
 
-		public UniTask Reset()
+		// Stops every gameplay loop, in reverse order of creation: the spawner feeds the enemies, the enemies read the hero.
+		public async UniTask Reset()
 		{
 			if (HeroController != null) HeroController.OnDied -= OnHeroDied;
 			if (_gameFlowService != null) _gameFlowService.OnStateChanged -= OnGameStateChanged;
 			_waveSpawner?.Reset();
-			return default;
+			if (EnemiesController != null) await EnemiesController.Reset();
+			if (HeroController != null) await HeroController.Reset();
 		}
 
 		private void OnHeroDied() => _gameFlowService.EndGame();

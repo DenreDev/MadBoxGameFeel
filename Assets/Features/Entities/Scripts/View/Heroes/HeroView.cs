@@ -90,7 +90,7 @@ namespace Game.GamePlay.Heroes
 
 		private void OnDestroy()
 		{
-			ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
+			if (ServicesLocator.Instance != null) ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
 			if (_joystickInputService != null)
 			{
 				_joystickInputService.OnStateChanged -= OnJoystickStateChanged;

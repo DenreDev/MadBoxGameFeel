@@ -39,7 +39,7 @@ namespace Game.JoystickInput
 
 		private void OnDestroy()
 		{
-			ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
+			if (ServicesLocator.Instance != null) ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
 			JoystickInputService joystickInputService = ServicesLocator.Instance.GetService<JoystickInputService>();
 			if(joystickInputService != null) joystickInputService.OnStateChanged -= OnJoystickStateChanged;
 			if (_heroController != null) _heroController.OnStateChanged -= OnHeroStateChanged;

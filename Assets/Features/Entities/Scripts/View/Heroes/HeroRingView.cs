@@ -38,7 +38,7 @@ namespace Game.GamePlay.Heroes
 
 		private void OnDestroy()
 		{
-			ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
+			if (ServicesLocator.Instance != null) ServicesLocator.Instance.OnAllServicesInitialized -= OnServicesInitialized;
 			if (_heroController != null) _heroController.OnStateChanged -= OnHeroStateChanged;
 			if (_gameFlowService != null) _gameFlowService.OnStateChanged -= OnGameStateChanged;
 		}
