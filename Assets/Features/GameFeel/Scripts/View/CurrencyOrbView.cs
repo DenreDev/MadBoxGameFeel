@@ -8,22 +8,6 @@ namespace Game.GameFeel
 	{
 		private enum Phase { Burst, Rest, Windup, Magnet, Vanish }
 
-		// Implementation details, not designer values.
-		private const float PopDuration = 0.2f; // spawn pop
-		private const float PopOvershoot = 2.5f;
-		private const float LandSquash = 0.3f;
-		private const float LandSquashDuration = 0.15f;
-		private const float MinBounceSpeed = 2f; // landing slower than this ends the bounce
-		private const float BounceFriction = 0.7f; // horizontal speed kept at each bounce
-		private const float BobHeight = 0.08f;
-		private const float BobSpeed = 4f;
-		private const float WindupSquash = 0.7f; // body size at the end of the windup
-		private const float MagnetGrowDuration = 0.15f;
-		private const float MagnetScale = 1.25f;
-		private const float ArrivalShrinkDistance = 1.5f; // the orb shrinks as it gets sucked into the hero
-		private const float SteerRate = 10f; // how fast the velocity turns toward the hero
-		private const float VanishDuration = 0.15f;
-
 		[SerializeField, Tooltip("Billboard root: faces the camera, gets the pop, squash and bob")]
 		private Transform visual;
 		[SerializeField, Tooltip("Soft halo behind the orb, pulses while resting and swells when the orb is called")]
@@ -119,7 +103,7 @@ namespace Game.GameFeel
 				position.y = restY;
 				_landTime = Time.time;
 
-				if (-_velocity.y < MinBounceSpeed)
+				if (-_velocity.y < _config.MinBounceSpeed)
 				{
 					transform.position = position;
 					SetPhase(Phase.Rest);
@@ -127,8 +111,8 @@ namespace Game.GameFeel
 				}
 
 				_velocity.y = -_velocity.y * _config.Bounciness;
-				_velocity.x *= BounceFriction;
-				_velocity.z *= BounceFriction;
+				_velocity.x *= _config.BounceFriction;
+				_velocity.z *= _config.BounceFriction;
 			}
 
 			transform.position = position;
@@ -157,7 +141,7 @@ namespace Game.GameFeel
 			float eased = 1f - (1f - progress) * (1f - progress);
 
 			transform.position = Vector3.Lerp(_windupFrom, _windupTo, eased);
-			_phaseScale = Mathf.Lerp(1f, WindupSquash, eased);
+			_phaseScale = Mathf.Lerp(1f, _config.WindupSquash, eased);
 			_glowBoost = Mathf.Lerp(1f, 1.8f, eased);
 
 			if (progress >= 1f) StartMagnet();
@@ -191,7 +175,7 @@ namespace Game.GameFeel
 
 			_speed = Mathf.Min(_config.MaxSpeed, _speed + _config.AttractAcceleration * Time.deltaTime);
 			Vector3 desired = distance > 0.0001f ? toTarget / distance * _speed : Vector3.zero;
-			_velocity = Vector3.Lerp(_velocity, desired, 1f - Mathf.Exp(-SteerRate * Time.deltaTime));
+			_velocity = Vector3.Lerp(_velocity, desired, 1f - Mathf.Exp(-_config.SteerRate * Time.deltaTime));
 
 			if (distance <= _config.CollectRadius || _velocity.magnitude * Time.deltaTime >= distance)
 			{
@@ -201,14 +185,14 @@ namespace Game.GameFeel
 
 			transform.position += _velocity * Time.deltaTime;
 
-			float grow = Mathf.Lerp(WindupSquash, MagnetScale, Mathf.Clamp01((Time.time - _phaseStart) / MagnetGrowDuration));
-			_phaseScale = grow * Mathf.Clamp01(distance / ArrivalShrinkDistance);
+			float grow = Mathf.Lerp(_config.WindupSquash, _config.MagnetScale, Mathf.Clamp01((Time.time - _phaseStart) / _config.MagnetGrowDuration));
+			_phaseScale = grow * Mathf.Clamp01(distance / _config.ArrivalShrinkDistance);
 			_glowBoost = 1.4f;
 		}
 
 		private void UpdateVanish()
 		{
-			float progress = Mathf.Clamp01((Time.time - _phaseStart) / VanishDuration);
+			float progress = Mathf.Clamp01((Time.time - _phaseStart) / _config.VanishDuration);
 			_phaseScale = 1f - progress;
 
 			if (progress >= 1f) Destroy(gameObject);
@@ -245,28 +229,21 @@ namespace Game.GameFeel
 		{
 			float time = Time.time;
 
-			float pop = EaseOutBack(Mathf.Clamp01((time - _spawnTime) / PopDuration), PopOvershoot);
-			float landing = 1f - Mathf.Clamp01((time - _landTime) / LandSquashDuration);
-			float squash = LandSquash * landing * landing;
-			float bob = _phase == Phase.Rest ? Mathf.Sin(time * BobSpeed + _bobOffset) * BobHeight : 0f;
+			float pop = Easing.OutBack(Mathf.Clamp01((time - _spawnTime) / _config.PopDuration), _config.PopOvershoot);
+			float landing = 1f - Mathf.Clamp01((time - _landTime) / _config.LandSquashDuration);
+			float squash = _config.LandSquash * landing * landing;
+			float bob = _phase == Phase.Rest ? Mathf.Sin(time * _config.BobSpeed + _bobOffset) * _config.BobHeight : 0f;
 
 			visual.localPosition = Vector3.up * bob;
 			visual.localScale = new Vector3(1f + squash, 1f - squash, 1f) * (_phaseScale * pop);
 
-			float pulse = _phase == Phase.Rest ? 1f + Mathf.Sin(time * BobSpeed * 1.5f + _bobOffset) * 0.15f : 1f;
+			float pulse = _phase == Phase.Rest ? 1f + Mathf.Sin(time * _config.BobSpeed * 1.5f + _bobOffset) * 0.15f : 1f;
 			glow.localScale = _glowBaseScale * (_glowBoost * pulse * pop);
 
 			// The shadow stays on the floor under the orb and shrinks with the height.
 			float height = Mathf.Max(0f, transform.position.y - (_floorY + _config.RestHeight));
 			shadow.position = new Vector3(transform.position.x, _floorY + 0.03f, transform.position.z);
 			shadow.localScale = _shadowBaseScale * (Mathf.Lerp(1f, 0.4f, Mathf.Clamp01(height / 3f)) * pop * _phaseScale);
-		}
-
-		// 0 -> 1 with a swing past 1 that settles back (same curve as the enemy spawn pop).
-		private static float EaseOutBack(float t, float overshoot)
-		{
-			float u = t - 1f;
-			return 1f + u * u * ((overshoot + 1f) * u + overshoot);
 		}
 	}
 }

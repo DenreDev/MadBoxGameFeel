@@ -75,6 +75,50 @@ namespace Game.GameFeel
 		[Tooltip("Distance to the hero at which an orb counts as collected, in world units")]
 		private float collectRadius = 0.5f;
 
+		[Header("Orb motion")]
+		[SerializeField, Min(0.01f)]
+		[Tooltip("Seconds of the pop-in when an orb appears")]
+		private float popDuration = 0.2f;
+		[SerializeField, Min(0f)]
+		[Tooltip("How far past full size the pop-in swings before it settles (0 = no overshoot)")]
+		private float popOvershoot = 2.5f;
+		[SerializeField, Range(0f, 0.9f)]
+		[Tooltip("Squash of the orb when it lands on the floor (0.3 = 30% flatter and wider), then it springs back")]
+		private float landSquash = 0.3f;
+		[SerializeField, Min(0.01f)]
+		[Tooltip("Seconds the landing squash takes to recover")]
+		private float landSquashDuration = 0.15f;
+		[SerializeField, Min(0f)]
+		[Tooltip("Landing slower than this (units per second) ends the bouncing: the orb rests")]
+		private float minBounceSpeed = 2f;
+		[SerializeField, Range(0f, 1f)]
+		[Tooltip("Share of its sideways speed an orb keeps at each bounce")]
+		private float bounceFriction = 0.7f;
+		[SerializeField, Min(0f)]
+		[Tooltip("Height of the slow bob while the orb rests, in world units")]
+		private float bobHeight = 0.08f;
+		[SerializeField, Min(0f)]
+		[Tooltip("Speed of the resting bob and glow pulse")]
+		private float bobSpeed = 4f;
+		[SerializeField, Range(0.1f, 1f)]
+		[Tooltip("Size of the orb at the end of the wind-up (1 = no squash)")]
+		private float windupSquash = 0.7f;
+		[SerializeField, Min(0.01f)]
+		[Tooltip("Seconds the orb takes to swell once it leaves for the hero")]
+		private float magnetGrowDuration = 0.15f;
+		[SerializeField, Min(0.1f)]
+		[Tooltip("Size of the orb while it flies to the hero")]
+		private float magnetScale = 1.25f;
+		[SerializeField, Min(0.01f)]
+		[Tooltip("Distance to the hero under which the orb shrinks as it is sucked in, in world units")]
+		private float arrivalShrinkDistance = 1.5f;
+		[SerializeField, Min(0f)]
+		[Tooltip("How fast the orb's velocity turns toward the hero: low = wide lazy curve, high = homing")]
+		private float steerRate = 10f;
+		[SerializeField, Min(0.01f)]
+		[Tooltip("Seconds an orb takes to shrink away when the round ends")]
+		private float vanishDuration = 0.15f;
+
 		[Header("Sound")]
 		[SerializeField, Range(0f, 1f)]
 		[Tooltip("Volume of the pop when the orbs burst out")]
@@ -112,6 +156,20 @@ namespace Game.GameFeel
 		public float AttractCurve => attractCurve;
 		public float TargetHeight => targetHeight;
 		public float CollectRadius => collectRadius;
+		public float PopDuration => popDuration;
+		public float PopOvershoot => popOvershoot;
+		public float LandSquash => landSquash;
+		public float LandSquashDuration => landSquashDuration;
+		public float MinBounceSpeed => minBounceSpeed;
+		public float BounceFriction => bounceFriction;
+		public float BobHeight => bobHeight;
+		public float BobSpeed => bobSpeed;
+		public float WindupSquash => windupSquash;
+		public float MagnetGrowDuration => magnetGrowDuration;
+		public float MagnetScale => magnetScale;
+		public float ArrivalShrinkDistance => arrivalShrinkDistance;
+		public float SteerRate => steerRate;
+		public float VanishDuration => vanishDuration;
 		public float DropVolume => dropVolume;
 		public float CollectVolume => collectVolume;
 		public float ChainWindow => chainWindow;
