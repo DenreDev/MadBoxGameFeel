@@ -22,9 +22,6 @@ namespace Game.GameFeel
 
 		public UniTask Reset()
 		{
-			// The numbers pooled by third-party package are copies of a prefab about to be released.
-			DamageNumber.ClearPooled();
-
 			foreach (AsyncOperationHandle<Object> handle in _handles.Values)
 			{
 				if (handle.IsValid()) Addressables.Release(handle);

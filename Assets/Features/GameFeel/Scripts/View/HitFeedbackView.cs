@@ -15,7 +15,7 @@ namespace Game.GameFeel
 
 		private HitFeedbackConfig _config;
 		private DamageNumberConfig _numbers;
-		private DamageNumber _numberPrefab;
+		private DamageNumberView _numberPrefab;
 		private FeedbackAssetsService _assets;
 		private Material _flashMaterial;
 		private Renderer[] _renderers;
@@ -104,27 +104,21 @@ namespace Game.GameFeel
 			if (!_flashing && punch <= 0f && recoil <= 0f) enabled = false;
 		}
 
-		// Floating damage number (third-party package). Position, colors and size come from the DamageNumberConfig, the motion and fades from the prefab.
+		// Floating damage number. Position, colors and size come from the DamageNumberConfig, the motion and fades from the prefab's DamageNumberView.
 		// A critical strike gets its own colors, a "!" and is bigger (on top of the kill size).
 		private void PlayDamageNumber(Vector3 hitPoint, int damage, bool isKillingBlow, bool isCritical)
 		{
 			if (_numberPrefab == null) return;
 
-			DamageNumber number = _numberPrefab.Spawn(hitPoint + Vector3.up * _numbers.Height, damage);
-
-			// Set on every spawn: pooled numbers keep the look of their previous use.
 			Color top = isCritical ? _numbers.CritTopColor : isKillingBlow ? _numbers.KillTopColor : _numbers.HitTopColor;
 			Color bottom = isCritical ? _numbers.CritBottomColor : isKillingBlow ? _numbers.KillBottomColor : _numbers.HitBottomColor;
-			number.SetGradientColor(top, top, bottom, bottom);
 
 			float scale = _numbers.HitScale;
 			if (isKillingBlow) scale *= _numbers.KillScale;
 			if (isCritical) scale *= _numbers.CritScale;
-			number.SetScale(scale);
 
-			number.enableRightText = isCritical;
-			number.rightText = isCritical ? CritNumberSuffix : "";
-			number.UpdateText();
+			DamageNumberView number = Instantiate(_numberPrefab, hitPoint + Vector3.up * _numbers.Height, Quaternion.identity);
+			number.Play(damage, isCritical ? CritNumberSuffix : "", top, bottom, scale);
 		}
 
 		// Takes back the shove, before a new hit or the death launch (which starts from the model's current position).

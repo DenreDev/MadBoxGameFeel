@@ -64,8 +64,8 @@ Times are rounded estimates based on recorded sessions and corrections for waiti
 
 ### Damage numbers
 
-- **Implemented:** every hit on an enemy pops a floating damage number: chunky, outlined, with a color gradient. It slams in, drifts and fades. It is bigger for heavier weapons, and the hit that kills prints a bigger, red-orange number. Built on third-party package, so critical hits or scaling damage can reuse it later.
-- **Addressables:** the damage number prefab is preloaded and pooled from the `VFX` group.
+- **Implemented:** every hit on an enemy pops a floating damage number: chunky, outlined, with a color gradient. It slams in, drifts and fades. It is bigger for heavier weapons, and the hit that kills prints a bigger, red-orange number. Built as one small TextMeshPro component, so critical hits or scaling damage can reuse it later.
+- **Addressables:** the damage number prefab is preloaded from the `VFX` group.
 
 ### Start screen and game flow
 
@@ -185,4 +185,4 @@ Times are rounded estimates based on recorded sessions and corrections for waiti
 
 ## Comments
 
-No additional comments.
+- No paid Asset Store package is used. All in-game text uses Liberation Sans (open-source, shipped with TextMeshPro).

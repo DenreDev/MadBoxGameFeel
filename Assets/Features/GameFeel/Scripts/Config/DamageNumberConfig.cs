@@ -5,13 +5,13 @@ using UnityEngine.AddressableAssets;
 namespace Game.GameFeel
 {
 	// Floating damage number over a body that takes a hit, with its own look for a regular hit, the killing blow and a critical strike.
-	// Plugged into the content that shows numbers (EnemyConfig). The motion, fades and scale by damage are tuned on the third-party package prefab itself.
+	// Plugged into the content that shows numbers (EnemyConfig). The motion, fades and scale by damage are tuned on the prefab's DamageNumberView.
 	[CreateAssetMenu(fileName = "DamageNumbers", menuName = "Feedback/Damage Numbers")]
 	public class DamageNumberConfig : ScriptableObject
 	{
 		[Header("Content")]
 		[SerializeField]
-		[Tooltip("Addressable floating damage number, a third-party package prefab (address VFX/DamageNumber, group VFX)")]
+		[Tooltip("Addressable floating damage number, a prefab with a DamageNumberView (address VFX/DamageNumber, group VFX)")]
 		private AssetReferenceGameObject prefab;
 		[SerializeField]
 		[Tooltip("How far above the hit point (body center) the number appears, in world units")]
@@ -19,7 +19,7 @@ namespace Game.GameFeel
 
 		[Header("Regular hit")]
 		[SerializeField]
-		[Tooltip("Size of a regular hit number (heavier weapons print bigger on top of this, see Scale By Number on the prefab)")]
+		[Tooltip("Size of a regular hit number (heavier weapons print bigger on top of this, see Scale By Damage on the prefab)")]
 		private float hitScale = 1.8f;
 		[SerializeField]
 		[Tooltip("Color at the top of a regular hit number")]
@@ -61,22 +61,18 @@ namespace Game.GameFeel
 		public Color CritTopColor => critTopColor;
 		public Color CritBottomColor => critBottomColor;
 
-		// The prefab is only the template: third-party package instantiates and pools the numbers from it.
-		// Prewarming here keeps the first hit of the game from paying for the number creation (it is a no-op once the pool is full).
 		public async UniTask PreloadAssets(FeedbackAssetsService assets)
 		{
 			await assets.Preload(this, prefab);
 
-			DamageNumber number = GetPrefab(assets);
-			if (number != null) number.PrewarmPool();
-			else if (assets.Get(prefab) != null) Debug.LogWarning($"{name}: the damage number prefab has no DamageNumber component. Damage numbers are disabled.", this);
+			if (assets.Get(prefab) != null && GetPrefab(assets) == null) Debug.LogWarning($"{name}: the damage number prefab has no DamageNumberView component. Damage numbers are disabled.", this);
 		}
 
-		// The third-party package template, or null when it is missing: the hit just shows no number.
-		public DamageNumber GetPrefab(FeedbackAssetsService assets)
+		// The number template, or null when it is missing: the hit just shows no number.
+		public DamageNumberView GetPrefab(FeedbackAssetsService assets)
 		{
 			GameObject loaded = assets.Get(prefab);
-			return loaded != null && loaded.TryGetComponent(out DamageNumber number) ? number : null;
+			return loaded != null && loaded.TryGetComponent(out DamageNumberView number) ? number : null;
 		}
 	}
 }
