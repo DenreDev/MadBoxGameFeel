@@ -41,9 +41,9 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 | Boot, start and game over screens | 14 min |
 | Attack range charge fill | 6 min |
 | Feedback config split (refactor) | 24 min |
-| **Estimated elapsed work** | **About 3 h 50 min** |
+| **Estimated elapsed work** | **About 4 h 30 min** |
 
-Times are rounded estimates based on recorded sessions and corrections for waiting time. The overall estimate accounts for documented overlapping AI-assisted sessions, so the individual feature times do not add up to it.
+Times are rounded estimates based on recorded sessions and corrections for waiting time. The overall estimate accounts for documented overlapping AI-assisted sessions, so the individual feature times do not add up to it. The total is about 30 minutes over the four-hour limit (see Comments).
 
 ### Entity animation state machines
 
@@ -185,4 +185,5 @@ Times are rounded estimates based on recorded sessions and corrections for waiti
 
 ## Comments
 
+- I went about 30 minutes over the four-hour limit. I went too deep into the features and spent about 1 hour on refactoring and robustness (config split, Addressables preload, view lifetimes).
 - No paid Asset Store package is used. All in-game text uses Liberation Sans (open-source, shipped with TextMeshPro).
