@@ -1,6 +1,7 @@
 # Feature Cheat Sheet Template
 
 > Copy into `Documentation/FeatureNotes/` as `NN_FeatureName.md` (e.g. `01_HitFeedback.md`).
+> Keep notes and screenshots private in this Git-ignored directory. Never commit them or link to them from public documentation.
 > Keep it short. It is review preparation: everything here must be explainable aloud.
 > Sections 2 and 3 use the human's reasoning, polished, never invented.
 
@@ -65,10 +66,9 @@ Anything useful learned about the original project (candidate for the README fee
 What the player problem was, what was done, how it is structured, the main trade-off.
 
 ## 14. README entry
-Copied into `README.md` under "Features".
+Copied into `README.md` under "Features". Include no bottleneck entry or link to the private note.
 
 ### <Feature name> — XX min
 - **Implemented:** …
 - **Time:** …
-- **Bottleneck:** …
 - **Addressables:** … (omit if none)

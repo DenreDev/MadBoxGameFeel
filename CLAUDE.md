@@ -21,7 +21,7 @@ They are the source of truth for three areas the human may update at any time:
 4. New runtime assets use **Addressables**, designed as if the project were large and served from a CDN, without over-engineering.
 5. Validate, using real timestamps for phase timing. Never invent time.
 6. Ask the human: why was it created, what issue did it fix, what was the bottleneck. Polish their answers.
-7. Write the feature note in `Documentation/FeatureNotes/` and update `README.md` (implemented, time, bottleneck).
+7. Write the private, Git-ignored feature note in `Documentation/FeatureNotes/` and update `README.md` (implemented, time). Never add bottleneck entries or links to private notes to the README.
 8. Proactively suggest relevant Game Feel features when useful. Build only what the human approves.
 
 Do not refactor unrelated code. Note base-project issues for the README feedback section.

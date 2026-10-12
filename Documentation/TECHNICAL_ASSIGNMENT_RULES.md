@@ -110,11 +110,11 @@ Every gameplay or Game Feel feature produces a record, in this order:
    - What issue did it fix?
    - What was the bottleneck? (what slowed it down or was hardest)
 4. **Polish the human's words** into simple, concise English. Keep their meaning; do not add reasoning they did not give.
-5. **Write the feature note** under `Documentation/FeatureNotes/` from the template (`NN_FeatureName.md`).
-6. **Update `README.md`**: add the feature entry (what was implemented, for how long, bottleneck) and update the time summary table.
+5. **Write the private feature note** under `Documentation/FeatureNotes/` from the template (`NN_FeatureName.md`). Keep this directory Git-ignored; notes and their screenshots are local review preparation and must not be committed or linked from public documentation.
+6. **Update `README.md`**: add the feature entry (what was implemented, for how long) and update the time summary table. Do not include bottleneck entries or links to private feature notes.
 
 `README.md` is expected to be written to throughout the work. Do not invent missing information; flag anything needing human confirmation.
 
 Final README sections (kept current as features land), matching exactly what the assignment asks for: approach, features and time spent, feedback on the base project, additional comments.
 
-README must stay **short and human-readable**: one table for time, a few plain sentences per feature, a link to the feature note for details. No bottleneck write-ups, Addressables lifecycles or generated-asset inventories in the README; those live in the feature notes. Only mention Addressables or generated assets in the README as a short line inside a feature if relevant.
+README must stay **short and human-readable**: one table for time and a few plain sentences per feature. No bottleneck entries, links to private feature notes, Addressables lifecycles or generated-asset inventories in the README; detailed review preparation stays in the private feature notes. Only mention Addressables or generated assets in the README as a short line inside a feature if relevant.
