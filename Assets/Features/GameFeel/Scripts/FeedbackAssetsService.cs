@@ -34,10 +34,12 @@ namespace Game.GameFeel
 			return UniTask.CompletedTask;
 		}
 
-		// Loads every reference not loaded yet. owner is the config asking, named in the warnings.
+		// Starts every reference not loaded yet, side by side (from a CDN the downloads overlap instead of queuing), and returns once they are all done.
+		// owner is the config asking, named in the warnings. A reference another config already started is awaited too, so the caller can rely on Get afterwards.
 		// Failure must never break gameplay: a missing or broken asset only disables its own feedback.
 		public async UniTask Preload(Object owner, params AssetReference[] references)
 		{
+			List<UniTask> loads = new List<UniTask>();
 			foreach (AssetReference reference in references)
 			{
 				if (reference == null || !reference.RuntimeKeyIsValid())
@@ -47,20 +49,27 @@ namespace Game.GameFeel
 				}
 
 				object key = reference.RuntimeKey;
-				if (_handles.ContainsKey(key)) continue;
+				if (!_handles.ContainsKey(key)) _handles[key] = Addressables.LoadAssetAsync<Object>(key);
+				loads.Add(WaitFor(owner, key));
+			}
 
-				AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(key);
-				_handles[key] = handle;
-				try
-				{
-					await handle.ToUniTask();
-				}
-				catch (Exception e)
-				{
-					Debug.LogWarning($"{owner.name}: an asset could not be loaded. Its feedback is disabled. {e.Message}", owner);
-					_handles.Remove(key);
-					if (handle.IsValid()) Addressables.Release(handle);
-				}
+			await UniTask.WhenAll(loads);
+		}
+
+		private async UniTask WaitFor(Object owner, object key)
+		{
+			AsyncOperationHandle<Object> handle = _handles[key];
+			try
+			{
+				await handle.ToUniTask();
+			}
+			catch (Exception e)
+			{
+				// Several configs can wait on the same handle: only the first to fail warns and releases.
+				if (!_handles.Remove(key)) return;
+
+				Debug.LogWarning($"{owner.name}: an asset could not be loaded. Its feedback is disabled. {e.Message}", owner);
+				if (handle.IsValid()) Addressables.Release(handle);
 			}
 		}
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Core.ServicesManager;
 using Cysharp.Threading.Tasks;
 using Game.GameFeel;
@@ -21,10 +22,12 @@ namespace Game.GamePlay.Entities
 		{
 			_assets = ServicesLocator.Instance.GetService<FeedbackAssetsService>();
 
-			await PreloadHero(HeroConfig.Instance);
-			foreach (EnemyConfig enemy in EnemiesConfig.Instance.Enemies) await PreloadEnemy(enemy);
-			if (EnemiesConfig.Instance.WaveSounds != null) await EnemiesConfig.Instance.WaveSounds.PreloadAssets(_assets);
-			foreach (WeaponConfig weapon in WeaponsConfig.Instance.Weapons) await PreloadWeapon(weapon);
+			// Every config starts its loads at once, so from a CDN the whole set downloads in parallel and the boot waits for the slowest, not the sum.
+			List<UniTask> loads = new List<UniTask> { PreloadHero(HeroConfig.Instance) };
+			foreach (EnemyConfig enemy in EnemiesConfig.Instance.Enemies) loads.Add(PreloadEnemy(enemy));
+			if (EnemiesConfig.Instance.WaveSounds != null) loads.Add(EnemiesConfig.Instance.WaveSounds.PreloadAssets(_assets));
+			foreach (WeaponConfig weapon in WeaponsConfig.Instance.Weapons) loads.Add(PreloadWeapon(weapon));
+			await UniTask.WhenAll(loads);
 
 			// Failure must never break gameplay: a missing asset only disables its own feedback.
 			return true;
@@ -36,29 +39,34 @@ namespace Game.GamePlay.Entities
 		{
 			if (hero == null) return;
 
-			await _assets.Preload(hero, hero.GroundRingPrefab);
-			if (hero.HitFeedback != null) await hero.HitFeedback.PreloadAssets(_assets);
-			if (hero.Footsteps != null) await hero.Footsteps.PreloadAssets(_assets);
-			if (hero.ComboSounds != null) await hero.ComboSounds.PreloadAssets(_assets);
+			List<UniTask> loads = new List<UniTask> { _assets.Preload(hero, hero.GroundRingPrefab) };
+			if (hero.HitFeedback != null) loads.Add(hero.HitFeedback.PreloadAssets(_assets));
+			if (hero.Footsteps != null) loads.Add(hero.Footsteps.PreloadAssets(_assets));
+			if (hero.ComboSounds != null) loads.Add(hero.ComboSounds.PreloadAssets(_assets));
+			await UniTask.WhenAll(loads);
 		}
 
 		private async UniTask PreloadEnemy(EnemyConfig enemy)
 		{
 			if (enemy == null) return;
 
-			if (enemy.HitFeedback != null) await enemy.HitFeedback.PreloadAssets(_assets);
-			if (enemy.DamageNumbers != null) await enemy.DamageNumbers.PreloadAssets(_assets);
-			if (enemy.SpawnFeedback != null) await enemy.SpawnFeedback.PreloadAssets(_assets);
-			if (enemy.AttackTelegraph != null) await enemy.AttackTelegraph.PreloadAssets(_assets);
-			if (enemy.CurrencyDrop != null) await enemy.CurrencyDrop.PreloadAssets(_assets);
+			List<UniTask> loads = new List<UniTask>();
+			if (enemy.HitFeedback != null) loads.Add(enemy.HitFeedback.PreloadAssets(_assets));
+			if (enemy.DamageNumbers != null) loads.Add(enemy.DamageNumbers.PreloadAssets(_assets));
+			if (enemy.SpawnFeedback != null) loads.Add(enemy.SpawnFeedback.PreloadAssets(_assets));
+			if (enemy.AttackTelegraph != null) loads.Add(enemy.AttackTelegraph.PreloadAssets(_assets));
+			if (enemy.CurrencyDrop != null) loads.Add(enemy.CurrencyDrop.PreloadAssets(_assets));
+			await UniTask.WhenAll(loads);
 		}
 
 		private async UniTask PreloadWeapon(WeaponConfig weapon)
 		{
 			if (weapon == null) return;
 
-			if (weapon.Sounds != null) await weapon.Sounds.PreloadAssets(_assets);
-			if (weapon.Attack != null) await weapon.Attack.PreloadAssets(_assets);
+			List<UniTask> loads = new List<UniTask>();
+			if (weapon.Sounds != null) loads.Add(weapon.Sounds.PreloadAssets(_assets));
+			if (weapon.Attack != null) loads.Add(weapon.Attack.PreloadAssets(_assets));
+			await UniTask.WhenAll(loads);
 		}
 	}
 }
