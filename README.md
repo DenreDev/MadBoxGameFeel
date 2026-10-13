@@ -8,6 +8,10 @@ My first gameplay priority was combat readability. Animations were not connected
 
 I then focused on making combat more satisfying through hit reactions, effects, sound, and camera feedback. Finally, I refined the presentation and explored additions at the boundary between feel and gameplay design where they could improve clarity and polish. Throughout, the goal was to balance implementation with playtesting, tuning, fixes, and understanding the architecture.
 
+## Demo
+
+https://github.com/user-attachments/assets/5aee5781-9194-4da4-80c6-3d8fd828ff12
+
 ## Features and time
 
 | Feature | Approximate time |
