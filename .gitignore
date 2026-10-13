@@ -72,3 +72,6 @@ android_account_key
 
 # Private review preparation notes and screenshots
 /Documentation/FeatureNotes/
+
+# Unity Recorder output
+/Recordings/
