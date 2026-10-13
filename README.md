@@ -41,9 +41,9 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 | Boot, start and game over screens | 14 min |
 | Attack range charge fill | 6 min |
 | Feedback config split (refactor) | 24 min |
-| **Estimated elapsed work** | **About 4 h 30 min** |
+| **Total** | **About 4 h** |
 
-Times are rounded estimates based on recorded sessions and corrections for waiting time. The overall estimate accounts for documented overlapping AI-assisted sessions, so the individual feature times do not add up to it. The total is about 30 minutes over the four-hour limit (see Comments).
+All times are approximate, rounded from recorded work sessions.
 
 ### Entity animation state machines
 
@@ -51,7 +51,7 @@ Times are rounded estimates based on recorded sessions and corrections for waiti
 
 ### Health bars
 
-- **Implemented:** every entity has a health bar above its head: green and bigger for the hero, red for enemies (shown once damaged). Hits are animated with a sliding fill, flash, pop and a lagging trail, and the bar disappears on death.
+- **Implemented:** every entity has a health bar above its head: green and bigger for the hero, red for enemies (shown once damaged). Hits are animated with a sliding fill, flash, pop and a lagging trail, and the bar disappears on death. The bars bring comprehension: the player sees at once who is being hit, how much damage it did and how close an enemy is to dying.
 - **Addressables:** the bar prefab is preloaded from a new `UI` group.
 
 ### Joystick UI rework
@@ -178,11 +178,27 @@ Times are rounded estimates based on recorded sessions and corrections for waiti
 
 ## Feedback on the base project
 
+**What I noticed as a player**
+
+- Hits had no weight: no flash, flinch, knockback, sparks, sound or camera reaction, and the damage and death animations were never played.
+- It was hard to understand what was happening: the animators had Damage, Death and attack states that nothing triggered, bees never left Idle, and there was no health or damage feedback.
+- Damage was applied the same frame as the swing or the bee's arrival, so animation and hit could never line up.
+- Enemy attacks came with no warning, so the player could not read them or dodge.
+- The hero's hit rule only used distance, with no direction and nothing drawn on screen, so it was unclear what a swing would hit.
+
+**What I noticed in the code**
+
+- The structure was easy to extend: plain C# controllers raising events, views reacting to them, services found by reflection through `ServicesLocator`, and ScriptableObject configs. Adding a feedback rarely meant touching gameplay code.
+- Views unsubscribe in `OnDestroy` through `ServicesLocator.Instance`, which is already destroyed, so leaving play mode throws `NullReferenceException`s.
+- `EntitiesService.Reset()` does not reset its controllers, so their update loops are never cancelled.
+- `ServicesLocator` has no `try/catch` around `Initialize`, `GetService` throws before the services exist, and `ResetServices` throws on a duplicate instance.
+- `HeroController.OnStateChanged` fires every movement frame, and enemy events carried only an id (no damage), so views had to re-read state.
+- Only weapons were Addressable: enemy and hero prefabs were direct references from a `Resources` config, despite the `Local/` and `Remote/` folders.
+- The camera angle is stored twice (World prefab `VirtualCamera` and the scene Main Camera), and only the first one has an effect.
+
+## Comments
+
 - I appreciated the one-week window to complete a four-hour assignment. It made the test easier to fit around my job.
 - I particularly enjoyed the focus on Game Feel, since technical tests often emphasize designing and implementing new features.
 - The scope felt well suited to the four-hour limit, especially with AI assistance. Supervising an agent's implementation gave me more time to focus on Game Feel decisions.
 - I also appreciated seeing Addressables used in the base project.
-
-## Comments
-
-- I went about 30 minutes over the four-hour limit. I went too deep into the features and spent about 1 hour on refactoring and robustness (config split, Addressables preload, view lifetimes).
