@@ -12,35 +12,35 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 
 | Feature | Approximate time |
 |---|---|
-| Entity animation state machines | 9 min |
-| Health bars | 9 min |
-| Joystick UI rework | 9 min |
-| Higher camera angle | 8 min |
-| Damage numbers | 9 min |
-| Start screen and game flow | 10 min |
-| Hit feedback, ragdoll death and screen shake | 12 min |
-| Enemy spawn | 8 min |
-| Smooth hero rotation | 4 min |
-| Hero health value | 5 min |
-| Hero ground ring | 8 min |
-| Footstep puffs | 7 min |
-| Archero-style visual pass | 13 min |
-| Great Sword texture | 3 min |
-| Multi-hit Great Sword | 2 min |
-| Run animation speed | 2 min |
-| Enemy attack telegraph | 7 min |
-| Delayed swing and aim | 8 min |
-| Attack impact pass | 3 min |
-| Attack sounds | 7 min |
-| Attack cone and range display | 2 min |
-| Critical strikes | 11 min |
-| Currency orbs | 8 min |
-| Enemy waves and bee types | 15 min |
-| Wave counter, including view refactor | 10 min |
-| Combo counter | 9 min |
-| Boot, start and game over screens | 14 min |
-| Attack range charge fill | 6 min |
-| Feedback config split (refactor) | 24 min |
+| [Entity animation state machines](#entity-animation-state-machines) | 9 min |
+| [Health bars](#health-bars) | 9 min |
+| [Joystick UI rework](#joystick-ui-rework) | 9 min |
+| [Higher camera angle](#higher-camera-angle) | 8 min |
+| [Damage numbers](#damage-numbers) | 9 min |
+| [Start screen and game flow](#start-screen-and-game-flow) | 10 min |
+| [Hit feedback, ragdoll death and screen shake](#hit-feedback-ragdoll-death-and-screen-shake) | 12 min |
+| [Enemy spawn](#enemy-spawn) | 8 min |
+| [Smooth hero rotation](#smooth-hero-rotation) | 4 min |
+| [Hero health value](#hero-health-value) | 5 min |
+| [Hero ground ring](#hero-ground-ring) | 8 min |
+| [Footstep puffs](#footstep-puffs) | 7 min |
+| [Archero-style visual pass](#archero-style-visual-pass) | 13 min |
+| [Great Sword texture](#great-sword-texture) | 3 min |
+| [Multi-hit Great Sword](#multi-hit-great-sword) | 2 min |
+| [Run animation speed](#run-animation-speed) | 2 min |
+| [Enemy attack telegraph](#enemy-attack-telegraph) | 7 min |
+| [Delayed swing and aim](#delayed-swing-and-aim) | 8 min |
+| [Attack impact pass](#attack-impact-pass) | 3 min |
+| [Attack sounds](#attack-sounds) | 7 min |
+| [Attack cone and range display](#attack-cone-and-range-display) | 2 min |
+| [Critical strikes](#critical-strikes) | 11 min |
+| [Currency orbs](#currency-orbs) | 8 min |
+| [Enemy waves and bee types](#enemy-waves-and-bee-types) | 15 min |
+| [Wave counter, including view refactor](#wave-counter) | 10 min |
+| [Combo counter](#combo-counter) | 9 min |
+| [Boot, start and game over screens](#boot-start-and-game-over-screens) | 14 min |
+| [Attack range charge fill](#attack-range-charge-fill) | 6 min |
+| [Feedback config split (refactor)](#feedback-config-split-refactor) | 24 min |
 | **Total** | **About 4 h** |
 
 All times are approximate, rounded from recorded work sessions.
