@@ -10,9 +10,7 @@ I then focused on making combat more satisfying through hit reactions, effects, 
 
 ## Demo
 
-<p align="center">
-  <video src="https://github.com/user-attachments/assets/5aee5781-9194-4da4-80c6-3d8fd828ff12" width="400" controls muted></video>
-</p>
+https://github.com/user-attachments/assets/ee62455c-3a10-461a-8e7b-713a44334557
 
 ## Features and time
 
