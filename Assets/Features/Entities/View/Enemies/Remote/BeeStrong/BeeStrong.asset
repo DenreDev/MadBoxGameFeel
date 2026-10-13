@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: BeeStrong
   m_EditorClassIdentifier: 
   id: bee_strong
-  initialHealth: 180
+  initialHealth: 120
   speed: 2.7
   bodyRadius: 1.1
-  attackCooldown: 0.8
+  attackCooldown: 3
   attackDamage: 30
-  attackRange: 6
+  attackRange: 4.5
   attack: {fileID: 11400000, guid: ec300fc38804644478feecd267c50710, type: 2}
   prefab:
     m_AssetGUID: ca1a34fa598404dffb62f942ff786abb
